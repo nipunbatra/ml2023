@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://github.com/Pakillo/quarto-course-website-template/index.html</loc>
-    <lastmod>2022-09-04T14:21:05.896Z</lastmod>
+    <loc>https://github.com/nipunbatra/ml23-2/schedule.html</loc>
+    <lastmod>2023-01-02T11:29:11.585Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/Pakillo/quarto-course-website-template/materials.html</loc>
-    <lastmod>2022-09-04T14:21:06.732Z</lastmod>
+    <loc>https://github.com/nipunbatra/ml23-2/materials.html</loc>
+    <lastmod>2023-01-02T11:29:12.421Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/Pakillo/quarto-course-website-template/schedule.html</loc>
-    <lastmod>2022-09-04T14:21:07.160Z</lastmod>
+    <loc>https://github.com/nipunbatra/ml23-2/index.html</loc>
+    <lastmod>2023-01-02T11:29:12.877Z</lastmod>
   </url>
 </urlset>
