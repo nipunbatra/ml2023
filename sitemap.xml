@@ -2,14 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://github.com/nipunbatra/ml2023/schedule.html</loc>
-    <lastmod>2023-01-03T02:15:25.673Z</lastmod>
+    <lastmod>2023-01-03T02:18:13.210Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/materials.html</loc>
-    <lastmod>2023-01-03T02:15:26.281Z</lastmod>
+    <lastmod>2023-01-03T02:18:13.866Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/index.html</loc>
-    <lastmod>2023-01-03T02:15:26.581Z</lastmod>
+    <lastmod>2023-01-03T02:18:14.206Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/grading.html</loc>
+    <lastmod>2023-01-03T02:18:14.498Z</lastmod>
   </url>
 </urlset>
