@@ -4,27 +4,42 @@ title: "FAQ"
 
 ### FAQ
 
+#### Quizzes
+
 - What happens if I miss a quiz due to any reason?
     - The quiz will be marked as 0.
     - The provision of best 6 out of 8 quizzes is designed keeping in mind such scenarios.
-- What happens if I miss an assignment due to any reason?
-    - There will no extensions for assignments.
 - Will the quizzes and end-semester exam be open book? Will I be allowed to carry notes?
     - No, the exams and quizzes will be closed book. You are not permitted to carry notes.
 - How soon can I expect to receive my answer sheets back?
     - You should expect to receive answer sheets back in 4-5 working days.
 - Is there an end-semester exam or mid-semester exam?
-    - No, there is no end-semester exam or mid-semester exam. However, some of the quizzes may be held in the exam slot.
+    - No, there is no end-semester exam or mid-semester exam. However, some of the quizzes may be held in the exam slot. In total we will have 8 equal weightage quizzes. The best 6 out of them will be considered for the final grade.
+- Will the quizzes be MCQs or subjective?
+    - The quizzes may contain both the MCQs and subjective questions.
+
+#### Assignments
+- What happens if I miss an assignment due to any reason?
+    - There will no extensions for assignments.
 - I have a doubt in the assignment. Whom should I write to?
     - Ask on the slack General channel. If you don't get a response within 2 days, write to the course instructor.
 - I do not know Python. Can I code assignments in some other language?
     - Unfortunately, no. You have to stick to Python.
-- Attendance policy
-    - Attendance is not mandatory, but highly encouraged. Marks often correlated with attendance. 
 - How will you evaluate the assignment?
     - The assignments would be followed by a viva. The TAs would first check the code and compare against the submission. Any change from the submitted code is not allowed and any instance of the same would culminate in a warning. The TAs would run the code and ask a few questions. About 75% of these questions would be based on the assignment in question and about 25% would be based on the theory behind the concepts covered in the assignment. 
     - The grade breakup would be: i) code runs correctly and solves the problem [50% marks]; ii) questions based on the assignment and student understanding of code [25% marks]; iii) code quality [12.5% marks]; iv) questions based on the theory behind the concepts covered in the assignments [12.5% marks]
-    
+- Is the assignment individual or group?
+    - The assignment is TBA. In case of group, all team members get the same grade for the assignment.
+
+#### Attendance
+
+- Attendance policy
+    - Attendance is not mandatory, but highly encouraged. Marks often correlated with attendance. 
+
+#### Projects
+
+- Is there a project component in the course?
+    - No. There is no project component in the course. 
 
 
 
