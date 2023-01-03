@@ -23,4 +23,12 @@ title: "Grading Policy and FAQ"
     - The provision of best 6 out of 8 quizzes is designed keeping in mind such scenarios.
 - What happens if I miss an assignment due to any reason?
     - There will no extensions for assignments.
-- 
+- Will the quizzes and end-semester exam be open book? Will I be allowed to carry notes?
+    - No, the exams and quizzes will be closed book. You are not permitted to carry notes.
+- How soon can I expect to receive my answer sheets back?
+    - You should expect to receive answer sheets back in 4-5 working days.
+- Is there an end-semester exam or mid-semester exam?
+    - No, there is no end-semester exam or mid-semester exam. However, some of the quizzes may be held in the exam slot.
+- I have a doubt in the assignment. Whom should I write to?
+    - Ask on the slack General channel. 
+

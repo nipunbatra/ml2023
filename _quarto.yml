@@ -21,12 +21,14 @@ website:
         text: Grading Policy and FAQ
       - href: schedule.qmd
         text: Schedule
+      - href: https://nipunbatra.github.io
+        text: Instructor Homepage
 
 
 format:
   html:
     theme: cosmo
-    # css: styles.css
+    css: styles.css
     toc: true
 
 execute:

@@ -2,12 +2,14 @@
 title: "ES 654 Machine Learning"
 ---
 
+### Summary
+
 * Instructor: Nipun Batra (nipun.batra@iitgn.ac.in)
 * Teaching Assistants: Zeel B Patel, Shriraj Sawant, Sarth Dubey, Hitarth Gandhi, Saagar Parikh, Eshan Gujarathi, Gautam Vashishta, Aadesh Desai
 * Course Timings: Tuesday, Thursday 330-450 PM IST in 1/101
 * [Slack Invite](https://join.slack.com/t/es654-2022/shared_invite/zt-1mgeh688j-Wynv7_s_0n2_FaSu7kbUWg)
 
----
+
 
 ### Pre-requisites:
 
@@ -21,7 +23,7 @@ Course preparation: Students are encouraged to study some of the following to re
 *   [Some material on Linear Algebra](https://machinelearningmastery.com/linear-algebra-machine-learning/)
 *   [Khan academy course on Stats and Probability](https://www.khanacademy.org/math/statistics-probability)
 
-* * *
+
 
 ### Reference textbooks:
 
@@ -33,7 +35,7 @@ Course preparation: Students are encouraged to study some of the following to re
 6.  Murphy, K. Machine Learning: A Probabilistic Perspective. MIT Press
 7.  Goodfellow I, Bengio Y, Courville A, Bengio Y. Deep learning. Cambridge: MIT press; 2016 Nov 18.[\[Freely available online\]](https://www.deeplearningbook.org/)
 
----
+
 
 ### Some other ML courses
 
