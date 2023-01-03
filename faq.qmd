@@ -23,6 +23,8 @@ title: "FAQ"
 - What do you mean by "clear" the exam?
     - Like all courses at IITGn, the instructor will decide the cut-off for the exam. You will have to score above the cut-off to clear the exam. No cut-off will be revealed to the students apriori.
 
+---
+
 #### Quizzes
 
 - What happens if I miss a quiz due to any reason?
@@ -36,6 +38,7 @@ title: "FAQ"
     - No, there is no end-semester exam or mid-semester exam. However, some of the quizzes may be held in the exam slot. In total we will have 8 equal weightage quizzes. The best 6 out of them will be considered for the final grade.
 - Will the quizzes be MCQs or subjective?
     - The quizzes may contain both the MCQs and subjective questions.
+---
 
 #### Assignments
 - What happens if I miss an assignment due to any reason?
@@ -50,15 +53,22 @@ title: "FAQ"
 - Is the assignment individual or group?
     - The assignment is TBA. In case of group, all team members get the same grade for the assignment.
 
+---
+
 #### Attendance
 
 - Attendance policy
     - Attendance is not mandatory, but highly encouraged. Marks often correlated with attendance. 
 
+---
+
+
 #### Projects
 
 - Is there a project component in the course?
     - No. There is no project component in the course. 
+
+---
 
 #### Bonus
 
