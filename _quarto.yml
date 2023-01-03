@@ -17,6 +17,8 @@ website:
     contents:
       - href: index.qmd
         text: Home
+      - href: grading.qmd
+        text: Grading Policy
       - href: schedule.qmd
         text: Schedule
 
