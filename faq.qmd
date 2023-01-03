@@ -4,6 +4,22 @@ title: "FAQ"
 
 ### FAQ
 
+#### Prerequisites (and exam)
+
+- What are the course prerequisites?
+    - The course has no "formal" prerequisites like all courses at IITGn. However, it is assumed that you have a basic understanding of: 
+        - programming (Python), and data structures (ES242 equivalent)
+        - probability and statistics 
+        - linear algebra 
+        - calculus 
+- What is the prerequisite exam? What will it contain?
+    - We will hold a prerequisite exam on Jan 5th, 2023. 
+    - The exam will be a mix of subjective, objective and coding (writing on paper) questions.
+- What happens if I do not clear the prerequisite exam?
+    - You will not be allowed to take the course.
+- What do you mean by "clear" the exam?
+    - Like all courses at IITGn, the instructor will decide the cut-off for the exam. You will have to score above the cut-off to clear the exam. No cut-off will be revealed to the students apriori.
+
 #### Quizzes
 
 - What happens if I miss a quiz due to any reason?
