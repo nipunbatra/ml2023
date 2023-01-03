@@ -41,6 +41,12 @@ title: "FAQ"
 - Is there a project component in the course?
     - No. There is no project component in the course. 
 
+#### Bonus
+
+- Can I choose a PR of my choice.
+    - Yes, you can choose a PR of your choice from a list of PRs decided by the teaching staff. The teaching staff hold the right to decide whether a PR is suitable or not.
+
+
 
 
 
