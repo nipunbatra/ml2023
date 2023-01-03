@@ -15,6 +15,9 @@ title: "FAQ"
 - What is the prerequisite exam? What will it contain?
     - We will hold a prerequisite exam on Jan 5th, 2023. 
     - The exam will be a mix of subjective, objective and coding (writing on paper) questions.
+- How can I prepare for the prerequisite exam?
+    - Your UG course material should be sufficient to prepare for the exam.
+    - You may additionally refer to the "prerequisite" reading section on the [course homepage](../index.qmd).
 - What happens if I do not clear the prerequisite exam?
     - You will not be allowed to take the course.
 - What do you mean by "clear" the exam?
