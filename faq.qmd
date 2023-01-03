@@ -1,5 +1,5 @@
 ---
-title: "Grading Policy and FAQ"
+title: "FAQ"
 ---
 
 ### FAQ
@@ -16,5 +16,16 @@ title: "Grading Policy and FAQ"
 - Is there an end-semester exam or mid-semester exam?
     - No, there is no end-semester exam or mid-semester exam. However, some of the quizzes may be held in the exam slot.
 - I have a doubt in the assignment. Whom should I write to?
-    - Ask on the slack General channel. 
+    - Ask on the slack General channel. If you don't get a response within 2 days, write to the course instructor.
+- I do not know Python. Can I code assignments in some other language?
+    - Unfortunately, no. You have to stick to Python.
+- Attendance policy
+    - Attendance is not mandatory, but highly encouraged. Marks often correlated with attendance. 
+- How will you evaluate the assignment?
+    - The assignments would be followed by a viva. The TAs would first check the code and compare against the submission. Any change from the submitted code is not allowed and any instance of the same would culminate in a warning. The TAs would run the code and ask a few questions. About 75% of these questions would be based on the assignment in question and about 25% would be based on the theory behind the concepts covered in the assignment. 
+    - The grade breakup would be: i) code runs correctly and solves the problem [50% marks]; ii) questions based on the assignment and student understanding of code [25% marks]; iii) code quality [12.5% marks]; iv) questions based on the theory behind the concepts covered in the assignments [12.5% marks]
+    
+
+
+
 
