@@ -3,26 +3,23 @@ project:
   output-dir: docs
 
 website:
-  title: "Course Title"
+  title: "ES654"
   sidebar:
     background: primary
-    # logo: "images/logo.png"
+    logo: "images/logo.png"
     pinned: true
     align: center
     tools:
-      - icon: github
-        href: https://github.com/Pakillo/quarto-course-website-template
-        text: GitHub
+      - icon: slack
+        href: https://join.slack.com/t/es654-2022/shared_invite/zt-1mgeh688j-Wynv7_s_0n2_FaSu7kbUWg
+        text: Slack
     style: docked
     contents:
       - href: index.qmd
         text: Home
       - href: schedule.qmd
         text: Schedule
-      - href: materials.qmd
-        text: Materials
-      - href: https://github.com/Pakillo/quarto-course-website-template/discussions
-        text: Forum
+
 
 format:
   html:
