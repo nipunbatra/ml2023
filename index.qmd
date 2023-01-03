@@ -2,18 +2,14 @@
 title: "ES 654 Machine Learning"
 ---
 
-*   Instructor: Nipun Batra (nipun.batra@iitgn.ac.in)
-*   Teaching Assistants: TBD
-*   Course Timings: TBD
-*   MS Teams code: TBD
+* Instructor: Nipun Batra (nipun.batra@iitgn.ac.in)
+* Teaching Assistants: Zeel B Patel, Shriraj Sawant, Sarth Dubey, Hitarth Gandhi, Saagar Parikh, Eshan Gujarathi, Gautam Vashishta, Aadesh Desai
+* Course Timings: Tuesday, Thursday 330-450 PM IST in 1/101
+* [Slack Invite](https://join.slack.com/t/es654-2022/shared_invite/zt-1mgeh688j-Wynv7_s_0n2_FaSu7kbUWg)
 
+---
 
-* * * 
-Grading policy - will be shared soon
-
-* * *
-
-Pre-requisites:
+### Pre-requisites:
 
 *   Good experience in Python programming
 *   Probability
@@ -21,13 +17,13 @@ Pre-requisites:
 
 Course preparation: Students are encouraged to study some of the following to refresh their understanding of some of the prerequisities before the course formally begins.  
 
-*   First four chapters of the [Python Data Science handbook](https://jakevdp.github.io/PythonDataScienceHandbook/)
+*  First four chapters of the [Python Data Science handbook](https://jakevdp.github.io/PythonDataScienceHandbook/)
 *   [Some material on Linear Algebra](https://machinelearningmastery.com/linear-algebra-machine-learning/)
 *   [Khan academy course on Stats and Probability](https://www.khanacademy.org/math/statistics-probability)
 
 * * *
 
-Reference textbooks:
+### Reference textbooks:
 
 1.  Gareth James, Daniela Witten, Trevor Hastie and Robert Tibshirani. [An Introduction to Statistical Learning with Applications in R](http://www-bcf.usc.edu/~gareth/ISL/)
 2.  Christopher Bishop. Pattern Recognition and Machine Learning. Springer, 2006.[\[Freely available online\]](https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf)
@@ -37,12 +33,9 @@ Reference textbooks:
 6.  Murphy, K. Machine Learning: A Probabilistic Perspective. MIT Press
 7.  Goodfellow I, Bengio Y, Courville A, Bengio Y. Deep learning. Cambridge: MIT press; 2016 Nov 18.[\[Freely available online\]](https://www.deeplearningbook.org/)
 
-* * *
+---
 
-
-* * *
-
-Some other ML courses
+### Some other ML courses
 
 1.  [NPTEL course by Balaram Ravindran](https://www.youtube.com/watch?v=r4sgKrRL2Ys&list=PL1xHD4vteKYVpaIiy295pg6_SY5qznc77)
 2.  [CMU course by Tom Mitchell and Maria-Florina Balcan](http://www.cs.cmu.edu/~ninamf/courses/601sp15/lectures.shtml)

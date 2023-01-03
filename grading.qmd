@@ -17,3 +17,10 @@ title: "Grading Policy and FAQ"
     - Getting the PR accepted (2%)
 
 ### FAQ
+
+- What happens if I miss a quiz due to any reason?
+    - The quiz will be marked as 0.
+    - The provision of best 6 out of 8 quizzes is designed keeping in mind such scenarios.
+- What happens if I miss an assignment due to any reason?
+    - There will no extensions for assignments.
+- 
