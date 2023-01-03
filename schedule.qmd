@@ -2,14 +2,9 @@
 title: "Schedule"
 ---
 
-Example schedule:
-
-|     |                Morning              |          Afternoon                     |
-|:---:|:-----------------------------------:|:--------------------------------------:|
-|  L  | Intro + Data manipulation           | git / GitHub                           |
-|  M  | Generalised Linear Models           | Data visualisation                     |
-|  X  | Mixed models / GAM / Bayes          | Functional programming + Students work |
-|  J  | Multivariate analyses               | Reproducible workflows                 |
-|  V  | Using R as GIS + Students work      | Project presentations                  |
+|Lecture #|Date|Topic|
+|:---:|:---:|:---|
+|1|3 Jan|Introduction and Logistics|
+|2|5 Jan|Convention, Metrics, Classification, Regression|
 
 
