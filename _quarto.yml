@@ -18,7 +18,9 @@ website:
       - href: index.qmd
         text: Home
       - href: grading.qmd
-        text: Grading Policy and FAQ
+        text: Grading Policy
+      - href: faq.qmd
+        text: FAQs
       - href: schedule.qmd
         text: Schedule
       - href: https://nipunbatra.github.io
