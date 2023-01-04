@@ -10,6 +10,7 @@ title: "Prerequsite test"
 3. The submission would be a link to a public GitHub repository containing the notebook.
 4. A random subset of students may have a viva post the exam. The viva would be based on the notebook and the solutions you have provided.
 5. The test is open till 6th January 2022 9 PM. You can submit your solutions anytime before that.
+6. This problem has to be solved individually. You cannot collaborate with anyone else.
 
 
 --- 
