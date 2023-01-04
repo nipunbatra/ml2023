@@ -13,7 +13,7 @@ website:
       - icon: slack
         href: https://join.slack.com/t/es654-2022/shared_invite/zt-1mgeh688j-Wynv7_s_0n2_FaSu7kbUWg
         text: Slack
-    style: docked
+    style: floating
     contents:
       - href: index.qmd
         text: Home
