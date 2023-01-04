@@ -179,12 +179,12 @@ ul.task-list li input[type="checkbox"] {
 <ol type="1">
 <li><p>How many multiplications and additions do you need to perform a matrix multiplication between a (n, k) and (k, m) matrix? Explain.</p></li>
 <li><p>Write Python code to multiply the above two matrices. Solve using list of lists and then use numpy. Compare the timing of both solutions. Which one is faster? Why?</p></li>
-<li><p>Finding the highest element in a list requires one pass of the array. Finding the second highest element requires 2 passes of the the array. Using this method, what is the time complexity of finding the median of the array? Can you suggest a better method? Can you implement both these methods in Python and compare against numpy.sort routine in terms of time?</p></li>
+<li><p>Finding the highest element in a list requires one pass of the array. Finding the second highest element requires 2 passes of the the array. Using this method, what is the time complexity of finding the median of the array? Can you suggest a better method? Can you implement both these methods in Python and compare against <code>numpy.median</code> routine in terms of time?</p></li>
 <li><p>What is the gradient of the following function with respect to x and y? <span class="math display">\[
 x^2y+y^3\sin(x)
 \]</span></p></li>
-<li><p>Use JAX to confirm the gradient evaluated by your method matches the analytical solution corresponding to a few random values of x and y</p></li>
-<li><p>Use sympy to confirm that you obtain the same gradient analytically.</p></li>
+<li><p>Use <code>JAX</code> to confirm the gradient evaluated by your method matches the analytical solution corresponding to a few random values of x and y</p></li>
+<li><p>Use <code>sympy</code> to confirm that you obtain the same gradient analytically.</p></li>
 <li><p>Create a Python nested dictionary to represent hierarchical information. We want to store record of students and their marks. Something like:</p>
 <ol type="1">
 <li>2022
@@ -225,7 +225,7 @@ x^2y+y^3\sin(x)
 <li><span class="math inline">\(y = \log(x)\)</span></li>
 <li><span class="math inline">\(y = e^x\)</span></li>
 </ol></li>
-<li><p>Using numpy generate a matrix of size 20X5 containing random numbers drawn uniformly from the range of 1 to 2. Using Pandas create a dataframe out of this matrix. Name the columns of the dataframe as “a”, “b”, “c”, “d”, “e”. Find the column with the highest standard deviation. Find the row with the lowest mean.</p></li>
+<li><p>Using numpy generate a matrix of size <code>20X5</code> containing random numbers drawn uniformly from the range of 1 to 2. Using Pandas create a dataframe out of this matrix. Name the columns of the dataframe as “a”, “b”, “c”, “d”, “e”. Find the column with the highest standard deviation. Find the row with the lowest mean.</p></li>
 <li><p>Add a new column to the dataframe called “f” which is the sum of the columns “a”, “b”, “c”, “d”, “e”. Create another column called “g”. The value in the column “g” should be “LT8” if the value in the column “f” is less than 8 and “GT8” otherwise. Find the number of rows in the dataframe where the value in the column “g” is “LT8”. Find the standard deviation of the column “f” for the rows where the value in the column “g” is “LT8” and “GT8” respectively.</p></li>
 <li><p>Write a small piece of code to explain broadcasting in numpy.</p></li>
 <li><p>Write a function to compute the <code>argmin</code> of a numpy array. The function should take a numpy array as input and return the index of the minimum element. You can use the <code>np.argmin</code> function to verify your solution.</p></li>
