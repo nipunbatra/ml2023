@@ -2,7 +2,6 @@
 title: "Grading Policy"
 ---
 
-### Grading Policy
 
 - Quizzes: 60%
     - 10% each

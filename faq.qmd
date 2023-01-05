@@ -2,9 +2,8 @@
 title: "FAQ"
 ---
 
-### FAQ
 
-#### Prerequisites (and exam)
+#### Prerequisites
 
 - What are the course prerequisites?
     - The course has no "formal" prerequisites like all courses at IITGn. However, it is assumed that you have a basic understanding of: 
@@ -12,9 +11,6 @@ title: "FAQ"
         - probability and statistics 
         - linear algebra 
         - calculus 
-- What is the prerequisite exam? What will it contain?
-    - We will hold a prerequisite exam on Jan 5th, 2023. 
-    - The exam will be a mix of subjective, objective and coding (writing on paper) questions.
 - How can I prepare for the prerequisite exam?
     - Your UG course material should be sufficient to prepare for the exam.
     - You may additionally refer to the "prerequisite" reading section on the [course homepage](./index.html).
