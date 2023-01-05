@@ -51,7 +51,7 @@ $$
    2. $y = x^2$
    3. $y = \frac{x^3}{100}$
    4. $y = \sin(x)$
-   5. $y = \sin(x)$
+   5. $y = \frac{\sin(x)}{x}$
    6. $y = \log(x)$
    7. $y = e^x$
 10. Using numpy generate a matrix of size `20X5` containing random numbers drawn uniformly from the range of 1 to 2. Using Pandas create a dataframe out of this matrix. Name the columns of the dataframe as "a", "b", "c", "d", "e". Find the column with the highest standard deviation. Find the row with the lowest mean.
