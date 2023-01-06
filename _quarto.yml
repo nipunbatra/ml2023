@@ -23,10 +23,9 @@ website:
 format:
   html:
     theme:
-      light: [litera, styles.scss]
-      dark: [darkly, styles-dark.scss]
+      light: litera
+      dark: darkly
     highlight-style: a11y-dark
-    mainfont: "Atkinson Hyperlegible"
     code-copy: true
     code-overflow: wrap
 
