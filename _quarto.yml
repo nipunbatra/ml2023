@@ -26,7 +26,7 @@ format:
       light: [litera, styles.scss]
       dark: [darkly, styles-dark.scss]
     highlight-style: a11y-dark
-    mainfont: "Atkinson Hyperlegible"
+    mainfont: "Roboto"
     code-copy: true
     code-overflow: wrap
 
