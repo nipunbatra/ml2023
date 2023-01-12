@@ -228,13 +228,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<div class="cell" data-execution_count="1">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="dataset-creation" class="level3">
 <h3 class="anchored" data-anchor-id="dataset-creation">Dataset creation</h3>
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a DataFrame for whether or not a person plays tennis. </span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># It has discrete features and 14 rows.</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -249,9 +249,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="counting-values-of-outcome-variable-useful-for-calculating-entropy" class="level3">
 <h3 class="anchored" data-anchor-id="counting-values-of-outcome-variable-useful-for-calculating-entropy">Counting values of outcome variable (useful for calculating entropy)</h3>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'PlayTennis'</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ser <span class="op">=</span> df[<span class="st">'PlayTennis'</span>].value_counts()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ser</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>Yes    9
 No     5
 Name: PlayTennis, dtype: int64</code></pre>
@@ -260,10 +261,10 @@ Name: PlayTennis, dtype: int64</code></pre>
 </section>
 <section id="using-cross-tab-to-quickly-capture-the-relationship-between-two-variables" class="level3">
 <h3 class="anchored" data-anchor-id="using-cross-tab-to-quickly-capture-the-relationship-between-two-variables">Using cross tab to quickly capture the relationship between two variables</h3>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_out <span class="op">=</span> pd.crosstab(df[<span class="st">'Outlook'</span>], df[<span class="st">'PlayTennis'</span>])</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_out</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="9">
 
 <div>
 
@@ -301,17 +302,17 @@ Name: PlayTennis, dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
+<div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_out.index, df_out.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>(Index(['Overcast', 'Rain', 'Sunny'], dtype='object', name='Outlook'),
  Index(['No', 'Yes'], dtype='object', name='PlayTennis'))</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="6">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> df_out.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>e</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>Outlook
 Overcast    4
 Rain        5
@@ -319,12 +320,12 @@ Sunny       5
 dtype: int64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the fraction of each row that is a 'Yes' and 'No' for PlayTennis</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>df_out[<span class="st">'Yes'</span>] <span class="op">=</span> df_out[<span class="st">'Yes'</span>] <span class="op">/</span> e</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>df_out[<span class="st">'No'</span>] <span class="op">=</span> df_out[<span class="st">'No'</span>] <span class="op">/</span> e</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>df_out</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="11">
 
 <div>
 
@@ -408,15 +409,15 @@ dtype: int64</code></pre>
 </section>
 <section id="using-pd.groupby" class="level3">
 <h3 class="anchored" data-anchor-id="using-pd.groupby">Using pd.groupby()</h3>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"Outlook"</span>]).groups</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>{'Overcast': [2, 6, 11, 12], 'Rain': [3, 4, 5, 9, 13], 'Sunny': [0, 1, 7, 8, 10]}</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="10">
+<div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"Outlook"</span>]).get_group(<span class="st">"Sunny"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="14">
 
 <div>
 
@@ -477,9 +478,9 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
+<div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"Outlook"</span>]).get_group(<span class="st">"Sunny"</span>)[<span class="st">"PlayTennis"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>0      No
 1      No
 7      No
@@ -488,23 +489,23 @@ dtype: int64</code></pre>
 Name: PlayTennis, dtype: object</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="12">
+<div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"Outlook"</span>]).get_group(<span class="st">"Sunny"</span>)[<span class="st">"PlayTennis"</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <pre><code>No     3
 Yes    2
 Name: PlayTennis, dtype: int64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="13">
+<div class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"Outlook"</span>, <span class="st">"PlayTennis"</span>]).groups</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>{('Overcast', 'Yes'): [2, 6, 11, 12], ('Rain', 'No'): [5, 13], ('Rain', 'Yes'): [3, 4, 9], ('Sunny', 'No'): [0, 1, 7], ('Sunny', 'Yes'): [8, 10]}</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="14">
+<div class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"Outlook"</span>, <span class="st">"PlayTennis"</span>]).get_group((<span class="st">"Sunny"</span>, <span class="st">"Yes"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="19">
 
 <div>
 
@@ -541,9 +542,9 @@ Name: PlayTennis, dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="15">
+<div class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"Outlook"</span>, <span class="st">"PlayTennis"</span>]).size()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <pre><code>Outlook   PlayTennis
 Overcast  Yes           4
 Rain      No            2
@@ -564,9 +565,9 @@ dtype: int64</code></pre>
            names=['Outlook', 'PlayTennis'])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="17">
+<div class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"Outlook"</span>, <span class="st">"PlayTennis"</span>]).size().unstack()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div class="cell-output cell-output-display" data-execution_count="21">
 
 <div>
 
@@ -604,9 +605,9 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="18">
+<div class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>df.groupby([<span class="st">"Outlook"</span>, <span class="st">"PlayTennis"</span>]).size().unstack(fill_value<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="22">
 
 <div>
 
@@ -647,10 +648,10 @@ dtype: int64</code></pre>
 </section>
 <section id="using-pd.pivot_table" class="level3">
 <h3 class="anchored" data-anchor-id="using-pd.pivot_table">Using pd.pivot_table</h3>
-<div class="cell" data-execution_count="19">
+<div class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pivot_table <span class="op">=</span> df.pivot_table(index<span class="op">=</span><span class="st">'Outlook'</span>, columns<span class="op">=</span><span class="st">'PlayTennis'</span>, aggfunc<span class="op">=</span><span class="st">'size'</span>, fill_value<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>pivot_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="23">
 
 <div>
 
@@ -688,13 +689,22 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="22">
+<div class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>df_out.plot(kind<span class="op">=</span><span class="st">'bar'</span>, stacked<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
-<pre><code>&lt;AxesSubplot: xlabel='Outlook'&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>&lt;AxesSubplot:xlabel='Outlook'&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="pivot-cross_files/figure-html/cell-21-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df_out.plot(kind<span class="op">=</span><span class="st">'bar'</span>, stacked<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>&lt;AxesSubplot:xlabel='Outlook'&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="pivot-cross_files/figure-html/cell-22-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 

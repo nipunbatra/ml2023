@@ -2,6 +2,7 @@
   {
     "listing": "/notebooks/index.html",
     "items": [
+      "/notebooks/posts/dt-reg.html",
       "/notebooks/posts/pivot-cross.html",
       "/notebooks/posts/tips.html"
     ]
