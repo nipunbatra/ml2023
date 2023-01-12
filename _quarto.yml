@@ -16,6 +16,8 @@ website:
         text: Schedule
       - href: quizzes.qmd
         text: Quizzes
+      - text: "Notebooks"
+        href: notebooks/index.qmd
       - href: https://nipunbatra.github.io
         text: Instructor Homepage
 
