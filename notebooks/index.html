@@ -72,9 +72,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-date','listing-title','listing-author','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: ["listing-categories"],
+      searchColumns: ["listing-date","listing-title","listing-author","listing-description","listing-categories"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -155,7 +155,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(0)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div></div></div>
 <!-- main -->
 <main class="content column-page-left" id="quarto-document-content">
 
@@ -183,7 +183,56 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
+<div class="quarto-post image-right" data-index="0" data-listing-date-sort="1673481600000" data-listing-file-modified-sort="1673514680641" data-listing-reading-time-sort="0.16">
+<div class="body">
+<a href="../notebooks/posts/pivot-cross.html">
+<h3 class="no-anchor listing-title">
+Pandas tips
+</h3>
+<div class="listing-subtitle">
 
+</div>
+<div class="listing-description">
+<p>Pandas groupby</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="../notebooks/posts/pivot-cross.html">
+<div class="listing-date">
+Jan 12, 2023
+</div>
+<div class="listing-author">
+Nipun Batra
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="1" data-listing-date-sort="1673308800000" data-listing-file-modified-sort="1673514680641" data-listing-reading-time-sort="0.185">
+<div class="body">
+<a href="../notebooks/posts/tips.html">
+<h3 class="no-anchor listing-title">
+Misc tips
+</h3>
+<div class="listing-subtitle">
+
+</div>
+<div class="listing-description">
+<p>Misc tips</p>
+</div>
+</a>
+</div>
+<div class="metadata">
+<a href="../notebooks/posts/tips.html">
+<div class="listing-date">
+Jan 10, 2023
+</div>
+<div class="listing-author">
+Nipun Batra
+</div>
+</a>
+</div>
+</div>
 </div>
 <div class="listing-no-matching d-none">
 No matching items

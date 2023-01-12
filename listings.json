@@ -1,6 +1,9 @@
 [
   {
     "listing": "/notebooks/index.html",
-    "items": []
+    "items": [
+      "/notebooks/posts/pivot-cross.html",
+      "/notebooks/posts/tips.html"
+    ]
   }
 ]

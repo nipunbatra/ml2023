@@ -1,508 +1,232 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
-      xmlns:media="http://search.yahoo.com/mrss/" 
-      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
-      xmlns:dc="http://purl.org/dc/elements/1.1/" 
-      version="2.0">
-<channel>
-<title>ES654</title>
-<link>https://github.com/nipunbatra/ml2023/notebooks/index.html</link>
-<atom:link href="https://github.com/nipunbatra/ml2023/notebooks/index.xml" rel="self" type="application/rss+xml"/>
-<description></description>
-<generator>quarto-1.2.313</generator>
-<lastBuildDate>Thu, 12 Jan 2023 00:00:00 GMT</lastBuildDate>
-<item>
-  <title>Pandas tips</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross.html</link>
-  <description><![CDATA[ 
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Nipun Batra">
+<meta name="dcterms.date" content="2023-01-10">
+<meta name="description" content="Misc tips">
+
+<title>ES654 - Misc tips</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span></code></pre></div>
-</div>
-<section id="dataset-creation" class="level3">
-<h3 class="anchored" data-anchor-id="dataset-creation">Dataset creation</h3>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Create a DataFrame for whether or not a person plays tennis. </span></span>
-<span id="cb2-2"><span class="co" style="color: #5E5E5E;"># It has discrete features and 14 rows.</span></span>
-<span id="cb2-3"></span>
-<span id="cb2-4">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame({</span>
-<span id="cb2-5">    <span class="st" style="color: #20794D;">'Outlook'</span>: [<span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Overcast'</span>, <span class="st" style="color: #20794D;">'Rain'</span>, <span class="st" style="color: #20794D;">'Rain'</span>, <span class="st" style="color: #20794D;">'Rain'</span>, <span class="st" style="color: #20794D;">'Overcast'</span>, <span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Rain'</span>, <span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Overcast'</span>, <span class="st" style="color: #20794D;">'Overcast'</span>, <span class="st" style="color: #20794D;">'Rain'</span>],</span>
-<span id="cb2-6">    <span class="st" style="color: #20794D;">'Temperature'</span>: [<span class="st" style="color: #20794D;">'Hot'</span>, <span class="st" style="color: #20794D;">'Hot'</span>, <span class="st" style="color: #20794D;">'Hot'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Cool'</span>, <span class="st" style="color: #20794D;">'Cool'</span>, <span class="st" style="color: #20794D;">'Cool'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Cool'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Hot'</span>, <span class="st" style="color: #20794D;">'Mild'</span>],</span>
-<span id="cb2-7">    <span class="st" style="color: #20794D;">'Humidity'</span>: [<span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'High'</span>],</span>
-<span id="cb2-8">    <span class="st" style="color: #20794D;">'Wind'</span>: [<span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Strong'</span>],</span>
-<span id="cb2-9">    <span class="st" style="color: #20794D;">'PlayTennis'</span>: [<span class="st" style="color: #20794D;">'No'</span>, <span class="st" style="color: #20794D;">'No'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'No'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'No'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'No'</span>]</span>
-<span id="cb2-10">})</span></code></pre></div>
-</div>
-</section>
-<section id="counting-values-of-outcome-variable-useful-for-calculating-entropy" class="level3">
-<h3 class="anchored" data-anchor-id="counting-values-of-outcome-variable-useful-for-calculating-entropy">Counting values of outcome variable (useful for calculating entropy)</h3>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">df[<span class="st" style="color: #20794D;">'PlayTennis'</span>].value_counts()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>Yes    9
-No     5
-Name: PlayTennis, dtype: int64</code></pre>
-</div>
-</div>
-</section>
-<section id="using-cross-tab-to-quickly-capture-the-relationship-between-two-variables" class="level3">
-<h3 class="anchored" data-anchor-id="using-cross-tab-to-quickly-capture-the-relationship-between-two-variables">Using cross tab to quickly capture the relationship between two variables</h3>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">df_out <span class="op" style="color: #5E5E5E;">=</span> pd.crosstab(df[<span class="st" style="color: #20794D;">'Outlook'</span>], df[<span class="st" style="color: #20794D;">'PlayTennis'</span>])</span>
-<span id="cb5-2">df_out</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
 
-<div>
+</head>
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>2</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>3</td>
-      <td>2</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">df_out.index, df_out.columns</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>(Index(['Overcast', 'Rain', 'Sunny'], dtype='object', name='Outlook'),
- Index(['No', 'Yes'], dtype='object', name='PlayTennis'))</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">e <span class="op" style="color: #5E5E5E;">=</span> df_out.<span class="bu" style="color: null;">sum</span>(axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb8-2">e</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>Outlook
-Overcast    4
-Rain        5
-Sunny       5
-dtype: int64</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;"># Find the fraction of each row that is a 'Yes' and 'No' for PlayTennis</span></span>
-<span id="cb10-2">df_out[<span class="st" style="color: #20794D;">'Yes'</span>] <span class="op" style="color: #5E5E5E;">=</span> df_out[<span class="st" style="color: #20794D;">'Yes'</span>] <span class="op" style="color: #5E5E5E;">/</span> e</span>
-<span id="cb10-3">df_out[<span class="st" style="color: #20794D;">'No'</span>] <span class="op" style="color: #5E5E5E;">=</span> df_out[<span class="st" style="color: #20794D;">'No'</span>] <span class="op" style="color: #5E5E5E;">/</span> e</span>
-<span id="cb10-4">df_out</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<body class="nav-fixed fullcontent">
 
-<div>
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ES654</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../grading.html">
+ <span class="menu-text">Grading Policy</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../faq.html">
+ <span class="menu-text">FAQs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../schedule.html">
+ <span class="menu-text">Schedule</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../quizzes.html">
+ <span class="menu-text">Quizzes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../notebooks/index.html">
+ <span class="menu-text">Notebooks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://nipunbatra.github.io">
+ <span class="menu-text">Instructor Homepage</span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0.0</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>0.4</td>
-      <td>0.6</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>0.6</td>
-      <td>0.4</td>
-    </tr>
-  </tbody>
-</table>
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Misc tips</h1>
 </div>
-</div>
-</div>
-</section>
-<section id="more-efficient-cross-tabulation-using-normalize" class="level3">
-<h3 class="anchored" data-anchor-id="more-efficient-cross-tabulation-using-normalize">More efficient cross tabulation (using normalize)</h3>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">pd.crosstab(df[<span class="st" style="color: #20794D;">'Outlook'</span>], df[<span class="st" style="color: #20794D;">'PlayTennis'</span>], normalize<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'index'</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0.0</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>0.4</td>
-      <td>0.6</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>0.6</td>
-      <td>0.4</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-</section>
-<section id="using-pd.groupby" class="level3">
-<h3 class="anchored" data-anchor-id="using-pd.groupby">Using pd.groupby()</h3>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>]).groups</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<pre><code>{'Overcast': [2, 6, 11, 12], 'Rain': [3, 4, 5, 9, 13], 'Sunny': [0, 1, 7, 8, 10]}</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>]).get_group(<span class="st" style="color: #20794D;">"Sunny"</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
 
 <div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Outlook</th>
-      <th>Temperature</th>
-      <th>Humidity</th>
-      <th>Wind</th>
-      <th>PlayTennis</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Sunny</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>No</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Sunny</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>No</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>No</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>Sunny</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>Normal</td>
-      <td>Strong</td>
-      <td>Yes</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>]).get_group(<span class="st" style="color: #20794D;">"Sunny"</span>)[<span class="st" style="color: #20794D;">"PlayTennis"</span>]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<pre><code>0      No
-1      No
-7      No
-8     Yes
-10    Yes
-Name: PlayTennis, dtype: object</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>]).get_group(<span class="st" style="color: #20794D;">"Sunny"</span>)[<span class="st" style="color: #20794D;">"PlayTennis"</span>].value_counts()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>No     3
-Yes    2
-Name: PlayTennis, dtype: int64</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).groups</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
-<pre><code>{('Overcast', 'Yes'): [2, 6, 11, 12], ('Rain', 'No'): [5, 13], ('Rain', 'Yes'): [3, 4, 9], ('Sunny', 'No'): [0, 1, 7], ('Sunny', 'Yes'): [8, 10]}</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).get_group((<span class="st" style="color: #20794D;">"Sunny"</span>, <span class="st" style="color: #20794D;">"Yes"</span>))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Outlook</th>
-      <th>Temperature</th>
-      <th>Humidity</th>
-      <th>Wind</th>
-      <th>PlayTennis</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>8</th>
-      <td>Sunny</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>Normal</td>
-      <td>Strong</td>
-      <td>Yes</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).size()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
-<pre><code>Outlook   PlayTennis
-Overcast  Yes           4
-Rain      No            2
-          Yes           3
-Sunny     No            3
-          Yes           2
-dtype: int64</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).size().index</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<pre><code>MultiIndex([('Overcast', 'Yes'),
-            (    'Rain',  'No'),
-            (    'Rain', 'Yes'),
-            (   'Sunny',  'No'),
-            (   'Sunny', 'Yes')],
-           names=['Outlook', 'PlayTennis'])</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).size().unstack()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="17">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>NaN</td>
-      <td>4.0</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>2.0</td>
-      <td>3.0</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>3.0</td>
-      <td>2.0</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).size().unstack(fill_value<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>2</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>3</td>
-      <td>2</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-</section>
-<section id="using-pd.pivot_table" class="level3">
-<h3 class="anchored" data-anchor-id="using-pd.pivot_table">Using pd.pivot_table</h3>
-<div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">pivot_table <span class="op" style="color: #5E5E5E;">=</span> df.pivot_table(index<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Outlook'</span>, columns<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'PlayTennis'</span>, aggfunc<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'size'</span>, fill_value<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)</span>
-<span id="cb28-2">pivot_table</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>2</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>3</td>
-      <td>2</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">df_out.plot(kind<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'bar'</span>, stacked<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
-<pre><code>&lt;AxesSubplot: xlabel='Outlook'&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross_files/figure-html/cell-21-output-2.png" class="img-fluid"></p>
-</div>
+  <div class="description">
+    Misc tips
+  </div>
 </div>
 
 
-</section>
+<div class="quarto-title-meta">
 
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross.html</guid>
-  <pubDate>Thu, 12 Jan 2023 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Misc tips</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/tips.html</link>
-  <description><![CDATA[ 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nipun Batra </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 10, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
-
+</header>
 
 <section id="miscelleneous-tips" class="level3">
 <h3 class="anchored" data-anchor-id="miscelleneous-tips">Miscelleneous tips</h3>
@@ -526,42 +250,42 @@ dtype: int64</code></pre>
 <li>Plotting with pandas (sin, log, question …)</li>
 </ul>
 <div class="cell" data-execution_count="62">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
-<span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format<span class="op">=</span><span class="st">'retina'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">n <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">100</span></span>
-<span id="cb2-2">k <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">20</span></span>
-<span id="cb2-3">m <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">50</span></span>
-<span id="cb2-4"></span>
-<span id="cb2-5">np.random.seed(<span class="dv" style="color: #AD0000;">0</span>)</span>
-<span id="cb2-6">a <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(n, k)</span>
-<span id="cb2-7">b <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(k, m)</span>
-<span id="cb2-8">a.shape, b.shape</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">0</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.randn(n, k)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.random.randn(k, m)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>a.shape, b.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>((100, 20), (20, 50))</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">a_list_of_list <span class="op" style="color: #5E5E5E;">=</span> a.tolist()</span>
-<span id="cb4-2">a_list_of_list[<span class="dv" style="color: #AD0000;">0</span>]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>a_list_of_list <span class="op">=</span> a.tolist()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>a_list_of_list[<span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>list</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="28">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;">"list"</span> <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">dir</span>(a)[:]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">"list"</span> <span class="kw">in</span> <span class="bu">dir</span>(a)[:]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="28">
 <pre><code>False</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="38">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="im" style="color: #00769E;">import</span> rich</span>
-<span id="cb8-2">rich.inspect(a.tolist, methods<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, <span class="bu" style="color: null;">all</span><span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> rich</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>rich.inspect(a.tolist, methods<span class="op">=</span><span class="va">True</span>, <span class="bu">all</span><span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #000080; text-decoration-color: #000080">╭──────────────────────── </span><span style="color: #000080; text-decoration-color: #000080; font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">built-in</span><span style="color: #000000; text-decoration-color: #000000"> method tolist of numpy.ndarray object at </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x164cbb8d0</span><span style="color: #000080; text-decoration-color: #000080; font-weight: bold">&gt;</span><span style="color: #000080; text-decoration-color: #000080"> ────────────────────────╮</span>
 <span style="color: #000080; text-decoration-color: #000080">│</span> <span style="color: #00ffff; text-decoration-color: #00ffff; font-style: italic">def </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">ndarray.tolist</span><span style="font-weight: bold">(</span><span style="color: #808000; text-decoration-color: #808000">...</span><span style="font-weight: bold">)</span>                                                                                         <span style="color: #000080; text-decoration-color: #000080">│</span>
@@ -634,22 +358,22 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="kw" style="color: #003B4F;">lambda</span> x: np.power(x, <span class="dv" style="color: #AD0000;">3</span>)</span>
-<span id="cb9-2"></span>
-<span id="cb9-3"></span>
-<span id="cb9-4"><span class="kw" style="color: #003B4F;">def</span> f(x):</span>
-<span id="cb9-5">    <span class="cf" style="color: #003B4F;">return</span> np.power(x, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">lambda</span> x: np.power(x, <span class="dv">3</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> f(x):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.power(x, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="53">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">d <span class="op" style="color: #5E5E5E;">=</span> {</span>
-<span id="cb10-2">    <span class="vs" style="color: #20794D;">r"$\sin(x)$"</span>: np.sin,</span>
-<span id="cb10-3">    <span class="vs" style="color: #20794D;">r"$\log(x)$"</span>: np.log,</span>
-<span id="cb10-4">    <span class="vs" style="color: #20794D;">r"$\frac{sin(x)}</span><span class="sc" style="color: #5E5E5E;">{x}</span><span class="vs" style="color: #20794D;">$"</span>: <span class="kw" style="color: #003B4F;">lambda</span> x: np.sin(x) <span class="op" style="color: #5E5E5E;">/</span> x,</span>
-<span id="cb10-5">    <span class="vs" style="color: #20794D;">r"$x^3$"</span>: <span class="kw" style="color: #003B4F;">lambda</span> x: np.power(x, <span class="dv" style="color: #AD0000;">3</span>),</span>
-<span id="cb10-6">}</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="vs">r"$\sin(x)$"</span>: np.sin,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="vs">r"$\log(x)$"</span>: np.log,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="vs">r"$\frac{sin(x)}</span><span class="sc">{x}</span><span class="vs">$"</span>: <span class="kw">lambda</span> x: np.sin(x) <span class="op">/</span> x,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="vs">r"$x^3$"</span>: <span class="kw">lambda</span> x: np.power(x, <span class="dv">3</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="54">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">d</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="54">
 <pre><code>{'$\\sin(x)$': &lt;ufunc 'sin'&gt;,
  '$\\log(x)$': &lt;ufunc 'log'&gt;,
@@ -658,13 +382,13 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="55">
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">x <span class="op" style="color: #5E5E5E;">=</span> np.arange(<span class="fl" style="color: #AD0000;">0.005</span>, <span class="fl" style="color: #AD0000;">10.0</span>, <span class="fl" style="color: #AD0000;">0.005</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.arange(<span class="fl">0.005</span>, <span class="fl">10.0</span>, <span class="fl">0.005</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="56">
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">e <span class="op" style="color: #5E5E5E;">=</span> {k: v(x) <span class="cf" style="color: #003B4F;">for</span> k, v <span class="kw" style="color: #003B4F;">in</span> d.items()}</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>e <span class="op">=</span> {k: v(x) <span class="cf">for</span> k, v <span class="kw">in</span> d.items()}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="57">
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">e</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>e</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="57">
 <pre><code>{'$\\sin(x)$': array([ 0.00499998,  0.00999983,  0.01499944, ..., -0.53137431,
         -0.53560333, -0.53981897]),
@@ -677,10 +401,10 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="58">
-<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(e, index<span class="op" style="color: #5E5E5E;">=</span>x)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(e, index<span class="op">=</span>x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="59">
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">df</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="59">
 
 <div>
@@ -780,26 +504,26 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="64">
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">df.plot()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df.plot()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="64">
 <pre><code>&lt;AxesSubplot:&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/tips_files/figure-html/cell-15-output-2.png" class="img-fluid"></p>
+<p><img src="tips_files/figure-html/cell-15-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell" data-execution_count="63">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">df.plot(subplots<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df.plot(subplots<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="63">
 <pre><code>array([&lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;, &lt;AxesSubplot:&gt;],
       dtype=object)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/tips_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
+<p><img src="tips_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell" data-execution_count="46">
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">df</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="46">
 
 <div>
@@ -899,18 +623,18 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="65">
-<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1">((df <span class="op" style="color: #5E5E5E;">-</span> df.<span class="bu" style="color: null;">min</span>(axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)) <span class="op" style="color: #5E5E5E;">/</span> (df.<span class="bu" style="color: null;">max</span>(axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>) <span class="op" style="color: #5E5E5E;">-</span> df.<span class="bu" style="color: null;">min</span>(axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>))).plot()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>((df <span class="op">-</span> df.<span class="bu">min</span>(axis<span class="op">=</span><span class="dv">0</span>)) <span class="op">/</span> (df.<span class="bu">max</span>(axis<span class="op">=</span><span class="dv">0</span>) <span class="op">-</span> df.<span class="bu">min</span>(axis<span class="op">=</span><span class="dv">0</span>))).plot()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="65">
 <pre><code>&lt;AxesSubplot:&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/tips_files/figure-html/cell-18-output-2.png" class="img-fluid"></p>
+<p><img src="tips_files/figure-html/cell-18-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell" data-execution_count="66">
-<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(np.random.randn(<span class="dv" style="color: #AD0000;">1000</span>, <span class="dv" style="color: #AD0000;">5</span>),</span>
-<span id="cb26-2">                  columns<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"a,b,c,d,e"</span>.split(<span class="st" style="color: #20794D;">","</span>))</span>
-<span id="cb26-3">df</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(np.random.randn(<span class="dv">1000</span>, <span class="dv">5</span>),</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                  columns<span class="op">=</span><span class="st">"a,b,c,d,e"</span>.split(<span class="st">","</span>))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="66">
 
 <div>
@@ -1022,10 +746,10 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="67">
-<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">df <span class="op" style="color: #5E5E5E;">=</span> df.assign(f<span class="op" style="color: #5E5E5E;">=</span>df.<span class="bu" style="color: null;">sum</span>(axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.assign(f<span class="op">=</span>df.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="68">
-<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">df</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="68">
 
 <div>
@@ -1149,55 +873,55 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="66">
-<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">df.query(<span class="st" style="color: #20794D;">"f &gt; 5"</span>)[<span class="st" style="color: #20794D;">"f"</span>].std()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>df.query(<span class="st">"f &gt; 5"</span>)[<span class="st">"f"</span>].std()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="66">
 <pre><code>0.6609257763922614</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="67">
-<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1">df.query(<span class="st" style="color: #20794D;">"f &lt;= 5"</span>)[<span class="st" style="color: #20794D;">"f"</span>].std()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df.query(<span class="st">"f &lt;= 5"</span>)[<span class="st">"f"</span>].std()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="67">
 <pre><code>2.1891090850524444</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="71">
-<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="co" style="color: #5E5E5E;">"tolist"</span> <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">dir</span>(df)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">"tolist"</span> <span class="kw">in</span> <span class="bu">dir</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="71">
 <pre><code>False</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><span class="kw" style="color: #003B4F;">def</span> search(obj, query):</span>
-<span id="cb35-2">    <span class="im" style="color: #00769E;">import</span> re</span>
-<span id="cb35-3"></span>
-<span id="cb35-4">    <span class="cf" style="color: #003B4F;">return</span> <span class="bu" style="color: null;">list</span>(<span class="bu" style="color: null;">filter</span>(<span class="kw" style="color: #003B4F;">lambda</span> x: re.search(query, x), <span class="bu" style="color: null;">dir</span>(obj)))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> search(obj, query):</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> re</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">list</span>(<span class="bu">filter</span>(<span class="kw">lambda</span> x: re.search(query, x), <span class="bu">dir</span>(obj)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1">search(a, <span class="st" style="color: #20794D;">"lis"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>search(a, <span class="st">"lis"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="34">
 <pre><code>['tolist']</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb38-2"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="98">
-<div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><span class="kw" style="color: #003B4F;">def</span> search(obj, query):</span>
-<span id="cb39-2">    <span class="im" style="color: #00769E;">import</span> re</span>
-<span id="cb39-3">    <span class="im" style="color: #00769E;">from</span> rich <span class="im" style="color: #00769E;">import</span> inspect</span>
-<span id="cb39-4">    <span class="im" style="color: #00769E;">from</span> rich.pretty <span class="im" style="color: #00769E;">import</span> Pretty</span>
-<span id="cb39-5">    <span class="im" style="color: #00769E;">from</span> rich.panel <span class="im" style="color: #00769E;">import</span> Panel</span>
-<span id="cb39-6"></span>
-<span id="cb39-7">    z <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">list</span>(<span class="bu" style="color: null;">filter</span>(<span class="kw" style="color: #003B4F;">lambda</span> x: re.search(query, x), <span class="bu" style="color: null;">dir</span>(obj)))</span>
-<span id="cb39-8">    p <span class="op" style="color: #5E5E5E;">=</span> Panel(Pretty(<span class="st" style="color: #20794D;">"a"</span>), title<span class="op" style="color: #5E5E5E;">=</span><span class="ss" style="color: #20794D;">f"Searching for `</span><span class="sc" style="color: #5E5E5E;">{</span>query<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">`"</span>)</span>
-<span id="cb39-9">    <span class="co" style="color: #5E5E5E;"># return p</span></span>
-<span id="cb39-10">    ps <span class="op" style="color: #5E5E5E;">=</span> []</span>
-<span id="cb39-11">    <span class="cf" style="color: #003B4F;">for</span> q <span class="kw" style="color: #003B4F;">in</span> z:</span>
-<span id="cb39-12">        ps.append(Panel(Pretty(inspect(<span class="bu" style="color: null;">getattr</span>(obj, q), methods<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, docs<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>))))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> search(obj, query):</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> re</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> rich <span class="im">import</span> inspect</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> rich.pretty <span class="im">import</span> Pretty</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> rich.panel <span class="im">import</span> Panel</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> <span class="bu">list</span>(<span class="bu">filter</span>(<span class="kw">lambda</span> x: re.search(query, x), <span class="bu">dir</span>(obj)))</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> Panel(Pretty(<span class="st">"a"</span>), title<span class="op">=</span><span class="ss">f"Searching for `</span><span class="sc">{</span>query<span class="sc">}</span><span class="ss">`"</span>)</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return p</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>    ps <span class="op">=</span> []</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> q <span class="kw">in</span> z:</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>        ps.append(Panel(Pretty(inspect(<span class="bu">getattr</span>(obj, q), methods<span class="op">=</span><span class="va">True</span>, docs<span class="op">=</span><span class="va">True</span>))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="99">
-<div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1">search(np.random, <span class="st" style="color: #20794D;">"normal"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>search(np.random, <span class="st">"normal"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #000080; text-decoration-color: #000080">╭─ </span><span style="color: #000080; text-decoration-color: #000080; font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">built-in</span><span style="color: #000000; text-decoration-color: #000000"> method lognormal of numpy.random.mtrand.RandomState object at </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x10c627840</span><span style="color: #000080; text-decoration-color: #000080; font-weight: bold">&gt;</span><span style="color: #000080; text-decoration-color: #000080"> ─╮</span>
 <span style="color: #000080; text-decoration-color: #000080">│</span> <span style="color: #00ffff; text-decoration-color: #00ffff; font-style: italic">def </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">RandomState.lognormal</span><span style="font-weight: bold">(</span><span style="color: #808000; text-decoration-color: #808000">...</span><span style="font-weight: bold">)</span>                                                         <span style="color: #000080; text-decoration-color: #000080">│</span>
@@ -1240,13 +964,13 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="73">
-<div class="sourceCode cell-code" id="cb41" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><span class="bu" style="color: null;">getattr</span>(pd.DataFrame().values, <span class="st" style="color: #20794D;">"tolist"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="bu">getattr</span>(pd.DataFrame().values, <span class="st">"tolist"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="73">
 <pre><code>&lt;function ndarray.tolist&gt;</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="70">
-<div class="sourceCode cell-code" id="cb43" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1">pd.DataFrame.to</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame.to</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="70">
 
 <div>
@@ -1264,8 +988,8 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb44" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame()</span>
-<span id="cb44-2">search(df.values, <span class="st" style="color: #20794D;">"list"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame()</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>search(df.values, <span class="st">"list"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">╭───────────────────────────────────────────── Searching for {query} ─────────────────────────────────────────────╮
 │ <span style="font-weight: bold">[</span><span style="color: #008000; text-decoration-color: #008000">'tolist'</span><span style="font-weight: bold">]</span>                                                                                                      │
@@ -1274,7 +998,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb45" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1">search(pd.DataFrame, <span class="st" style="color: #20794D;">"to"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>search(pd.DataFrame, <span class="st">"to"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="11">
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
 │ <span style="font-weight: bold">[</span>                                                                                                               │
@@ -1311,18 +1035,18 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="47">
-<div class="sourceCode cell-code" id="cb46" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1">q <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">"normal"</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> <span class="st">"normal"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="55">
-<div class="sourceCode cell-code" id="cb47" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1">np.random.normal</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>np.random.normal</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="55">
 <pre><code>&lt;function RandomState.normal&gt;</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="65">
-<div class="sourceCode cell-code" id="cb49" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><span class="im" style="color: #00769E;">from</span> rich <span class="im" style="color: #00769E;">import</span> inspect</span>
-<span id="cb49-2"></span>
-<span id="cb49-3">inspect(<span class="bu" style="color: null;">eval</span>(<span class="ss" style="color: #20794D;">f"np.random.</span><span class="sc" style="color: #5E5E5E;">{</span>q<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>), methods<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, <span class="bu" style="color: null;">all</span><span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> rich <span class="im">import</span> inspect</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>inspect(<span class="bu">eval</span>(<span class="ss">f"np.random.</span><span class="sc">{</span>q<span class="sc">}</span><span class="ss">"</span>), methods<span class="op">=</span><span class="va">True</span>, <span class="bu">all</span><span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #000080; text-decoration-color: #000080">╭─────────────── </span><span style="color: #000080; text-decoration-color: #000080; font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">built-in</span><span style="color: #000000; text-decoration-color: #000000"> method normal of numpy.random.mtrand.RandomState object at </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x10c627840</span><span style="color: #000080; text-decoration-color: #000080; font-weight: bold">&gt;</span><span style="color: #000080; text-decoration-color: #000080"> ───────────────╮</span>
 <span style="color: #000080; text-decoration-color: #000080">│</span> <span style="color: #00ffff; text-decoration-color: #00ffff; font-style: italic">def </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">RandomState.normal</span><span style="font-weight: bold">(</span><span style="color: #808000; text-decoration-color: #808000">...</span><span style="font-weight: bold">)</span>                                                                                     <span style="color: #000080; text-decoration-color: #000080">│</span>
@@ -1410,7 +1134,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="63">
-<div class="sourceCode cell-code" id="cb50" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1">inspect(inspect)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>inspect(inspect)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #000080; text-decoration-color: #000080">╭─────────────────────────────────────── </span><span style="color: #000080; text-decoration-color: #000080; font-weight: bold">&lt;</span><span style="color: #ff00ff; text-decoration-color: #ff00ff; font-weight: bold">function</span><span style="color: #000000; text-decoration-color: #000000"> inspect at </span><span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0x10f3fc550</span><span style="color: #000080; text-decoration-color: #000080; font-weight: bold">&gt;</span><span style="color: #000080; text-decoration-color: #000080"> ───────────────────────────────────────╮</span>
 <span style="color: #000080; text-decoration-color: #000080">│</span> <span style="color: #00ffff; text-decoration-color: #00ffff; font-style: italic">def </span><span style="color: #800000; text-decoration-color: #800000; font-weight: bold">inspect</span><span style="font-weight: bold">(</span>obj: Any, *, console: Optional<span style="font-weight: bold">[</span><span style="color: #800080; text-decoration-color: #800080; font-weight: bold">ForwardRef</span><span style="font-weight: bold">(</span><span style="color: #008000; text-decoration-color: #008000">'Console'</span><span style="font-weight: bold">)]</span> = <span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>, title: Optional<span style="font-weight: bold">[</span>str<span style="font-weight: bold">]</span> = <span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>, help:    <span style="color: #000080; text-decoration-color: #000080">│</span>
@@ -1444,53 +1168,53 @@ dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="74">
-<div class="sourceCode cell-code" id="cb51" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><span class="im" style="color: #00769E;">from</span> dataclasses <span class="im" style="color: #00769E;">import</span> dataclass</span>
-<span id="cb51-2"></span>
-<span id="cb51-3"></span>
-<span id="cb51-4"><span class="at" style="color: #657422;">@dataclass</span></span>
-<span id="cb51-5"><span class="kw" style="color: #003B4F;">class</span> InventoryItem:</span>
-<span id="cb51-6">    <span class="co" style="color: #5E5E5E;">"""Class for keeping track of an item in inventory."""</span></span>
-<span id="cb51-7"></span>
-<span id="cb51-8">    name: <span class="bu" style="color: null;">str</span></span>
-<span id="cb51-9">    unit_price: <span class="bu" style="color: null;">float</span></span>
-<span id="cb51-10">    quantity_on_hand: <span class="bu" style="color: null;">int</span> <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">0</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dataclasses <span class="im">import</span> dataclass</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> InventoryItem:</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Class for keeping track of an item in inventory."""</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    name: <span class="bu">str</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>    unit_price: <span class="bu">float</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>    quantity_on_hand: <span class="bu">int</span> <span class="op">=</span> <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="75">
-<div class="sourceCode cell-code" id="cb52" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1">c <span class="op" style="color: #5E5E5E;">=</span> InventoryItem(<span class="st" style="color: #20794D;">"A"</span>, <span class="dv" style="color: #AD0000;">20</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> InventoryItem(<span class="st">"A"</span>, <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="76">
-<div class="sourceCode cell-code" id="cb53" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1">c</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>c</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="76">
 <pre><code>InventoryItem(name='A', unit_price=20, quantity_on_hand=0)</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="69">
-<div class="sourceCode cell-code" id="cb55" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><span class="kw" style="color: #003B4F;">class</span> InventoryItemOld:</span>
-<span id="cb55-2">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>, name: <span class="bu" style="color: null;">str</span>, unit_price: <span class="bu" style="color: null;">float</span>, </span>
-<span id="cb55-3">                 quantity_on_hand: <span class="bu" style="color: null;">int</span> <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">0</span>):</span>
-<span id="cb55-4">        <span class="va" style="color: #111111;">self</span>.name <span class="op" style="color: #5E5E5E;">=</span> name</span>
-<span id="cb55-5">        <span class="va" style="color: #111111;">self</span>.unit_price <span class="op" style="color: #5E5E5E;">=</span> unit_price</span>
-<span id="cb55-6">        <span class="va" style="color: #111111;">self</span>.quantity_on_hand <span class="op" style="color: #5E5E5E;">=</span> quantity_on_hand</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> InventoryItemOld:</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, name: <span class="bu">str</span>, unit_price: <span class="bu">float</span>, </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>                 quantity_on_hand: <span class="bu">int</span> <span class="op">=</span> <span class="dv">0</span>):</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.name <span class="op">=</span> name</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.unit_price <span class="op">=</span> unit_price</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.quantity_on_hand <span class="op">=</span> quantity_on_hand</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="73">
-<div class="sourceCode cell-code" id="cb56" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1">d <span class="op" style="color: #5E5E5E;">=</span> InventoryItemOld(<span class="st" style="color: #20794D;">"A"</span>, <span class="dv" style="color: #AD0000;">2</span>)</span>
-<span id="cb56-2">d</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> InventoryItemOld(<span class="st">"A"</span>, <span class="dv">2</span>)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="73">
 <pre><code>&lt;__main__.InventoryItemOld at 0x166340430&gt;</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="70">
-<div class="sourceCode cell-code" id="cb58" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><span class="kw" style="color: #003B4F;">def</span> greeting(name: <span class="bu" style="color: null;">str</span>) <span class="op" style="color: #5E5E5E;">-&gt;</span> <span class="bu" style="color: null;">str</span>:</span>
-<span id="cb58-2">    <span class="cf" style="color: #003B4F;">return</span> <span class="st" style="color: #20794D;">'Hello '</span> <span class="op" style="color: #5E5E5E;">+</span> name</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> greeting(name: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">'Hello '</span> <span class="op">+</span> name</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-execution_count="71">
-<div class="sourceCode cell-code" id="cb59" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1">greeting(<span class="st" style="color: #20794D;">"Abc"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>greeting(<span class="st">"Abc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="71">
 <pre><code>'Hello Abc'</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="72">
-<div class="sourceCode cell-code" id="cb61" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1">greeting(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>greeting(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>TypeError: can only concatenate str (not "int") to str</code></pre>
 </div>
@@ -1499,9 +1223,257 @@ dtype: int64</code></pre>
 
 </section>
 
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/tips.html</guid>
-  <pubDate>Tue, 10 Jan 2023 00:00:00 GMT</pubDate>
-</item>
-</channel>
-</rss>
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
