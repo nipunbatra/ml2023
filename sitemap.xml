@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://github.com/nipunbatra/ml2023/exams/prereq.html</loc>
-    <lastmod>2023-01-12T07:17:13.029Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/quizzes.html</loc>
-    <lastmod>2023-01-12T07:17:14.057Z</lastmod>
+    <loc>https://github.com/nipunbatra/ml2023/index.html</loc>
+    <lastmod>2023-01-12T07:18:48.314Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/pivot-cross.html</loc>
-    <lastmod>2023-01-12T07:17:14.473Z</lastmod>
+    <lastmod>2023-01-12T07:18:50.482Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/tips.html</loc>
-    <lastmod>2023-01-12T07:17:15.049Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/schedule.html</loc>
-    <lastmod>2023-01-12T07:17:15.393Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/index.html</loc>
-    <lastmod>2023-01-12T07:17:15.745Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/grading.html</loc>
-    <lastmod>2023-01-12T07:17:16.073Z</lastmod>
+    <lastmod>2023-01-12T07:18:51.054Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/faq.html</loc>
-    <lastmod>2023-01-12T07:17:16.429Z</lastmod>
+    <lastmod>2023-01-12T07:18:51.458Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/exams/prereq.html</loc>
+    <lastmod>2023-01-12T07:18:51.850Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/quizzes.html</loc>
+    <lastmod>2023-01-12T07:18:52.166Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/schedule.html</loc>
+    <lastmod>2023-01-12T07:18:52.490Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/grading.html</loc>
+    <lastmod>2023-01-12T07:18:52.846Z</lastmod>
   </url>
 </urlset>
