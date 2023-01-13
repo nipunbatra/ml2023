@@ -25,7 +25,7 @@ website:
 format:
   html:
     theme:
-      light: [litera, styles.scss]
+      light: [flatly, styles.scss]
       dark: [darkly, styles-dark.scss]
     highlight-style: a11y-dark
     mainfont: "Roboto"
