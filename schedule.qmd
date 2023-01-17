@@ -9,6 +9,8 @@ title: "Schedule"
 |2|5 Jan|Convention, Metrics, Classification, Regression [[Slides](lectures/accuracy.pdf)]|
 |3|10 Jan|Decision Trees - 1[[Slides](lectures/decision-tree-1.pdf)][[Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/tips.html)]|
 |4|12 Jan|Decision Trees - 2[[Slides](lectures/decision-tree-2-bias-variance-1.pdf)][[Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/pivot-cross.html)]|
-|5|17 Jan||
+|5|17 Jan|Bias and Variance[[Slides](lectures/bias-variance-1.pdf)][[Notebook on Python utils](https://nipunbatra.github.io/ml2023/notebooks/posts/python-utils.html)][[Notebook on Grid Search](https://nipunbatra.github.io/ml2023/notebooks/posts/hyperparameter-1.html)]|
+|None| 18 Jan| Quiz 1|
+
 
 
