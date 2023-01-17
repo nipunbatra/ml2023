@@ -191,43 +191,46 @@ Length: 162, dtype: float64</code></pre>
 <pre><code>dict_items([('criterion', ['gini', 'entropy']), ('max_depth', [2, 3, 4, 5, 6, 7, 8, 9, 10]), ('min_samples_split', [2, 3, 4, 5, 6, 7, 8, 9, 10])]) 3</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">print_vec(<span class="op" style="color: #5E5E5E;">*</span>hyperparams.items())</span></code></pre></div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><span class="kw" style="color: #003B4F;">def</span> print_vec(x, y, z):</span>
+<span id="cb22-2">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"[</span><span class="sc" style="color: #5E5E5E;">{</span>x<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;"> </span><span class="ch" style="color: #20794D;">\n</span><span class="sc" style="color: #5E5E5E;">{</span>y<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;"> </span><span class="ch" style="color: #20794D;">\n</span><span class="sc" style="color: #5E5E5E;">{</span>z<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">]"</span>)</span>
+<span id="cb22-3">print_vec(<span class="op" style="color: #5E5E5E;">*</span>hyperparams.items())</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[('criterion', ['gini', 'entropy']) 
 ('max_depth', [2, 3, 4, 5, 6, 7, 8, 9, 10]) 
 ('min_samples_split', [2, 3, 4, 5, 6, 7, 8, 9, 10])]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="22">
+<div class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="bu" style="color: null;">list</span>(<span class="bu" style="color: null;">zip</span>(<span class="op" style="color: #5E5E5E;">*</span>hyperparams.items()))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>[('criterion', 'max_depth', 'min_samples_split'),
  (['gini', 'entropy'],
   [2, 3, 4, 5, 6, 7, 8, 9, 10],
   [2, 3, 4, 5, 6, 7, 8, 9, 10])]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="23">
+<div class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1">keys, values <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">zip</span>(<span class="op" style="color: #5E5E5E;">*</span>hyperparams.items())</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="24">
+<div class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">keys</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <pre><code>('criterion', 'max_depth', 'min_samples_split')</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">values</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <pre><code>(['gini', 'entropy'],
  [2, 3, 4, 5, 6, 7, 8, 9, 10],
  [2, 3, 4, 5, 6, 7, 8, 9, 10])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><span class="bu" style="color: null;">list</span>(itertools.product(<span class="op" style="color: #5E5E5E;">*</span>values))[::<span class="dv" style="color: #AD0000;">10</span>]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><span class="im" style="color: #00769E;">import</span> itertools</span>
+<span id="cb31-2"><span class="bu" style="color: null;">list</span>(itertools.product(<span class="op" style="color: #5E5E5E;">*</span>values))[::<span class="dv" style="color: #AD0000;">10</span>]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
 <pre><code>[('gini', 2, 2),
  ('gini', 3, 3),
  ('gini', 4, 4),
@@ -247,14 +250,14 @@ Length: 162, dtype: float64</code></pre>
  ('entropy', 10, 9)]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="27">
+<div class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1">v <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">next</span>(itertools.product(<span class="op" style="color: #5E5E5E;">*</span>values))</span>
 <span id="cb33-2"><span class="bu" style="color: null;">print</span>(v)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>('gini', 2, 2)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="28">
+<div class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1">print_vec(<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">zip</span>(keys, v))</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[('criterion', 'gini') 
@@ -262,7 +265,7 @@ Length: 162, dtype: float64</code></pre>
 ('min_samples_split', 2)]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="29">
+<div class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><span class="kw" style="color: #003B4F;">def</span> print_dict(<span class="op" style="color: #5E5E5E;">**</span>kwargs):</span>
 <span id="cb37-2">    <span class="bu" style="color: null;">print</span>(kwargs)</span>
 <span id="cb37-3"></span>
@@ -271,29 +274,29 @@ Length: 162, dtype: float64</code></pre>
 <pre><code>{'criterion': 'gini', 'max_depth': 2, 'min_samples_split': 2}</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="30">
+<div class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1">out <span class="op" style="color: #5E5E5E;">=</span> {}</span>
 <span id="cb39-2"><span class="cf" style="color: #003B4F;">for</span> v <span class="kw" style="color: #003B4F;">in</span> itertools.product(<span class="op" style="color: #5E5E5E;">*</span>values):</span>
-<span id="cb39-3">    params <span class="op" style="color: #5E5E5E;">=</span> (<span class="bu" style="color: null;">dict</span>(<span class="bu" style="color: null;">zip</span>(keys, v)))</span>
+<span id="cb39-3">    params <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">dict</span>(<span class="bu" style="color: null;">zip</span>(keys, v))</span>
 <span id="cb39-4">    dt<span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier(<span class="op" style="color: #5E5E5E;">**</span>params)</span>
 <span id="cb39-5">    dt.fit(train_df[[<span class="st" style="color: #20794D;">'feature1'</span>, <span class="st" style="color: #20794D;">'feature2'</span>, <span class="st" style="color: #20794D;">'feature3'</span>, <span class="st" style="color: #20794D;">'feature4'</span>]], train_df[<span class="st" style="color: #20794D;">'target'</span>])</span>
 <span id="cb39-6">    out[(params[<span class="st" style="color: #20794D;">'criterion'</span>], params[<span class="st" style="color: #20794D;">'max_depth'</span>], params[<span class="st" style="color: #20794D;">'min_samples_split'</span>])] <span class="op" style="color: #5E5E5E;">=</span> dt.score(validation_df[[<span class="st" style="color: #20794D;">'feature1'</span>, <span class="st" style="color: #20794D;">'feature2'</span>, <span class="st" style="color: #20794D;">'feature3'</span>, <span class="st" style="color: #20794D;">'feature4'</span>]], validation_df[<span class="st" style="color: #20794D;">'target'</span>])</span>
 <span id="cb39-7">    </span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="31">
+<div class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1">pd.Series(out).sort_values(ascending<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="31">
-<pre><code>gini     9   6     0.666667
-         7   6     0.666667
-         8   6     0.666667
-         10  6     0.666667
-         6   6     0.666667
+<div class="cell-output cell-output-display" data-execution_count="27">
+<pre><code>entropy  10  10    0.766667
+         7   7     0.766667
+         9   8     0.766667
+         8   10    0.766667
+             9     0.766667
                      ...   
-entropy  2   10    0.400000
-             7     0.400000
-             8     0.400000
-             9     0.400000
-             2     0.400000
+         3   3     0.500000
+             4     0.500000
+             5     0.500000
+gini     10  5     0.500000
+             3     0.500000
 Length: 162, dtype: float64</code></pre>
 </div>
 </div>

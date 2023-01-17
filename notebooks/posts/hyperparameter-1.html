@@ -400,43 +400,46 @@ Length: 162, dtype: float64</code></pre>
 <pre><code>dict_items([('criterion', ['gini', 'entropy']), ('max_depth', [2, 3, 4, 5, 6, 7, 8, 9, 10]), ('min_samples_split', [2, 3, 4, 5, 6, 7, 8, 9, 10])]) 3</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>print_vec(<span class="op">*</span>hyperparams.items())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> print_vec(x, y, z):</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"[</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss"> </span><span class="ch">\n</span><span class="sc">{</span>y<span class="sc">}</span><span class="ss"> </span><span class="ch">\n</span><span class="sc">{</span>z<span class="sc">}</span><span class="ss">]"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>print_vec(<span class="op">*</span>hyperparams.items())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[('criterion', ['gini', 'entropy']) 
 ('max_depth', [2, 3, 4, 5, 6, 7, 8, 9, 10]) 
 ('min_samples_split', [2, 3, 4, 5, 6, 7, 8, 9, 10])]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="22">
+<div class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(<span class="bu">zip</span>(<span class="op">*</span>hyperparams.items()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>[('criterion', 'max_depth', 'min_samples_split'),
  (['gini', 'entropy'],
   [2, 3, 4, 5, 6, 7, 8, 9, 10],
   [2, 3, 4, 5, 6, 7, 8, 9, 10])]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="23">
+<div class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>keys, values <span class="op">=</span> <span class="bu">zip</span>(<span class="op">*</span>hyperparams.items())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="24">
+<div class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>keys</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <pre><code>('criterion', 'max_depth', 'min_samples_split')</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <pre><code>(['gini', 'entropy'],
  [2, 3, 4, 5, 6, 7, 8, 9, 10],
  [2, 3, 4, 5, 6, 7, 8, 9, 10])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(itertools.product(<span class="op">*</span>values))[::<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> itertools</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(itertools.product(<span class="op">*</span>values))[::<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
 <pre><code>[('gini', 2, 2),
  ('gini', 3, 3),
  ('gini', 4, 4),
@@ -456,14 +459,14 @@ Length: 162, dtype: float64</code></pre>
  ('entropy', 10, 9)]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="27">
+<div class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>v <span class="op">=</span> <span class="bu">next</span>(itertools.product(<span class="op">*</span>values))</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(v)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>('gini', 2, 2)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="28">
+<div class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>print_vec(<span class="op">*</span><span class="bu">zip</span>(keys, v))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[('criterion', 'gini') 
@@ -471,7 +474,7 @@ Length: 162, dtype: float64</code></pre>
 ('min_samples_split', 2)]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="29">
+<div class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> print_dict(<span class="op">**</span>kwargs):</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(kwargs)</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -480,29 +483,29 @@ Length: 162, dtype: float64</code></pre>
 <pre><code>{'criterion': 'gini', 'max_depth': 2, 'min_samples_split': 2}</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="30">
+<div class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> {}</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> v <span class="kw">in</span> itertools.product(<span class="op">*</span>values):</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> (<span class="bu">dict</span>(<span class="bu">zip</span>(keys, v)))</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">zip</span>(keys, v))</span>
 <span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    dt<span class="op">=</span> DecisionTreeClassifier(<span class="op">**</span>params)</span>
 <span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    dt.fit(train_df[[<span class="st">'feature1'</span>, <span class="st">'feature2'</span>, <span class="st">'feature3'</span>, <span class="st">'feature4'</span>]], train_df[<span class="st">'target'</span>])</span>
 <span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    out[(params[<span class="st">'criterion'</span>], params[<span class="st">'max_depth'</span>], params[<span class="st">'min_samples_split'</span>])] <span class="op">=</span> dt.score(validation_df[[<span class="st">'feature1'</span>, <span class="st">'feature2'</span>, <span class="st">'feature3'</span>, <span class="st">'feature4'</span>]], validation_df[<span class="st">'target'</span>])</span>
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="31">
+<div class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>pd.Series(out).sort_values(ascending<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="31">
-<pre><code>gini     9   6     0.666667
-         7   6     0.666667
-         8   6     0.666667
-         10  6     0.666667
-         6   6     0.666667
+<div class="cell-output cell-output-display" data-execution_count="27">
+<pre><code>entropy  10  10    0.766667
+         7   7     0.766667
+         9   8     0.766667
+         8   10    0.766667
+             9     0.766667
                      ...   
-entropy  2   10    0.400000
-             7     0.400000
-             8     0.400000
-             9     0.400000
-             2     0.400000
+         3   3     0.500000
+             4     0.500000
+             5     0.500000
+gini     10  5     0.500000
+             3     0.500000
 Length: 162, dtype: float64</code></pre>
 </div>
 </div>
