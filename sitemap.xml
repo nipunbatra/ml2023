@@ -2,42 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://github.com/nipunbatra/ml2023/index.html</loc>
-    <lastmod>2023-01-13T05:40:12.636Z</lastmod>
+    <lastmod>2023-01-17T08:51:41.037Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/index.html</loc>
-    <lastmod>2023-01-13T05:40:13.712Z</lastmod>
+    <lastmod>2023-01-17T08:51:43.301Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross.html</loc>
-    <lastmod>2023-01-13T05:40:14.124Z</lastmod>
+    <lastmod>2023-01-17T08:51:43.713Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/tips.html</loc>
-    <lastmod>2023-01-13T05:40:14.684Z</lastmod>
+    <lastmod>2023-01-17T08:51:44.285Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/hyperparameter-1.html</loc>
+    <lastmod>2023-01-17T08:51:44.685Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/python-utils.html</loc>
+    <lastmod>2023-01-17T08:51:45.029Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</loc>
-    <lastmod>2023-01-13T05:40:15.012Z</lastmod>
+    <lastmod>2023-01-17T08:51:45.357Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/faq.html</loc>
-    <lastmod>2023-01-13T05:40:15.384Z</lastmod>
+    <lastmod>2023-01-17T08:51:45.725Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/exams/prereq.html</loc>
-    <lastmod>2023-01-13T05:40:15.740Z</lastmod>
+    <lastmod>2023-01-17T08:51:46.085Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/quizzes.html</loc>
-    <lastmod>2023-01-13T05:40:16.040Z</lastmod>
+    <lastmod>2023-01-17T08:51:46.389Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/schedule.html</loc>
-    <lastmod>2023-01-13T05:40:16.392Z</lastmod>
+    <lastmod>2023-01-17T08:51:46.725Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/grading.html</loc>
-    <lastmod>2023-01-13T05:40:16.700Z</lastmod>
+    <lastmod>2023-01-17T08:51:47.025Z</lastmod>
   </url>
 </urlset>
