@@ -3,10 +3,10 @@
     "listing": "/notebooks/index.html",
     "items": [
       "/notebooks/posts/dt-reg.html",
+      "/notebooks/posts/split.html",
       "/notebooks/posts/hyperparameter-1.html",
       "/notebooks/posts/python-utils.html",
       "/notebooks/posts/pivot-cross.html",
-      "/notebooks/posts/split.html",
       "/notebooks/posts/tips.html"
     ]
   }
