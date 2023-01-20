@@ -1,16 +1,6 @@
 ---
 title: Quiz 1 (18 Jan)
 date: 2023-01-18
-format: 
-  pdf:
-    geometry:
-        - top=10mm
-        - left=10mm
-        - heightrounded
-    fontfamily: libertinus
-    colorlinks: true
-  html:
-    default
 ---
 
 ### Instructions
