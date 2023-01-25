@@ -72,9 +72,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
       
-      searchColumns: ["listing-date","listing-title","listing-author","listing-description","listing-categories"],
+      searchColumns: ["listing-date","listing-title","listing-author"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -181,151 +181,89 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-listing-file-modified-sort="1674206938977" data-listing-reading-time-sort="0.005">
-<div class="body">
-<a href="../notebooks/posts/dt-reg.html">
-<h3 class="no-anchor listing-title">
-</h3>
-<div class="listing-subtitle">
+<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
 
-</div>
-<div class="listing-description">
-
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="../notebooks/posts/dt-reg.html"> </a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-listing-date-sort="1673913600000" data-listing-file-modified-sort="1674206938977" data-listing-reading-time-sort="0.04">
-<div class="body">
-<a href="../notebooks/posts/hyperparameter-1.html">
-<h3 class="no-anchor listing-title">
-Grid Search
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-<p>Grid Search</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="../notebooks/posts/hyperparameter-1.html">
-<div class="listing-date">
+<table class="quarto-listing-table table">
+<thead>
+<tr>
+<th>
+Date
+</th>
+<th>
+Title
+</th>
+<th>
+Author
+</th>
+</tr>
+</thead>
+<tbody class="list">
+<tr data-index="0" data-listing-file-modified-sort="1674626791991" data-listing-reading-time-sort="0.005" data-listing-filename-sort="dt-reg.ipynb">
+<td class="listing-date">
+</td>
+<td class="listing-title">
+</td>
+<td class="listing-author">
+</td>
+</tr>
+<tr data-index="1" data-listing-date-sort="1673913600000" data-listing-file-modified-sort="1674626791991" data-listing-reading-time-sort="0.04" data-listing-title-sort="Grid Search" data-listing-filename-sort="hyperparameter-1.ipynb">
+<td class="listing-date">
 Jan 17, 2023
-</div>
-<div class="listing-author">
+</td>
+<td class="listing-title">
+<a href="../notebooks/posts/hyperparameter-1.html" class="title">Grid Search</a>
+</td>
+<td class="listing-author">
 Nipun Batra
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-listing-date-sort="1673913600000" data-listing-file-modified-sort="1674206938977" data-listing-reading-time-sort="0.025">
-<div class="body">
-<a href="../notebooks/posts/python-utils.html">
-<h3 class="no-anchor listing-title">
-Some Python Utilities
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-<p>Python Utilities</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="../notebooks/posts/python-utils.html">
-<div class="listing-date">
+</td>
+</tr>
+<tr data-index="2" data-listing-date-sort="1673913600000" data-listing-file-modified-sort="1674626791991" data-listing-reading-time-sort="0.025" data-listing-title-sort="Some Python Utilities" data-listing-filename-sort="python-utils.ipynb">
+<td class="listing-date">
 Jan 17, 2023
-</div>
-<div class="listing-author">
+</td>
+<td class="listing-title">
+<a href="../notebooks/posts/python-utils.html" class="title">Some Python Utilities</a>
+</td>
+<td class="listing-author">
 Nipun Batra
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-listing-date-sort="1673913600000" data-listing-file-modified-sort="1674206938977" data-listing-reading-time-sort="0.005">
-<div class="body">
-<a href="../notebooks/posts/split.html">
-<h3 class="no-anchor listing-title">
-Dataset splitting for machine learning
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-<p>Dataset splitting for machine learning</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="../notebooks/posts/split.html">
-<div class="listing-date">
+</td>
+</tr>
+<tr data-index="3" data-listing-date-sort="1673913600000" data-listing-file-modified-sort="1674626791991" data-listing-reading-time-sort="0.005" data-listing-title-sort="Dataset splitting for machine learning" data-listing-filename-sort="split.ipynb">
+<td class="listing-date">
 Jan 17, 2023
-</div>
-<div class="listing-author">
+</td>
+<td class="listing-title">
+<a href="../notebooks/posts/split.html" class="title">Dataset splitting for machine learning</a>
+</td>
+<td class="listing-author">
 Nipun Batra
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-listing-date-sort="1673481600000" data-listing-file-modified-sort="1674206938977" data-listing-reading-time-sort="0.16">
-<div class="body">
-<a href="../notebooks/posts/pivot-cross.html">
-<h3 class="no-anchor listing-title">
-Pandas tips
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-<p>Pandas groupby</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="../notebooks/posts/pivot-cross.html">
-<div class="listing-date">
+</td>
+</tr>
+<tr data-index="4" data-listing-date-sort="1673481600000" data-listing-file-modified-sort="1674626791991" data-listing-reading-time-sort="0.16" data-listing-title-sort="Pandas tips" data-listing-filename-sort="pivot-cross.ipynb">
+<td class="listing-date">
 Jan 12, 2023
-</div>
-<div class="listing-author">
+</td>
+<td class="listing-title">
+<a href="../notebooks/posts/pivot-cross.html" class="title">Pandas tips</a>
+</td>
+<td class="listing-author">
 Nipun Batra
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-listing-date-sort="1673308800000" data-listing-file-modified-sort="1674206938981" data-listing-reading-time-sort="0.185">
-<div class="body">
-<a href="../notebooks/posts/tips.html">
-<h3 class="no-anchor listing-title">
-Misc tips
-</h3>
-<div class="listing-subtitle">
-
-</div>
-<div class="listing-description">
-<p>Misc tips</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="../notebooks/posts/tips.html">
-<div class="listing-date">
+</td>
+</tr>
+<tr data-index="5" data-listing-date-sort="1673308800000" data-listing-file-modified-sort="1674626791995" data-listing-reading-time-sort="0.185" data-listing-title-sort="Misc tips" data-listing-filename-sort="tips.ipynb">
+<td class="listing-date">
 Jan 10, 2023
-</div>
-<div class="listing-author">
+</td>
+<td class="listing-title">
+<a href="../notebooks/posts/tips.html" class="title">Misc tips</a>
+</td>
+<td class="listing-author">
 Nipun Batra
-</div>
-</a>
-</div>
-</div>
-</div>
+</td>
+</tr>
+</tbody>
+
+</table>
 <div class="listing-no-matching d-none">
 No matching items
 </div>
