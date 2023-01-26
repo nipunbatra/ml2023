@@ -81,7 +81,7 @@
     "href": "schedule.html",
     "title": "Schedule",
     "section": "",
-    "text": "Lecture #\nDate\nTopic\n\n\n\n\n1\n3 Jan\nIntroduction and Logistics [Slides]\n\n\nNone\n4 Jan\nPre-requisites quiz released\n\n\n2\n5 Jan\nConvention, Metrics, Classification, Regression [Slides]\n\n\n3\n10 Jan\nDecision Trees - 1[Slides][Notebook]\n\n\n4\n12 Jan\nDecision Trees - 2[Slides][Notebook]\n\n\n5\n17 Jan\nBias and Variance[Slides][Notebook on Python utils][Notebook on Grid Search]\n\n\nNone\n18 Jan\nQuiz 1\n\n\n6\n19 Jan\nBias, Variance 2, Cross Validation[Slides]"
+    "text": "Lecture #\nDate\nTopic\n\n\n\n\n1\n3 Jan\nIntroduction and Logistics [Slides]\n\n\nNone\n4 Jan\nPre-requisites quiz released\n\n\n2\n5 Jan\nConvention, Metrics, Classification, Regression [Slides]\n\n\n3\n10 Jan\nDecision Trees - 1[Slides][Notebook]\n\n\n4\n12 Jan\nDecision Trees - 2[Slides][Notebook]\n\n\n5\n17 Jan\nBias and Variance[Slides][Notebook on Python utils][Notebook on Grid Search]\n\n\nNone\n18 Jan\nQuiz 1\n\n\n6\n19 Jan\nBias, Variance 2, Cross Validation[Slides]\n\n\n7\n24 Jan\nEnsemble Methods[Slides], Weighted samples in decision trees[Slides]"
   },
   {
     "objectID": "faq.html",
