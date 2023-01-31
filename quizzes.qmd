@@ -1,5 +1,8 @@
 ---
 title: "Quizzes"
+listing:
+  contents: exams
+  type: table
+  sort: "date"  
 ---
 
-1. [Prerequisites quiz](https://nipunbatra.github.io/ml2023/exams/prereq.html), Released 4 Jan 2022

@@ -8,5 +8,6 @@ listing:
   filter-ui: false
   categories: true
   feed: true
+  type: table
 page-layout: full
 ---
