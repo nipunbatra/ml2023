@@ -12,7 +12,10 @@ title: "Schedule"
 |5|17 Jan|Bias and Variance[[Slides](lectures/bias-variance-1.pdf)][[Notebook on Python utils](https://nipunbatra.github.io/ml2023/notebooks/posts/python-utils.html)][[Notebook on Grid Search](https://nipunbatra.github.io/ml2023/notebooks/posts/hyperparameter-1.html)]|
 |None| 18 Jan| Quiz 1|
 |6|19 Jan| Bias, Variance 2, Cross Validation[[Slides](lectures/cross-validation.pdf)]|
-|7|24 Jan| Ensemble Methods[[Slides](lectures/ensemble.pdf)], Weighted samples in decision trees[[Slides](lectures/dt-weighted.pdf)]| 
+|7|24 Jan| Ensemble Methods[[Slides](lectures/ensemble.pdf)]| 
+|8|31 Jan| Ensemble Methods[[Slides](lectures/ensemble.pdf)], Weighted samples in decision trees[[Slides](lectures/dt-weighted.pdf)], Maths for ML-1 [[Slides](lectures/ml-maths.pdf)], Linear Regression [[Slides](lectures/linear-regression.pdf)]|
+|9| 2 Feb| Linear Regression [[Slides](lectures/linear-regression.pdf)]|
+
 
 
 
