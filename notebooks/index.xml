@@ -193,20 +193,20 @@
 
 
 
-<div class="cell" data-execution_count="22">
+<div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
 <span id="cb1-2"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
 <span id="cb1-3"><span class="im" style="color: #00769E;">import</span> jax.numpy <span class="im" style="color: #00769E;">as</span> jnp</span>
 <span id="cb1-4"><span class="im" style="color: #00769E;">import</span> jax</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="kw" style="color: #003B4F;">def</span> func(x, y, z):</span>
 <span id="cb2-2">    <span class="cf" style="color: #003B4F;">return</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span> <span class="op" style="color: #5E5E5E;">+</span> jnp.sin(y) <span class="op" style="color: #5E5E5E;">+</span> z</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="26">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">func(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
-<pre><code>DeviceArray(4.9092975, dtype=float32)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>DeviceArray(4.9092975, dtype=float32, weak_type=True)</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="4">
