@@ -3,6 +3,7 @@
     "listing": "/notebooks/index.html",
     "items": [
       "/notebooks/posts/lowrank-matrix.html",
+      "/notebooks/posts/projection.html",
       "/notebooks/posts/maths-jax.html",
       "/notebooks/posts/hyperparameter-1.html",
       "/notebooks/posts/python-utils.html",
