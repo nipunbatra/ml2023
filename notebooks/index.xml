@@ -193,13 +193,13 @@
 
 
 
-<div class="cell" data-execution_count="1">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
 <span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
 <span id="cb1-3"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
 <span id="cb1-4"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Two three-dimensional vectors</span></span>
 <span id="cb2-2">v1 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>])</span>
 <span id="cb2-3">v2 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">2</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">2</span>])</span>
@@ -207,7 +207,7 @@
 <span id="cb2-5"><span class="co" style="color: #5E5E5E;"># y-vector</span></span>
 <span id="cb2-6">y <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="fl" style="color: #AD0000;">2.5</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="fl" style="color: #AD0000;">0.8</span>, <span class="fl" style="color: #AD0000;">1.2</span>])</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># plot the vectors in 3D</span></span>
 <span id="cb3-2">fig <span class="op" style="color: #5E5E5E;">=</span> plt.figure(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
 <span id="cb3-3">ax <span class="op" style="color: #5E5E5E;">=</span> fig.add_subplot(<span class="dv" style="color: #AD0000;">111</span>, projection<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'3d'</span>)</span>
@@ -228,22 +228,22 @@
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">theta <span class="op" style="color: #5E5E5E;">=</span> np.linalg.lstsq(np.array([v1, v2]).T, y, rcond<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">None</span>)[<span class="dv" style="color: #AD0000;">0</span>]</span>
 <span id="cb4-2">theta</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>array([0.525 , 0.6625])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
+<div class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># Projection of y onto the plane spanned by v1 and v2</span></span>
 <span id="cb6-2">y_proj <span class="op" style="color: #5E5E5E;">=</span> np.dot(np.array([v1, v2]).T, theta)</span>
 <span id="cb6-3">y_proj</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>array([ 1.85, -0.8 ,  1.85])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="31">
+<div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;"># Plot the x=z plane filled with color black</span></span>
 <span id="cb8-2">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
 <span id="cb8-3"><span class="co" style="color: #5E5E5E;"># 3d projection</span></span>
@@ -270,7 +270,7 @@
 <span id="cb8-24">ax.view_init(elev<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">60</span>, azim<span class="op" style="color: #5E5E5E;">=-</span><span class="dv" style="color: #AD0000;">80</span>, roll<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">90</span>)</span>
 <span id="cb8-25">ax.view_init(<span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>)</span>
 <span id="cb8-26"><span class="co" style="color: #5E5E5E;">#ax.view_init(roll=45)</span></span>
-<span id="cb8-27"></span>
+<span id="cb8-27"><span class="co" style="color: #5E5E5E;">#ax.view_init(elev=30, azim=45, roll=15)</span></span>
 <span id="cb8-28">ax.set_ylim(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
 <span id="cb8-29">ax.set_xlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
 <span id="cb8-30">ax.set_zlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
@@ -279,8 +279,8 @@
 <span id="cb8-33"><span class="co" style="color: #5E5E5E;"># Plot the projection of y onto the plane spanned by v1 and v2</span></span>
 <span id="cb8-34">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y_proj[<span class="dv" style="color: #AD0000;">0</span>], y_proj[<span class="dv" style="color: #AD0000;">1</span>], y_proj[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Projection of y onto</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;"> the plane spanned by v1 and v2'</span>)</span>
 <span id="cb8-35">plt.legend()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="31">
-<pre><code>&lt;matplotlib.legend.Legend at 0x1a6271430&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>&lt;matplotlib.legend.Legend at 0x111d52730&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-7-output-2.png" class="img-fluid"></p>
