@@ -1,15 +1,15 @@
 ---
 format:
-  pdf:
-    include-in-header: 
-        text: '\pagenumbering{gobble}'
-    geometry:
-        - top=10mm
-        - left=10mm
-        - right=10mm
-        - heightrounded
-    fontfamily: libertine
-    colorlinks: true
+  # pdf:
+  #   include-in-header: 
+  #       text: '\pagenumbering{gobble}'
+  #   geometry:
+  #       - top=10mm
+  #       - left=10mm
+  #       - right=10mm
+  #       - heightrounded
+  #   fontfamily: libertine
+  #   colorlinks: true
   html:
     default
 ---
