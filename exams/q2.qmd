@@ -1,4 +1,6 @@
 ---
+title: Quiz 2 (8 Feb)
+date: 2023-02-08
 format:
   # pdf:
   #   include-in-header: 
