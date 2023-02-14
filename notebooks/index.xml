@@ -10,7 +10,178 @@
 <atom:link href="https://github.com/nipunbatra/ml2023/notebooks/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.2.335</generator>
-<lastBuildDate>Tue, 31 Jan 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 14 Feb 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Taylor Series</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/taylor.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> jax.numpy <span class="im" style="color: #00769E;">as</span> jnp</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">from</span> jax <span class="im" style="color: #00769E;">import</span> random, jit, vmap, grad, jacfwd, jacrev, hessian, value_and_grad</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-4"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Define the function to be approximated</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="kw" style="color: #003B4F;">def</span> f(x):</span>
+<span id="cb2-4">    <span class="cf" style="color: #003B4F;">return</span> jnp.sin(x)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># Plot the function</span></span>
+<span id="cb3-2"></span>
+<span id="cb3-3">x <span class="op" style="color: #5E5E5E;">=</span> jnp.linspace(<span class="op" style="color: #5E5E5E;">-</span>jnp.pi, jnp.pi, <span class="dv" style="color: #AD0000;">100</span>)</span>
+<span id="cb3-4">plt.plot(x, f(x))</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># First order Taylor approximation for f(x) at x = 0</span></span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span class="kw" style="color: #003B4F;">def</span> taylor1(f, x, x0<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.</span>):</span>
+<span id="cb4-4">    <span class="cf" style="color: #003B4F;">return</span> f(x0) <span class="op" style="color: #5E5E5E;">+</span> grad(f)(x0) <span class="op" style="color: #5E5E5E;">*</span> (x <span class="op" style="color: #5E5E5E;">-</span> x0)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;"># Plot the Taylor approximation</span></span>
+<span id="cb5-2"></span>
+<span id="cb5-3">plt.plot(x, f(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'f(x)'</span>)</span>
+<span id="cb5-4">plt.plot(x, taylor1(f, x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># factorial function in JAX</span></span>
+<span id="cb6-2"></span>
+<span id="cb6-3"><span class="kw" style="color: #003B4F;">def</span> factorial(n):</span>
+<span id="cb6-4">    <span class="cf" style="color: #003B4F;">return</span> jnp.prod(jnp.arange(<span class="dv" style="color: #AD0000;">1</span>, n <span class="op" style="color: #5E5E5E;">+</span> <span class="dv" style="color: #AD0000;">1</span>))</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;"># Find the nth order Taylor approximation for f(x) at x = 0</span></span>
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="kw" style="color: #003B4F;">def</span> taylor(f, x, n, x0<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.</span>):</span>
+<span id="cb7-4">    grads <span class="op" style="color: #5E5E5E;">=</span> {<span class="dv" style="color: #AD0000;">0</span>:f}</span>
+<span id="cb7-5">    output <span class="op" style="color: #5E5E5E;">=</span> f(x0)</span>
+<span id="cb7-6">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1</span>, n<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>):</span>
+<span id="cb7-7">        grads[i] <span class="op" style="color: #5E5E5E;">=</span> grad(grads[i<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb7-8">        output <span class="op" style="color: #5E5E5E;">+=</span> grads[i](x0) <span class="op" style="color: #5E5E5E;">*</span> (x <span class="op" style="color: #5E5E5E;">-</span> x0)<span class="op" style="color: #5E5E5E;">**</span>i <span class="op" style="color: #5E5E5E;">/</span> factorial(i)</span>
+<span id="cb7-9">    <span class="cf" style="color: #003B4F;">return</span> output</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">grads <span class="op" style="color: #5E5E5E;">=</span> {<span class="dv" style="color: #AD0000;">0</span>:f}</span>
+<span id="cb8-2">grads[<span class="dv" style="color: #AD0000;">1</span>] <span class="op" style="color: #5E5E5E;">=</span> grad(grads[<span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb8-3">grads[<span class="dv" style="color: #AD0000;">2</span>] <span class="op" style="color: #5E5E5E;">=</span> grad(grads[<span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb8-4">grads[<span class="dv" style="color: #AD0000;">3</span>] <span class="op" style="color: #5E5E5E;">=</span> grad(grads[<span class="dv" style="color: #AD0000;">2</span>])</span>
+<span id="cb8-5"></span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">plt.plot(x, f(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'f(x)'</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>)</span>
+<span id="cb9-2">plt.plot(x, taylor(f, x, <span class="dv" style="color: #AD0000;">1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=1'</span>)</span>
+<span id="cb9-3">plt.plot(x, taylor(f, x, <span class="dv" style="color: #AD0000;">3</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=3'</span>)</span>
+<span id="cb9-4">plt.plot(x, taylor(f, x, <span class="dv" style="color: #AD0000;">5</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=5'</span>)</span>
+<span id="cb9-5">plt.legend()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="30">
+<pre><code>&lt;matplotlib.legend.Legend at 0x1aea5ea90&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-10-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="43">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">x <span class="op" style="color: #5E5E5E;">=</span> jnp.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>)</span>
+<span id="cb11-2"></span>
+<span id="cb11-3"><span class="kw" style="color: #003B4F;">def</span> g(x):</span>
+<span id="cb11-4">    <span class="cf" style="color: #003B4F;">return</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span></span>
+<span id="cb11-5"></span>
+<span id="cb11-6">plt.plot(x, g(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g(x)'</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">4</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.5</span>)</span>
+<span id="cb11-7">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=1'</span>)</span>
+<span id="cb11-8">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">2</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=3'</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'--'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="44">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">plt.plot(x, g(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g(x)'</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">4</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.5</span>)</span>
+<span id="cb12-2">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">1</span>, <span class="fl" style="color: #AD0000;">4.1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=1'</span>)</span>
+<span id="cb12-3">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">2</span>, <span class="fl" style="color: #AD0000;">4.1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=3'</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'--'</span>)</span>
+<span id="cb12-4">plt.ylim((<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">20</span>))</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="44">
+<pre><code>(-2.0, 20.0)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/taylor.html</guid>
+  <pubDate>Tue, 14 Feb 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Conditioning and Linear Regression</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/condition-inverse.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-3"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-4"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Showing that np.linalg.solve is better conditioned than np.linalg.inv for linear regression normal equations</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;"># Generate data</span></span>
+<span id="cb2-4">n <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">100</span></span>
+<span id="cb2-5">p <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">10</span></span>
+<span id="cb2-6">X <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(n, p)</span>
+<span id="cb2-7">theta <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(p)</span>
+<span id="cb2-8">y <span class="op" style="color: #5E5E5E;">=</span> X <span class="op" style="color: #5E5E5E;">@</span> theta <span class="op" style="color: #5E5E5E;">+</span> np.random.randn(n)</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;"># Solve normal equations</span></span>
+<span id="cb2-11">theta_hat <span class="op" style="color: #5E5E5E;">=</span> np.linalg.solve(X.T <span class="op" style="color: #5E5E5E;">@</span> X, X.T <span class="op" style="color: #5E5E5E;">@</span> y)</span>
+<span id="cb2-12">theta_hat_inv <span class="op" style="color: #5E5E5E;">=</span> np.linalg.inv(X.T <span class="op" style="color: #5E5E5E;">@</span> X) <span class="op" style="color: #5E5E5E;">@</span> X.T <span class="op" style="color: #5E5E5E;">@</span> y</span>
+<span id="cb2-13"></span>
+<span id="cb2-14"><span class="co" style="color: #5E5E5E;"># Compare the condition numbers</span></span>
+<span id="cb2-15"><span class="bu" style="color: null;">print</span>(np.linalg.cond(X.T <span class="op" style="color: #5E5E5E;">@</span> X))</span>
+<span id="cb2-16"><span class="bu" style="color: null;">print</span>(np.linalg.cond(np.linalg.inv(X.T <span class="op" style="color: #5E5E5E;">@</span> X)))</span>
+<span id="cb2-17"></span>
+<span id="cb2-18"><span class="co" style="color: #5E5E5E;"># Plot the difference between the two solutions</span></span>
+<span id="cb2-19">plt.plot(theta_hat <span class="op" style="color: #5E5E5E;">-</span> theta_hat_inv)</span>
+<span id="cb2-20">plt.title(<span class="st" style="color: #20794D;">'Difference between solutions'</span>)</span>
+<span id="cb2-21">plt.xlabel(<span class="st" style="color: #20794D;">'Index'</span>)</span>
+<span id="cb2-22">plt.ylabel(<span class="st" style="color: #20794D;">'Difference'</span>)</span>
+<span id="cb2-23">plt.show()</span>
+<span id="cb2-24"></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2.980877596192165
+2.980877596192165</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/condition-inverse_files/figure-html/cell-3-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/condition-inverse.html</guid>
+  <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Maths and JAX: Low Rank</title>
   <dc:creator>Nipun Batra</dc:creator>
