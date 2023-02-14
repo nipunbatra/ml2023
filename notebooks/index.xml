@@ -73,52 +73,42 @@
 <span id="cb7-8">        output <span class="op" style="color: #5E5E5E;">+=</span> grads[i](x0) <span class="op" style="color: #5E5E5E;">*</span> (x <span class="op" style="color: #5E5E5E;">-</span> x0)<span class="op" style="color: #5E5E5E;">**</span>i <span class="op" style="color: #5E5E5E;">/</span> factorial(i)</span>
 <span id="cb7-9">    <span class="cf" style="color: #003B4F;">return</span> output</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">grads <span class="op" style="color: #5E5E5E;">=</span> {<span class="dv" style="color: #AD0000;">0</span>:f}</span>
-<span id="cb8-2">grads[<span class="dv" style="color: #AD0000;">1</span>] <span class="op" style="color: #5E5E5E;">=</span> grad(grads[<span class="dv" style="color: #AD0000;">0</span>])</span>
-<span id="cb8-3">grads[<span class="dv" style="color: #AD0000;">2</span>] <span class="op" style="color: #5E5E5E;">=</span> grad(grads[<span class="dv" style="color: #AD0000;">1</span>])</span>
-<span id="cb8-4">grads[<span class="dv" style="color: #AD0000;">3</span>] <span class="op" style="color: #5E5E5E;">=</span> grad(grads[<span class="dv" style="color: #AD0000;">2</span>])</span>
-<span id="cb8-5"></span></code></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
-</div>
-</div>
 <div class="cell" data-execution_count="30">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">plt.plot(x, f(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'f(x)'</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>)</span>
-<span id="cb9-2">plt.plot(x, taylor(f, x, <span class="dv" style="color: #AD0000;">1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=1'</span>)</span>
-<span id="cb9-3">plt.plot(x, taylor(f, x, <span class="dv" style="color: #AD0000;">3</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=3'</span>)</span>
-<span id="cb9-4">plt.plot(x, taylor(f, x, <span class="dv" style="color: #AD0000;">5</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=5'</span>)</span>
-<span id="cb9-5">plt.legend()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">plt.plot(x, f(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'f(x)'</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>)</span>
+<span id="cb8-2">plt.plot(x, taylor(f, x, <span class="dv" style="color: #AD0000;">1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=1'</span>)</span>
+<span id="cb8-3">plt.plot(x, taylor(f, x, <span class="dv" style="color: #AD0000;">3</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=3'</span>)</span>
+<span id="cb8-4">plt.plot(x, taylor(f, x, <span class="dv" style="color: #AD0000;">5</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=5'</span>)</span>
+<span id="cb8-5">plt.legend()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="30">
 <pre><code>&lt;matplotlib.legend.Legend at 0x1aea5ea90&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-10-output-2.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell" data-execution_count="43">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">x <span class="op" style="color: #5E5E5E;">=</span> jnp.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>)</span>
-<span id="cb11-2"></span>
-<span id="cb11-3"><span class="kw" style="color: #003B4F;">def</span> g(x):</span>
-<span id="cb11-4">    <span class="cf" style="color: #003B4F;">return</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span></span>
-<span id="cb11-5"></span>
-<span id="cb11-6">plt.plot(x, g(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g(x)'</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">4</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.5</span>)</span>
-<span id="cb11-7">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=1'</span>)</span>
-<span id="cb11-8">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">2</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=3'</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'--'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">x <span class="op" style="color: #5E5E5E;">=</span> jnp.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>)</span>
+<span id="cb10-2"></span>
+<span id="cb10-3"><span class="kw" style="color: #003B4F;">def</span> g(x):</span>
+<span id="cb10-4">    <span class="cf" style="color: #003B4F;">return</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span></span>
+<span id="cb10-5"></span>
+<span id="cb10-6">plt.plot(x, g(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g(x)'</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">4</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.5</span>)</span>
+<span id="cb10-7">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=1'</span>)</span>
+<span id="cb10-8">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">2</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=3'</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'--'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell" data-execution_count="44">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">plt.plot(x, g(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g(x)'</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">4</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.5</span>)</span>
-<span id="cb12-2">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">1</span>, <span class="fl" style="color: #AD0000;">4.1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=1'</span>)</span>
-<span id="cb12-3">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">2</span>, <span class="fl" style="color: #AD0000;">4.1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=3'</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'--'</span>)</span>
-<span id="cb12-4">plt.ylim((<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">20</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">plt.plot(x, g(x), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g(x)'</span>, lw<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">4</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.5</span>)</span>
+<span id="cb11-2">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">1</span>, <span class="fl" style="color: #AD0000;">4.1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=1'</span>)</span>
+<span id="cb11-3">plt.plot(x, taylor(g, x, <span class="dv" style="color: #AD0000;">2</span>, <span class="fl" style="color: #AD0000;">4.1</span>), label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Taylor approximation, n=3'</span>, ls<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'--'</span>)</span>
+<span id="cb11-4">plt.ylim((<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">20</span>))</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="44">
 <pre><code>(-2.0, 20.0)</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/taylor_files/figure-html/cell-11-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 
