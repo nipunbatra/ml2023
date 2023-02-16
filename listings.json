@@ -2,6 +2,7 @@
   {
     "listing": "/notebooks/index.html",
     "items": [
+      "/notebooks/posts/gd.html",
       "/notebooks/posts/taylor.html",
       "/notebooks/posts/condition-inverse.html",
       "/notebooks/posts/lowrank-matrix.html",
