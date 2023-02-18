@@ -15,6 +15,13 @@ title: "Schedule"
 |7|24 Jan| Ensemble Methods[[Slides](lectures/ensemble.pdf)]| 
 |8|31 Jan| Ensemble Methods[[Slides](lectures/ensemble.pdf)], Weighted samples in decision trees[[Slides](lectures/dt-weighted.pdf)], Maths for ML-1 [[Slides](lectures/ml-maths.pdf)] [[Notebook-1](https://nipunbatra.github.io/ml2023/notebooks/posts/maths-jax.html)] [[Notebook 2](https://nipunbatra.github.io/ml2023/notebooks/posts/lowrank-matrix.html)], [[Streamlit app](notebooks/posts/streamlit-app.py)] Linear Regression [[Slides](lectures/linear-regression.pdf)]|
 |9| 2 Feb| Linear Regression [[Slides](lectures/linear-regression.pdf)], Contour Plots [[Slides](lectures/ml-maths-2-contour.pdf)], Geometric View of Linear Regression [[Slides](lectures/geometric-regression.pdf)]|
+|10| 9 Feb| Linear Regression II [[Slides](lectures/linear-regression-2.pdf)]|
+|11| 14 Feb| Gradient Descent [[Slides](lectures/Gradient-descent.pdf)], [Taylor's Series](https://www.youtube.com/watch?v=3d6DsjIBzJ4&t), [Notebook on Taylor's series](https://nipunbatra.github.io/ml2023/notebooks/posts/taylor.html), [Reference on relationship between Taylor's series and GD](https://www.cs.princeton.edu/courses/archive/fall18/cos597G/lecnotes/lecture3.pdf), [Reference 2](https://ekamperi.github.io/machine%20learning/2019/07/28/gradient-descent.html)|
+|12| 16 Feb| Gradient Descent [[Slides](lectures/Gradient-descent.pdf)] [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/gd.html)|
+|13| 21 Feb||
+|14| 23 Feb||
+|15| 28 Feb||
+|16| 2 Mar||
 
 
 
