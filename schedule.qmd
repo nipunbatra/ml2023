@@ -18,8 +18,8 @@ title: "Schedule"
 |10| 9 Feb| Linear Regression II [[Slides](lectures/linear-regression-2.pdf)]|
 |11| 14 Feb| Gradient Descent [[Slides](lectures/Gradient-descent.pdf)], [Taylor's Series](https://www.youtube.com/watch?v=3d6DsjIBzJ4&t), [Notebook on Taylor's series](https://nipunbatra.github.io/ml2023/notebooks/posts/taylor.html), [Reference on relationship between Taylor's series and GD](https://www.cs.princeton.edu/courses/archive/fall18/cos597G/lecnotes/lecture3.pdf), [Reference 2](https://ekamperi.github.io/machine%20learning/2019/07/28/gradient-descent.html)|
 |12| 16 Feb| Gradient Descent [[Slides](lectures/Gradient-descent.pdf)] [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/gd.html)|
-|13| 21 Feb||
-|14| 23 Feb||
+|13| 21 Feb|Gradient Descent continued, [[Ridge Regression](lectures/ridge-regression.pdf)], [[Streamlit demo](https://nipunbatra-ml-ridge.streamlit.app)], [[Additional reading on SGD being an unbiased estimator](https://florian.github.io/estimators/)]|
+|14| 23 Feb|Ridge regression, LASSO|
 |15| 28 Feb||
 |16| 2 Mar||
 
