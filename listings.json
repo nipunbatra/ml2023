@@ -2,6 +2,7 @@
   {
     "listing": "/notebooks/index.html",
     "items": [
+      "/notebooks/posts/autodiff-jax-torch.html",
       "/notebooks/posts/logistic.html",
       "/notebooks/posts/gd.html",
       "/notebooks/posts/taylor.html",

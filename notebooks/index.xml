@@ -10,7 +10,83 @@
 <atom:link href="https://github.com/nipunbatra/ml2023/notebooks/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.2.335</generator>
-<lastBuildDate>Tue, 28 Feb 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 01 Mar 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>AutoDiff in JAX and PyTorch</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-jax-torch.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> jax.numpy <span class="im" style="color: #00769E;">as</span> jnp</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> jax</span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> torch</span>
+<span id="cb1-5"><span class="bu" style="color: null;">print</span>(torch.__version__)</span>
+<span id="cb1-6"><span class="bu" style="color: null;">print</span>(jax.__version__)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>Array(1., dtype=float32, weak_type=True)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="kw" style="color: #003B4F;">def</span> f(x):</span>
+<span id="cb3-2">    <span class="cf" style="color: #003B4F;">return</span> jnp.sin(x)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>Array(1., dtype=float32, weak_type=True)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">z <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">0.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb5-2">torch.sin(z).backward()</span>
+<span id="cb5-3"><span class="bu" style="color: null;">print</span>(jax.grad(f)(<span class="fl" style="color: #AD0000;">0.0</span>), z.grad)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>tensor(1.)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="kw" style="color: #003B4F;">def</span> f(x):</span>
+<span id="cb7-2">    <span class="cf" style="color: #003B4F;">return</span> jnp.<span class="bu" style="color: null;">abs</span>(x)</span>
+<span id="cb7-3"></span>
+<span id="cb7-4"></span>
+<span id="cb7-5">z1 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">0.0001</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb7-6">torch.<span class="bu" style="color: null;">abs</span>(z1).backward()</span>
+<span id="cb7-7"></span>
+<span id="cb7-8">z2 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="op" style="color: #5E5E5E;">-</span><span class="fl" style="color: #AD0000;">0.0001</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb7-9">torch.<span class="bu" style="color: null;">abs</span>(z2).backward()</span>
+<span id="cb7-10"></span>
+<span id="cb7-11">z3 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">0.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb7-12">torch.<span class="bu" style="color: null;">abs</span>(z3).backward()</span>
+<span id="cb7-13"></span>
+<span id="cb7-14"><span class="bu" style="color: null;">print</span>(jax.grad(f)(<span class="fl" style="color: #AD0000;">0.0</span>), z1.grad, z2.grad, z3.grad)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1.0 tensor(1.) tensor(-1.) tensor(0.)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="co" style="color: #5E5E5E;"># Use functorch</span></span>
+<span id="cb9-2"></span>
+<span id="cb9-3"><span class="im" style="color: #00769E;">import</span> functorch</span></code></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>ImportError: dlopen(/Users/nipun/miniconda3/lib/python3.9/site-packages/functorch/_C.cpython-39-darwin.so, 0x0002): Symbol not found: __ZN2at4_ops10as_strided4callERKNS_6TensorEN3c108ArrayRefINS5_6SymIntEEES8_NS5_8optionalIS7_EE
+  Referenced from: &lt;12715304-4308-3E9B-A374-E4ADB3345E65&gt; /Users/nipun/miniconda3/lib/python3.9/site-packages/functorch/_C.cpython-39-darwin.so
+  Expected in:     &lt;22ECBAD5-EEDD-3C80-9B5A-0564B60B6811&gt; /Users/nipun/miniconda3/lib/python3.9/site-packages/torch/lib/libtorch_cpu.dylib</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>'1.12.1'</code></pre>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-jax-torch.html</guid>
+  <pubDate>Wed, 01 Mar 2023 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Logistic Regression</title>
   <dc:creator>Nipun Batra</dc:creator>
