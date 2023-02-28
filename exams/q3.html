@@ -155,7 +155,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <ol type="1">
 <li><p>Many evaluation metrics decompose over the training examples. For example, the loss function for linear regression (proportional to mean squared error) is given as: <span class="math display">\[L(\theta) = \frac{1}{2N}\sum_{i=1}^N (y_i - \sum_{d=1}^D \theta_d x_i^d)^2\]</span> where <span class="math inline">\(N\)</span> is the number of training examples, <span class="math inline">\(x_i\)</span> is the <span class="math inline">\(i^{th}\)</span> training example and <span class="math inline">\(y_i\)</span> is the corresponding label. Mention any evaluation metric/loss function in machine learning that does not decompose over the training examples. <strong>[1 mark]</strong></p></li>
-<li><p>We saw the figure (shown on projector) showing SGD convergence.</p></li>
+<li><p>We saw the figure showing SGD convergence. <img src="sgd-contour.png" class="img-fluid"></p></li>
 </ol>
 <ul>
 <li><p>2A) Prove that SGD is an unbiased estimator. <strong>[1 mark]</strong></p></li>
@@ -169,6 +169,7 @@ ul.task-list li input[type="checkbox"] {
 <ol start="3" type="1">
 <li>In an above question, we proved that the SGD estimator is an unbiased estimator. We have also previously discussed that we typically have a bias-variance tradeoff in our models. In the recent assignment question, we have plotted the bias and variance for different complexity trees. In this question, you have to derive the mean squared error in terms of three terms: bias, variance and irreducible noise.</li>
 </ol>
+<p><img src="bias-var.png" class="img-fluid"></p>
 <p>Let us assume our data is generated from a `true’ function <span class="math inline">\(f(x)\)</span> and we have some additional zero mean normally distributed noise <span class="math inline">\(\epsilon \sim \mathcal{N}(0, \sigma^2)\)</span>.</p>
 <p><span class="math display">\[y = f(x) + \epsilon\]</span></p>
 <p>We can use some model such as a decision tree or linear regression to approximate <span class="math inline">\(f(x)\)</span>. We now consider a single training example <span class="math inline">\((x_0, y_0)\)</span>. We can define the mean squared error as:</p>
