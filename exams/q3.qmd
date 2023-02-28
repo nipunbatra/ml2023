@@ -21,7 +21,9 @@ format:
 $$L(\theta) = \frac{1}{2N}\sum_{i=1}^N (y_i - \sum_{d=1}^D \theta_d x_i^d)^2$$
 where $N$ is the number of training examples, $x_i$ is the $i^{th}$ training example and $y_i$ is the corresponding label. Mention any evaluation metric/loss function in machine learning that does not decompose over the training examples. **[1 mark]** 
 
-2. We saw the figure (shown on projector) showing SGD convergence. 
+2. We saw the figure showing SGD convergence. 
+![](sgd-contour.png)
+
 
 - 2A) Prove that SGD is an unbiased estimator. **[1 mark]**
 
@@ -39,7 +41,10 @@ Obtain the closed form solution for $\theta$ in terms of the scalars $x_i$ and $
 
 - 2G) Now, answer why SGD works initially, when the loss is high. **[1 marks]**
 
-3. In an above question, we proved that the SGD estimator is an unbiased estimator. We have also previously discussed that we typically have a bias-variance tradeoff in our models. In the recent assignment question, we have plotted the bias and variance for different complexity trees. In this question, you have to derive the mean squared error in terms of three terms: bias, variance and irreducible noise. 
+3. In an above question, we proved that the SGD estimator is an unbiased estimator. We have also previously discussed that we typically have a bias-variance tradeoff in our models. In the recent assignment question, we have plotted the bias and variance for different complexity trees. In this question, you have to derive the mean squared error in terms of three terms: bias, variance and irreducible noise.
+
+![](bias-var.png)
+
 
 Let us assume our data is generated from a `true' function $f(x)$ and we have some additional zero mean normally distributed noise $\epsilon \sim \mathcal{N}(0, \sigma^2)$.
 
