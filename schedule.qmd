@@ -21,7 +21,9 @@ title: "Schedule"
 |13| 21 Feb|Gradient Descent continued, [[Ridge Regression](lectures/ridge-regression.pdf)], [[Streamlit demo](https://nipunbatra-ml-ridge.streamlit.app)], [[Additional reading on SGD being an unbiased estimator](https://florian.github.io/estimators/)]|
 |14| 23 Feb|Ridge regression, [LASSO](lectures/lasso-regression.pdf), [[Interactive article on Optimization algorithms](https://fa.bianp.net/teaching/2018/COMP-652/stochastic_gradient.html)]|
 |15| 28 Feb|Logistic regression [[Slides](lectures/logistic-1.pdf)], [[Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/logistic.html)] (best run locally to render interactive visualisations)|
-|16| 2 Mar||
+|16| 2 Mar|Logistic regression [[Slides](lectures/logistic-1.pdf)]|
+|17| 14 Mar| Logistic regression [[Slides](lectures/logistic-1.pdf)]|
+|18| 16 Mar| MLP [[Slides](lectures/mlp.pdf)]|
 
 
 
