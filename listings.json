@@ -2,6 +2,8 @@
   {
     "listing": "/notebooks/index.html",
     "items": [
+      "/notebooks/posts/mle.html",
+      "/notebooks/posts/log-sum-exp.html",
       "/notebooks/posts/autodiff-jax-torch.html",
       "/notebooks/posts/logistic.html",
       "/notebooks/posts/nn.html",
