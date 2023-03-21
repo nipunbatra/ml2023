@@ -4,17 +4,18 @@
     "items": [
       "/notebooks/posts/autodiff-jax-torch.html",
       "/notebooks/posts/logistic.html",
+      "/notebooks/posts/nn.html",
       "/notebooks/posts/gd.html",
       "/notebooks/posts/taylor.html",
       "/notebooks/posts/condition-inverse.html",
-      "/notebooks/posts/maths-jax.html",
-      "/notebooks/posts/lowrank-matrix.html",
       "/notebooks/posts/projection.html",
+      "/notebooks/posts/lowrank-matrix.html",
+      "/notebooks/posts/maths-jax.html",
+      "/notebooks/posts/split.html",
       "/notebooks/posts/hyperparameter-1.html",
       "/notebooks/posts/python-utils.html",
-      "/notebooks/posts/split.html",
-      "/notebooks/posts/pivot-cross.html",
       "/notebooks/posts/dt-reg.html",
+      "/notebooks/posts/pivot-cross.html",
       "/notebooks/posts/tips.html"
     ]
   },

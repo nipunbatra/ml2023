@@ -95,7 +95,7 @@
 
 
 
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="co" style="color: #5E5E5E;"># Create linearly separable data in 2d</span></span>
 <span id="cb1-2"></span>
 <span id="cb1-3"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
@@ -107,8 +107,8 @@
 <span id="cb1-9">                            n_clusters_per_class<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, class_sep<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">1.5</span>, random_state<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">42</span>)</span>
 <span id="cb1-10"></span>
 <span id="cb1-11">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], marker<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'o'</span>, c<span class="op" style="color: #5E5E5E;">=</span>y, s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">25</span>, edgecolor<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x12d6297c0&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x12b5ed280&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/logistic_files/figure-html/cell-2-output-2.png" class="img-fluid"></p>
@@ -293,6 +293,142 @@
 
  ]]></description>
   <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/logistic.html</guid>
+  <pubDate>Tue, 28 Feb 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Neural Network</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/nn.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> torch</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> torch.nn.functional <span class="im" style="color: #00769E;">as</span> F</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> torch.optim <span class="im" style="color: #00769E;">as</span> optim</span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="im" style="color: #00769E;">from</span> torch.utils.data <span class="im" style="color: #00769E;">import</span> DataLoader, TensorDataset</span>
+<span id="cb1-10"></span>
+<span id="cb1-11"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-12"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># MNIST dataset</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="im" style="color: #00769E;">from</span> torchvision <span class="im" style="color: #00769E;">import</span> datasets, transforms</span>
+<span id="cb2-4"><span class="im" style="color: #00769E;">import</span> torchvision</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;"># Split MNIST into train, validation, and test sets</span></span>
+<span id="cb2-7">train_data <span class="op" style="color: #5E5E5E;">=</span> datasets.MNIST(root<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'data'</span>, train<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, download<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, transform<span class="op" style="color: #5E5E5E;">=</span>transforms.ToTensor())</span>
+<span id="cb2-8">test_data <span class="op" style="color: #5E5E5E;">=</span> datasets.MNIST(root<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'data'</span>, train<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, download<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, transform<span class="op" style="color: #5E5E5E;">=</span>transforms.ToTensor())</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;"># Split train_data into train and validation sets</span></span>
+<span id="cb2-11">val_data <span class="op" style="color: #5E5E5E;">=</span> torch.utils.data.Subset(train_data, <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">50000</span>, <span class="dv" style="color: #AD0000;">60000</span>))</span>
+<span id="cb2-12">train_data <span class="op" style="color: #5E5E5E;">=</span> torch.utils.data.Subset(train_data, <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">50000</span>))</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># Create data loaders</span></span>
+<span id="cb3-2">batch_size <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span></span>
+<span id="cb3-3"></span>
+<span id="cb3-4">train_loader <span class="op" style="color: #5E5E5E;">=</span> DataLoader(train_data, batch_size<span class="op" style="color: #5E5E5E;">=</span>batch_size, shuffle<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb3-5">val_loader <span class="op" style="color: #5E5E5E;">=</span> DataLoader(val_data, batch_size<span class="op" style="color: #5E5E5E;">=</span>batch_size, shuffle<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb3-6">test_loader <span class="op" style="color: #5E5E5E;">=</span> DataLoader(test_data, batch_size<span class="op" style="color: #5E5E5E;">=</span>batch_size, shuffle<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">img, target <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">next</span>(<span class="bu" style="color: null;">iter</span>(train_loader))</span>
+<span id="cb4-2"><span class="bu" style="color: null;">print</span>(img.shape)</span>
+<span id="cb4-3"><span class="bu" style="color: null;">print</span>(target.shape)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1, 1, 28, 28])
+torch.Size([1])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">plt.imshow(img[<span class="dv" style="color: #AD0000;">0</span>].numpy().squeeze(), cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray_r'</span>)<span class="op" style="color: #5E5E5E;">;</span></span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/nn_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">target</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>tensor([9])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="co" style="color: #5E5E5E;"># Define model for 10-class MNIST classification</span></span>
+<span id="cb9-2"></span>
+<span id="cb9-3"><span class="kw" style="color: #003B4F;">class</span> MNISTClassifier(nn.Module):</span>
+<span id="cb9-4">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>):</span>
+<span id="cb9-5">        <span class="bu" style="color: null;">super</span>().<span class="fu" style="color: #4758AB;">__init__</span>()</span>
+<span id="cb9-6">        <span class="va" style="color: #111111;">self</span>.fc1 <span class="op" style="color: #5E5E5E;">=</span> nn.Linear(<span class="dv" style="color: #AD0000;">784</span>, <span class="dv" style="color: #AD0000;">64</span>)</span>
+<span id="cb9-7">        <span class="va" style="color: #111111;">self</span>.fc2 <span class="op" style="color: #5E5E5E;">=</span> nn.Linear(<span class="dv" style="color: #AD0000;">64</span>, <span class="dv" style="color: #AD0000;">32</span>)</span>
+<span id="cb9-8">        <span class="va" style="color: #111111;">self</span>.fc3 <span class="op" style="color: #5E5E5E;">=</span> nn.Linear(<span class="dv" style="color: #AD0000;">32</span>, <span class="dv" style="color: #AD0000;">10</span>)</span>
+<span id="cb9-9">        </span>
+<span id="cb9-10">    <span class="kw" style="color: #003B4F;">def</span> forward(<span class="va" style="color: #111111;">self</span>, x):</span>
+<span id="cb9-11">        z1 <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">self</span>.fc1(x)</span>
+<span id="cb9-12">        a1 <span class="op" style="color: #5E5E5E;">=</span> F.relu(z1)</span>
+<span id="cb9-13">        z2 <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">self</span>.fc2(a1)</span>
+<span id="cb9-14">        a2 <span class="op" style="color: #5E5E5E;">=</span> F.relu(z2)</span>
+<span id="cb9-15">        z3 <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">self</span>.fc3(a2) <span class="co" style="color: #5E5E5E;"># logits</span></span>
+<span id="cb9-16">        <span class="cf" style="color: #003B4F;">return</span> z3</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">model <span class="op" style="color: #5E5E5E;">=</span> MNISTClassifier()</span>
+<span id="cb10-2"></span>
+<span id="cb10-3"><span class="co" style="color: #5E5E5E;"># Get model summary</span></span>
+<span id="cb10-4"><span class="im" style="color: #00769E;">from</span> torchsummary <span class="im" style="color: #00769E;">import</span> summary</span>
+<span id="cb10-5">summary(model, (<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">784</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Linear-1                [-1, 1, 64]          50,240
+            Linear-2                [-1, 1, 32]           2,080
+            Linear-3                [-1, 1, 10]             330
+================================================================
+Total params: 52,650
+Trainable params: 52,650
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.00
+Forward/backward pass size (MB): 0.00
+Params size (MB): 0.20
+Estimated Total Size (MB): 0.20
+----------------------------------------------------------------</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="co" style="color: #5E5E5E;"># Forward pass through the model</span></span>
+<span id="cb12-2"></span>
+<span id="cb12-3">img, target <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">next</span>(<span class="bu" style="color: null;">iter</span>(train_loader))</span>
+<span id="cb12-4">img <span class="op" style="color: #5E5E5E;">=</span> img.view(img.shape[<span class="dv" style="color: #AD0000;">0</span>], <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb12-5"><span class="bu" style="color: null;">print</span>(img.shape)</span>
+<span id="cb12-6"></span>
+<span id="cb12-7">out <span class="op" style="color: #5E5E5E;">=</span> model(img)</span>
+<span id="cb12-8"><span class="bu" style="color: null;">print</span>(out)</span>
+<span id="cb12-9"></span>
+<span id="cb12-10"><span class="co" style="color: #5E5E5E;"># Softmax</span></span>
+<span id="cb12-11">probas <span class="op" style="color: #5E5E5E;">=</span> F.softmax(out, dim<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb12-12"><span class="bu" style="color: null;">print</span>(probas)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1, 784])
+tensor([[-0.0570, -0.0891, -0.0610, -0.1264, -0.1313, -0.0712,  0.1441, -0.0798,
+          0.0180,  0.0026]], grad_fn=&lt;AddmmBackward0&gt;)
+tensor([[0.0985, 0.0954, 0.0981, 0.0919, 0.0915, 0.0971, 0.1204, 0.0963, 0.1062,
+         0.1046]], grad_fn=&lt;SoftmaxBackward0&gt;)</code></pre>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/nn.html</guid>
   <pubDate>Tue, 28 Feb 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
@@ -745,134 +881,111 @@ Global minimum: 0.0 at [0.28000003 0.84      ]</code></pre>
   <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
-  <title>Maths and JAX</title>
+  <title>Linear Regression: Geometric Perspective</title>
   <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</link>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</link>
   <description><![CDATA[ 
 
 
 
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> jax.numpy <span class="im" style="color: #00769E;">as</span> jnp</span>
-<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> jax</span></code></pre></div>
-</div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="kw" style="color: #003B4F;">def</span> func(x, y, z):</span>
-<span id="cb2-2">    <span class="cf" style="color: #003B4F;">return</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span> <span class="op" style="color: #5E5E5E;">+</span> jnp.sin(y) <span class="op" style="color: #5E5E5E;">+</span> z</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-3"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-4"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">func(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>DeviceArray(4.9092975, dtype=float32, weak_type=True)</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Two three-dimensional vectors</span></span>
+<span id="cb2-2">v1 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb2-3">v2 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">2</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">2</span>])</span>
+<span id="cb2-4"></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;"># y-vector</span></span>
+<span id="cb2-6">y <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="fl" style="color: #AD0000;">2.5</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="fl" style="color: #AD0000;">0.8</span>, <span class="fl" style="color: #AD0000;">1.2</span>])</span></code></pre></div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;">from</span> sympy <span class="im" style="color: #00769E;">import</span> <span class="op" style="color: #5E5E5E;">*</span></span>
-<span id="cb5-2">init_printing()</span>
-<span id="cb5-3"></span>
-<span id="cb5-4">x, y, z <span class="op" style="color: #5E5E5E;">=</span> symbols(<span class="st" style="color: #20794D;">'x y z'</span>)</span>
-<span id="cb5-5">f <span class="op" style="color: #5E5E5E;">=</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span> <span class="op" style="color: #5E5E5E;">+</span> sin(y) <span class="op" style="color: #5E5E5E;">+</span> z</span>
-<span id="cb5-6">f</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20x%5E%7B2%7D%20+%20z%20+%20%5Csin%7B%5Cleft(y%20%5Cright)%7D"></p>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># plot the vectors in 3D</span></span>
+<span id="cb3-2">fig <span class="op" style="color: #5E5E5E;">=</span> plt.figure(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
+<span id="cb3-3">ax <span class="op" style="color: #5E5E5E;">=</span> fig.add_subplot(<span class="dv" style="color: #AD0000;">111</span>, projection<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'3d'</span>)</span>
+<span id="cb3-4">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v1[<span class="dv" style="color: #AD0000;">0</span>], v1[<span class="dv" style="color: #AD0000;">1</span>], v1[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v1'</span>)</span>
+<span id="cb3-5">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v2[<span class="dv" style="color: #AD0000;">0</span>], v2[<span class="dv" style="color: #AD0000;">1</span>], v2[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'b'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v2'</span>)</span>
+<span id="cb3-6">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y[<span class="dv" style="color: #AD0000;">0</span>], y[<span class="dv" style="color: #AD0000;">1</span>], y[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'y'</span>)</span>
+<span id="cb3-7"></span>
+<span id="cb3-8">ax.set_xlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb3-9">ax.set_ylim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
+<span id="cb3-10">ax.set_zlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb3-11">ax.set_xlabel(<span class="st" style="color: #20794D;">'x'</span>)</span>
+<span id="cb3-12">ax.set_ylabel(<span class="st" style="color: #20794D;">'y'</span>)</span>
+<span id="cb3-13">ax.set_zlabel(<span class="st" style="color: #20794D;">'z'</span>)</span>
+<span id="cb3-14">ax.legend()</span>
+<span id="cb3-15"></span>
+<span id="cb3-16">ax.view_init(elev<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">45</span>, azim<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">60</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">diff(f, x)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%202%20x"></p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">theta <span class="op" style="color: #5E5E5E;">=</span> np.linalg.lstsq(np.array([v1, v2]).T, y, rcond<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">None</span>)[<span class="dv" style="color: #AD0000;">0</span>]</span>
+<span id="cb4-2">theta</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>array([0.525 , 0.6625])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;"># Find the derivative of f with respect to x, y, and z using sympy</span></span>
-<span id="cb7-2">del_x, del_y, del_z <span class="op" style="color: #5E5E5E;">=</span> diff(f, x), diff(f, y), diff(f, z)</span>
-<span id="cb7-3">del_x, del_y, del_z</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%202%20x,%20%5C%20%20%5Ccos%7B%5Cleft(y%20%5Cright)%7D,%20%5C%20%201%5Cright)"></p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># Projection of y onto the plane spanned by v1 and v2</span></span>
+<span id="cb6-2">y_proj <span class="op" style="color: #5E5E5E;">=</span> np.dot(np.array([v1, v2]).T, theta)</span>
+<span id="cb6-3">y_proj</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>array([ 1.85, -0.8 ,  1.85])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">grad_f <span class="op" style="color: #5E5E5E;">=</span> lambdify((x, y, z), [del_x, del_y, del_z])</span>
-<span id="cb8-2">grad_f(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft%5B%202,%20%5C%20%20-0.416146836547142,%20%5C%20%201%5Cright%5D"></p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;"># Plot the x=z plane filled with color black</span></span>
+<span id="cb8-2">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
+<span id="cb8-3"><span class="co" style="color: #5E5E5E;"># 3d projection</span></span>
+<span id="cb8-4">ax <span class="op" style="color: #5E5E5E;">=</span> fig.add_subplot(<span class="dv" style="color: #AD0000;">111</span>, projection<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'3d'</span>)</span>
+<span id="cb8-5">xx, zz <span class="op" style="color: #5E5E5E;">=</span> np.meshgrid(np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>), np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>))</span>
+<span id="cb8-6">yy <span class="op" style="color: #5E5E5E;">=</span> np.zeros_like(xx)</span>
+<span id="cb8-7">ax.plot_surface(xx, yy, zz, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.2</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>)</span>
+<span id="cb8-8"></span>
+<span id="cb8-9"></span>
+<span id="cb8-10"><span class="co" style="color: #5E5E5E;"># plot the vectors in 3D</span></span>
+<span id="cb8-11">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v1[<span class="dv" style="color: #AD0000;">0</span>], v1[<span class="dv" style="color: #AD0000;">1</span>], v1[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v1'</span>)</span>
+<span id="cb8-12">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v2[<span class="dv" style="color: #AD0000;">0</span>], v2[<span class="dv" style="color: #AD0000;">1</span>], v2[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'b'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v2'</span>)</span>
+<span id="cb8-13">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y[<span class="dv" style="color: #AD0000;">0</span>], y[<span class="dv" style="color: #AD0000;">1</span>], y[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'y'</span>)</span>
+<span id="cb8-14"></span>
+<span id="cb8-15"></span>
+<span id="cb8-16"><span class="co" style="color: #5E5E5E;"># Limit the view to the x-z plane</span></span>
+<span id="cb8-17"></span>
+<span id="cb8-18">ax.set_xlabel(<span class="st" style="color: #20794D;">'x'</span>)</span>
+<span id="cb8-19">ax.set_ylabel(<span class="st" style="color: #20794D;">'y'</span>)</span>
+<span id="cb8-20">ax.set_zlabel(<span class="st" style="color: #20794D;">'z'</span>)</span>
+<span id="cb8-21"></span>
+<span id="cb8-22"><span class="co" style="color: #5E5E5E;"># Set the view angle so that we can see the x-z plane appear at a 45 degree angle</span></span>
+<span id="cb8-23"><span class="co" style="color: #5E5E5E;">#ax.view_init(azim=70, elev=200)</span></span>
+<span id="cb8-24">ax.view_init(elev<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">60</span>, azim<span class="op" style="color: #5E5E5E;">=-</span><span class="dv" style="color: #AD0000;">80</span>, roll<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">90</span>)</span>
+<span id="cb8-25">ax.view_init(<span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>)</span>
+<span id="cb8-26"><span class="co" style="color: #5E5E5E;">#ax.view_init(roll=45)</span></span>
+<span id="cb8-27"><span class="co" style="color: #5E5E5E;">#ax.view_init(elev=30, azim=45, roll=15)</span></span>
+<span id="cb8-28">ax.set_ylim(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
+<span id="cb8-29">ax.set_xlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
+<span id="cb8-30">ax.set_zlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
+<span id="cb8-31"></span>
+<span id="cb8-32"></span>
+<span id="cb8-33"><span class="co" style="color: #5E5E5E;"># Plot the projection of y onto the plane spanned by v1 and v2</span></span>
+<span id="cb8-34">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y_proj[<span class="dv" style="color: #AD0000;">0</span>], y_proj[<span class="dv" style="color: #AD0000;">1</span>], y_proj[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Projection of y onto</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;"> the plane spanned by v1 and v2'</span>)</span>
+<span id="cb8-35">plt.legend()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>&lt;matplotlib.legend.Legend at 0x111d52730&gt;</code></pre>
 </div>
-</div>
-<div class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">grad_f_jax <span class="op" style="color: #5E5E5E;">=</span> jax.grad(func, argnums<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>))</span>
-<span id="cb9-2">grad_f_jax(<span class="fl" style="color: #AD0000;">1.</span>, <span class="fl" style="color: #AD0000;">2.</span>, <span class="fl" style="color: #AD0000;">3.</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="29">
-<pre><code>(DeviceArray(2., dtype=float32, weak_type=True),
- DeviceArray(-0.41614684, dtype=float32, weak_type=True),
- DeviceArray(1., dtype=float32, weak_type=True))</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="92">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">n <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">20</span></span>
-<span id="cb11-2">A <span class="op" style="color: #5E5E5E;">=</span> jax.random.normal(shape<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">1</span>, n), key<span class="op" style="color: #5E5E5E;">=</span>jax.random.PRNGKey(<span class="dv" style="color: #AD0000;">0</span>), dtype<span class="op" style="color: #5E5E5E;">=</span>jnp.float32)</span>
-<span id="cb11-3">theta <span class="op" style="color: #5E5E5E;">=</span> jax.random.normal(shape<span class="op" style="color: #5E5E5E;">=</span>(n, <span class="dv" style="color: #AD0000;">1</span>), key<span class="op" style="color: #5E5E5E;">=</span>jax.random.PRNGKey(<span class="dv" style="color: #AD0000;">0</span>), dtype<span class="op" style="color: #5E5E5E;">=</span>jnp.float32)</span>
-<span id="cb11-4">b <span class="op" style="color: #5E5E5E;">=</span> A <span class="op" style="color: #5E5E5E;">@</span> theta </span>
-<span id="cb11-5"></span>
-<span id="cb11-6">b</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="92">
-<pre><code>DeviceArray([[28.684494]], dtype=float32)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="93">
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">b.flatten(), b.item()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="93">
-<pre><code>(DeviceArray([28.684494], dtype=float32), 28.684494018554688)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="94">
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="kw" style="color: #003B4F;">def</span> a_theta(A, theta):</span>
-<span id="cb15-2">    <span class="cf" style="color: #003B4F;">return</span> A <span class="op" style="color: #5E5E5E;">@</span> theta</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="95">
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">a_theta(A, theta)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="95">
-<pre><code>DeviceArray([[28.684494]], dtype=float32)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="96">
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">grad_a_theta <span class="op" style="color: #5E5E5E;">=</span> jax.grad(a_theta, argnums<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="101">
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">jax.jacobian(a_theta, argnums<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)(A, theta)[<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, :].shape</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="101">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%2020,%20%5C%20%201%5Cright)"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="102">
-<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">A.shape</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="102">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%201,%20%5C%20%2020%5Cright)"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="112">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Sympy version</span></span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="109">
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">A <span class="op" style="color: #5E5E5E;">=</span> MatrixSymbol(<span class="st" style="color: #20794D;">'A'</span>, <span class="dv" style="color: #AD0000;">1</span>, n)</span>
-<span id="cb22-2">theta <span class="op" style="color: #5E5E5E;">=</span> MatrixSymbol(<span class="st" style="color: #20794D;">'theta'</span>, n, <span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb22-3">A, theta</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="109">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%20A,%20%5C%20%20%5Ctheta%5Cright)"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="111">
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">diff(A<span class="op" style="color: #5E5E5E;">*</span>theta, theta)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="111">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20A%5E%7BT%7D"></p>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-7-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 
 
 
  ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</guid>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</guid>
   <pubDate>Tue, 31 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
@@ -1050,112 +1163,396 @@ Global minimum: 0.0 at [0.28000003 0.84      ]</code></pre>
   <media:content url="https://github.com/nipunbatra/ml2023/notebooks/posts/Ax-combined.png" medium="image" type="image/png"/>
 </item>
 <item>
-  <title>Linear Regression: Geometric Perspective</title>
+  <title>Maths and JAX</title>
   <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</link>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</link>
   <description><![CDATA[ 
 
 
 
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> jax.numpy <span class="im" style="color: #00769E;">as</span> jnp</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> jax</span></code></pre></div>
+</div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
-<span id="cb1-3"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
-<span id="cb1-4"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="kw" style="color: #003B4F;">def</span> func(x, y, z):</span>
+<span id="cb2-2">    <span class="cf" style="color: #003B4F;">return</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span> <span class="op" style="color: #5E5E5E;">+</span> jnp.sin(y) <span class="op" style="color: #5E5E5E;">+</span> z</span></code></pre></div>
 </div>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Two three-dimensional vectors</span></span>
-<span id="cb2-2">v1 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>])</span>
-<span id="cb2-3">v2 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">2</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">2</span>])</span>
-<span id="cb2-4"></span>
-<span id="cb2-5"><span class="co" style="color: #5E5E5E;"># y-vector</span></span>
-<span id="cb2-6">y <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="fl" style="color: #AD0000;">2.5</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="fl" style="color: #AD0000;">0.8</span>, <span class="fl" style="color: #AD0000;">1.2</span>])</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">func(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>DeviceArray(4.9092975, dtype=float32, weak_type=True)</code></pre>
+</div>
 </div>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># plot the vectors in 3D</span></span>
-<span id="cb3-2">fig <span class="op" style="color: #5E5E5E;">=</span> plt.figure(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
-<span id="cb3-3">ax <span class="op" style="color: #5E5E5E;">=</span> fig.add_subplot(<span class="dv" style="color: #AD0000;">111</span>, projection<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'3d'</span>)</span>
-<span id="cb3-4">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v1[<span class="dv" style="color: #AD0000;">0</span>], v1[<span class="dv" style="color: #AD0000;">1</span>], v1[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v1'</span>)</span>
-<span id="cb3-5">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v2[<span class="dv" style="color: #AD0000;">0</span>], v2[<span class="dv" style="color: #AD0000;">1</span>], v2[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'b'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v2'</span>)</span>
-<span id="cb3-6">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y[<span class="dv" style="color: #AD0000;">0</span>], y[<span class="dv" style="color: #AD0000;">1</span>], y[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'y'</span>)</span>
-<span id="cb3-7"></span>
-<span id="cb3-8">ax.set_xlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
-<span id="cb3-9">ax.set_ylim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
-<span id="cb3-10">ax.set_zlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
-<span id="cb3-11">ax.set_xlabel(<span class="st" style="color: #20794D;">'x'</span>)</span>
-<span id="cb3-12">ax.set_ylabel(<span class="st" style="color: #20794D;">'y'</span>)</span>
-<span id="cb3-13">ax.set_zlabel(<span class="st" style="color: #20794D;">'z'</span>)</span>
-<span id="cb3-14">ax.legend()</span>
-<span id="cb3-15"></span>
-<span id="cb3-16">ax.view_init(elev<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">45</span>, azim<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">60</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;">from</span> sympy <span class="im" style="color: #00769E;">import</span> <span class="op" style="color: #5E5E5E;">*</span></span>
+<span id="cb5-2">init_printing()</span>
+<span id="cb5-3"></span>
+<span id="cb5-4">x, y, z <span class="op" style="color: #5E5E5E;">=</span> symbols(<span class="st" style="color: #20794D;">'x y z'</span>)</span>
+<span id="cb5-5">f <span class="op" style="color: #5E5E5E;">=</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span> <span class="op" style="color: #5E5E5E;">+</span> sin(y) <span class="op" style="color: #5E5E5E;">+</span> z</span>
+<span id="cb5-6">f</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20x%5E%7B2%7D%20+%20z%20+%20%5Csin%7B%5Cleft(y%20%5Cright)%7D"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">theta <span class="op" style="color: #5E5E5E;">=</span> np.linalg.lstsq(np.array([v1, v2]).T, y, rcond<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">None</span>)[<span class="dv" style="color: #AD0000;">0</span>]</span>
-<span id="cb4-2">theta</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>array([0.525 , 0.6625])</code></pre>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">diff(f, x)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%202%20x"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># Projection of y onto the plane spanned by v1 and v2</span></span>
-<span id="cb6-2">y_proj <span class="op" style="color: #5E5E5E;">=</span> np.dot(np.array([v1, v2]).T, theta)</span>
-<span id="cb6-3">y_proj</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>array([ 1.85, -0.8 ,  1.85])</code></pre>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;"># Find the derivative of f with respect to x, y, and z using sympy</span></span>
+<span id="cb7-2">del_x, del_y, del_z <span class="op" style="color: #5E5E5E;">=</span> diff(f, x), diff(f, y), diff(f, z)</span>
+<span id="cb7-3">del_x, del_y, del_z</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%202%20x,%20%5C%20%20%5Ccos%7B%5Cleft(y%20%5Cright)%7D,%20%5C%20%201%5Cright)"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;"># Plot the x=z plane filled with color black</span></span>
-<span id="cb8-2">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
-<span id="cb8-3"><span class="co" style="color: #5E5E5E;"># 3d projection</span></span>
-<span id="cb8-4">ax <span class="op" style="color: #5E5E5E;">=</span> fig.add_subplot(<span class="dv" style="color: #AD0000;">111</span>, projection<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'3d'</span>)</span>
-<span id="cb8-5">xx, zz <span class="op" style="color: #5E5E5E;">=</span> np.meshgrid(np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>), np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>))</span>
-<span id="cb8-6">yy <span class="op" style="color: #5E5E5E;">=</span> np.zeros_like(xx)</span>
-<span id="cb8-7">ax.plot_surface(xx, yy, zz, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.2</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>)</span>
-<span id="cb8-8"></span>
-<span id="cb8-9"></span>
-<span id="cb8-10"><span class="co" style="color: #5E5E5E;"># plot the vectors in 3D</span></span>
-<span id="cb8-11">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v1[<span class="dv" style="color: #AD0000;">0</span>], v1[<span class="dv" style="color: #AD0000;">1</span>], v1[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v1'</span>)</span>
-<span id="cb8-12">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v2[<span class="dv" style="color: #AD0000;">0</span>], v2[<span class="dv" style="color: #AD0000;">1</span>], v2[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'b'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v2'</span>)</span>
-<span id="cb8-13">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y[<span class="dv" style="color: #AD0000;">0</span>], y[<span class="dv" style="color: #AD0000;">1</span>], y[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'y'</span>)</span>
-<span id="cb8-14"></span>
-<span id="cb8-15"></span>
-<span id="cb8-16"><span class="co" style="color: #5E5E5E;"># Limit the view to the x-z plane</span></span>
-<span id="cb8-17"></span>
-<span id="cb8-18">ax.set_xlabel(<span class="st" style="color: #20794D;">'x'</span>)</span>
-<span id="cb8-19">ax.set_ylabel(<span class="st" style="color: #20794D;">'y'</span>)</span>
-<span id="cb8-20">ax.set_zlabel(<span class="st" style="color: #20794D;">'z'</span>)</span>
-<span id="cb8-21"></span>
-<span id="cb8-22"><span class="co" style="color: #5E5E5E;"># Set the view angle so that we can see the x-z plane appear at a 45 degree angle</span></span>
-<span id="cb8-23"><span class="co" style="color: #5E5E5E;">#ax.view_init(azim=70, elev=200)</span></span>
-<span id="cb8-24">ax.view_init(elev<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">60</span>, azim<span class="op" style="color: #5E5E5E;">=-</span><span class="dv" style="color: #AD0000;">80</span>, roll<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">90</span>)</span>
-<span id="cb8-25">ax.view_init(<span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>)</span>
-<span id="cb8-26"><span class="co" style="color: #5E5E5E;">#ax.view_init(roll=45)</span></span>
-<span id="cb8-27"><span class="co" style="color: #5E5E5E;">#ax.view_init(elev=30, azim=45, roll=15)</span></span>
-<span id="cb8-28">ax.set_ylim(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
-<span id="cb8-29">ax.set_xlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
-<span id="cb8-30">ax.set_zlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
-<span id="cb8-31"></span>
-<span id="cb8-32"></span>
-<span id="cb8-33"><span class="co" style="color: #5E5E5E;"># Plot the projection of y onto the plane spanned by v1 and v2</span></span>
-<span id="cb8-34">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y_proj[<span class="dv" style="color: #AD0000;">0</span>], y_proj[<span class="dv" style="color: #AD0000;">1</span>], y_proj[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Projection of y onto</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;"> the plane spanned by v1 and v2'</span>)</span>
-<span id="cb8-35">plt.legend()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>&lt;matplotlib.legend.Legend at 0x111d52730&gt;</code></pre>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">grad_f <span class="op" style="color: #5E5E5E;">=</span> lambdify((x, y, z), [del_x, del_y, del_z])</span>
+<span id="cb8-2">grad_f(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft%5B%202,%20%5C%20%20-0.416146836547142,%20%5C%20%201%5Cright%5D"></p>
 </div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-7-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">grad_f_jax <span class="op" style="color: #5E5E5E;">=</span> jax.grad(func, argnums<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>))</span>
+<span id="cb9-2">grad_f_jax(<span class="fl" style="color: #AD0000;">1.</span>, <span class="fl" style="color: #AD0000;">2.</span>, <span class="fl" style="color: #AD0000;">3.</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<pre><code>(DeviceArray(2., dtype=float32, weak_type=True),
+ DeviceArray(-0.41614684, dtype=float32, weak_type=True),
+ DeviceArray(1., dtype=float32, weak_type=True))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="92">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">n <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">20</span></span>
+<span id="cb11-2">A <span class="op" style="color: #5E5E5E;">=</span> jax.random.normal(shape<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">1</span>, n), key<span class="op" style="color: #5E5E5E;">=</span>jax.random.PRNGKey(<span class="dv" style="color: #AD0000;">0</span>), dtype<span class="op" style="color: #5E5E5E;">=</span>jnp.float32)</span>
+<span id="cb11-3">theta <span class="op" style="color: #5E5E5E;">=</span> jax.random.normal(shape<span class="op" style="color: #5E5E5E;">=</span>(n, <span class="dv" style="color: #AD0000;">1</span>), key<span class="op" style="color: #5E5E5E;">=</span>jax.random.PRNGKey(<span class="dv" style="color: #AD0000;">0</span>), dtype<span class="op" style="color: #5E5E5E;">=</span>jnp.float32)</span>
+<span id="cb11-4">b <span class="op" style="color: #5E5E5E;">=</span> A <span class="op" style="color: #5E5E5E;">@</span> theta </span>
+<span id="cb11-5"></span>
+<span id="cb11-6">b</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="92">
+<pre><code>DeviceArray([[28.684494]], dtype=float32)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="93">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">b.flatten(), b.item()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="93">
+<pre><code>(DeviceArray([28.684494], dtype=float32), 28.684494018554688)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="94">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="kw" style="color: #003B4F;">def</span> a_theta(A, theta):</span>
+<span id="cb15-2">    <span class="cf" style="color: #003B4F;">return</span> A <span class="op" style="color: #5E5E5E;">@</span> theta</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="95">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">a_theta(A, theta)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="95">
+<pre><code>DeviceArray([[28.684494]], dtype=float32)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="96">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">grad_a_theta <span class="op" style="color: #5E5E5E;">=</span> jax.grad(a_theta, argnums<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="101">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">jax.jacobian(a_theta, argnums<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)(A, theta)[<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, :].shape</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="101">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%2020,%20%5C%20%201%5Cright)"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="102">
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">A.shape</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="102">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%201,%20%5C%20%2020%5Cright)"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="112">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Sympy version</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="109">
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">A <span class="op" style="color: #5E5E5E;">=</span> MatrixSymbol(<span class="st" style="color: #20794D;">'A'</span>, <span class="dv" style="color: #AD0000;">1</span>, n)</span>
+<span id="cb22-2">theta <span class="op" style="color: #5E5E5E;">=</span> MatrixSymbol(<span class="st" style="color: #20794D;">'theta'</span>, n, <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb22-3">A, theta</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="109">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%20A,%20%5C%20%20%5Ctheta%5Cright)"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="111">
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">diff(A<span class="op" style="color: #5E5E5E;">*</span>theta, theta)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="111">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20A%5E%7BT%7D"></p>
 </div>
 </div>
 
 
 
  ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</guid>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</guid>
   <pubDate>Tue, 31 Jan 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Dataset splitting for machine learning</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/split.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Create a dataset with 3 features and 1000 samples for a classification problem</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(np.random.randn(<span class="dv" style="color: #AD0000;">1000</span>, <span class="dv" style="color: #AD0000;">3</span>), columns<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'A'</span>, <span class="st" style="color: #20794D;">'B'</span>, <span class="st" style="color: #20794D;">'C'</span>])</span>
+<span id="cb2-4">df[<span class="st" style="color: #20794D;">'D'</span>] <span class="op" style="color: #5E5E5E;">=</span> np.random.randint(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">1000</span>)</span>
+<span id="cb2-5"></span>
+<span id="cb2-6">df</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>A</th>
+      <th>B</th>
+      <th>C</th>
+      <th>D</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.112981</td>
+      <td>-0.033889</td>
+      <td>0.348708</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.821601</td>
+      <td>1.267423</td>
+      <td>0.274915</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.148040</td>
+      <td>-1.412712</td>
+      <td>-0.271345</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.004766</td>
+      <td>-1.209944</td>
+      <td>0.122512</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.854442</td>
+      <td>-0.559497</td>
+      <td>-0.605376</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>995</th>
+      <td>0.161444</td>
+      <td>-0.969567</td>
+      <td>-2.079664</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>1.615938</td>
+      <td>0.219218</td>
+      <td>-0.322223</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>0.501970</td>
+      <td>-0.874313</td>
+      <td>1.571102</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>0.386063</td>
+      <td>-1.481215</td>
+      <td>-1.974313</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>999</th>
+      <td>0.468528</td>
+      <td>1.060850</td>
+      <td>0.612252</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>1000 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">X, y <span class="op" style="color: #5E5E5E;">=</span> df[[<span class="st" style="color: #20794D;">'A'</span>, <span class="st" style="color: #20794D;">'B'</span>, <span class="st" style="color: #20794D;">'C'</span>]], df[<span class="st" style="color: #20794D;">'D'</span>]</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">train_X, test_X <span class="op" style="color: #5E5E5E;">=</span> X[:<span class="dv" style="color: #AD0000;">800</span>], X[<span class="dv" style="color: #AD0000;">800</span>:]</span>
+<span id="cb4-2">train_y, test_y <span class="op" style="color: #5E5E5E;">=</span> y[:<span class="dv" style="color: #AD0000;">800</span>], y[<span class="dv" style="color: #AD0000;">800</span>:]</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;">from</span> sklearn.tree <span class="im" style="color: #00769E;">import</span> DecisionTreeClassifier</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">dt <span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier(max_depth<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb6-2">dt.fit(train_X, train_y)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<style>#sk-container-id-2 {color: black;background-color: white;}#sk-container-id-2 pre{padding: 0;}#sk-container-id-2 div.sk-toggleable {background-color: white;}#sk-container-id-2 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-2 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-2 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-2 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-2 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-2 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-2 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-2 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-2 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-2 div.sk-item {position: relative;z-index: 1;}#sk-container-id-2 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-2 div.sk-item::before, #sk-container-id-2 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-2 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-2 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-2 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-2 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-2 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-2 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-2 div.sk-label-container {text-align: center;}#sk-container-id-2 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-2 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>DecisionTreeClassifier(max_depth=2)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked=""><label for="sk-estimator-id-2" class="sk-toggleable__label sk-toggleable__label-arrow">DecisionTreeClassifier</label><div class="sk-toggleable__content"><pre>DecisionTreeClassifier(max_depth=2)</pre></div></div></div></div></div>
+</div>
+</div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="im" style="color: #00769E;">from</span> sklearn <span class="im" style="color: #00769E;">import</span> tree</span>
+<span id="cb7-2">tree.plot_tree(dt)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>[Text(0.5, 0.8333333333333334, 'X[0] &lt;= -0.17\ngini = 0.5\nsamples = 800\nvalue = [400, 400]'),
+ Text(0.25, 0.5, 'X[0] &lt;= -0.307\ngini = 0.495\nsamples = 348\nvalue = [157, 191]'),
+ Text(0.125, 0.16666666666666666, 'gini = 0.499\nsamples = 316\nvalue = [153, 163]'),
+ Text(0.375, 0.16666666666666666, 'gini = 0.219\nsamples = 32\nvalue = [4, 28]'),
+ Text(0.75, 0.5, 'X[2] &lt;= 1.656\ngini = 0.497\nsamples = 452\nvalue = [243, 209]'),
+ Text(0.625, 0.16666666666666666, 'gini = 0.495\nsamples = 434\nvalue = [239, 195]'),
+ Text(0.875, 0.16666666666666666, 'gini = 0.346\nsamples = 18\nvalue = [4, 14]')]</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/split_files/figure-html/cell-8-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">y_hat <span class="op" style="color: #5E5E5E;">=</span> dt.predict(test_X)</span>
+<span id="cb9-2">pd.DataFrame({<span class="st" style="color: #20794D;">"y_true"</span>: test_y, <span class="st" style="color: #20794D;">"y_hat"</span>: y_hat})</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>y_true</th>
+      <th>y_hat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>800</th>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>801</th>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>802</th>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>803</th>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>804</th>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>995</th>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>997</th>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>998</th>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>999</th>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>200 rows × 2 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="im" style="color: #00769E;">from</span> sklearn.tree <span class="im" style="color: #00769E;">import</span> DecisionTreeClassifier</span>
+<span id="cb10-2"></span>
+<span id="cb10-3">train_scores <span class="op" style="color: #5E5E5E;">=</span> {}</span>
+<span id="cb10-4">test_scores <span class="op" style="color: #5E5E5E;">=</span> {}</span>
+<span id="cb10-5"></span>
+<span id="cb10-6"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">20</span>):</span>
+<span id="cb10-7">    dt <span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier(max_depth<span class="op" style="color: #5E5E5E;">=</span>i)</span>
+<span id="cb10-8">    dt.fit(train_X, train_y)</span>
+<span id="cb10-9">    train_scores[i] <span class="op" style="color: #5E5E5E;">=</span> dt.score(train_X, train_y)</span>
+<span id="cb10-10">    </span>
+<span id="cb10-11">    test_scores[i] <span class="op" style="color: #5E5E5E;">=</span> dt.score(test_X, test_y)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">scores_df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame({<span class="st" style="color: #20794D;">'train'</span>: train_scores, <span class="st" style="color: #20794D;">'test'</span>: test_scores})</span>
+<span id="cb11-2">scores_df.plot()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>&lt;AxesSubplot:&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/split_files/figure-html/cell-11-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/split.html</guid>
+  <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Grid Search</title>
@@ -1577,29 +1974,22 @@ Length: 162, dtype: float64</code></pre>
   <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
-  <title>Dataset splitting for machine learning</title>
+  <title>DT Regression</title>
   <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/split.html</link>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</link>
   <description><![CDATA[ 
 
 
 
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
-<span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Create a dataset with 3 features and 1000 samples for a classification problem</span></span>
-<span id="cb2-2"></span>
-<span id="cb2-3">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(np.random.randn(<span class="dv" style="color: #AD0000;">1000</span>, <span class="dv" style="color: #AD0000;">3</span>), columns<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'A'</span>, <span class="st" style="color: #20794D;">'B'</span>, <span class="st" style="color: #20794D;">'C'</span>])</span>
-<span id="cb2-4">df[<span class="st" style="color: #20794D;">'D'</span>] <span class="op" style="color: #5E5E5E;">=</span> np.random.randint(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">1000</span>)</span>
-<span id="cb2-5"></span>
-<span id="cb2-6">df</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">df <span class="op" style="color: #5E5E5E;">=</span> pd.read_csv(<span class="st" style="color: #20794D;">"mins-played.csv"</span>)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">df</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
 
 <div>
 
@@ -1607,235 +1997,199 @@ Length: 162, dtype: float64</code></pre>
   <thead>
     <tr>
       <th></th>
-      <th>A</th>
-      <th>B</th>
-      <th>C</th>
-      <th>D</th>
+      <th>Day</th>
+      <th>Outlook</th>
+      <th>Temp</th>
+      <th>Humidity</th>
+      <th>Wind</th>
+      <th>Minutes Played</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>0.112981</td>
-      <td>-0.033889</td>
-      <td>0.348708</td>
-      <td>1</td>
+      <td>D1</td>
+      <td>Sunny</td>
+      <td>Hot</td>
+      <td>High</td>
+      <td>Weak</td>
+      <td>20</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>1.821601</td>
-      <td>1.267423</td>
-      <td>0.274915</td>
-      <td>1</td>
+      <td>D2</td>
+      <td>Sunny</td>
+      <td>Hot</td>
+      <td>High</td>
+      <td>Strong</td>
+      <td>24</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.148040</td>
-      <td>-1.412712</td>
-      <td>-0.271345</td>
-      <td>1</td>
+      <td>D3</td>
+      <td>Overcast</td>
+      <td>Hot</td>
+      <td>High</td>
+      <td>Weak</td>
+      <td>40</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.004766</td>
-      <td>-1.209944</td>
-      <td>0.122512</td>
-      <td>1</td>
+      <td>D4</td>
+      <td>Rain</td>
+      <td>Mild</td>
+      <td>High</td>
+      <td>Weak</td>
+      <td>50</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.854442</td>
-      <td>-0.559497</td>
-      <td>-0.605376</td>
-      <td>1</td>
+      <td>D5</td>
+      <td>Rain</td>
+      <td>Cool</td>
+      <td>Normal</td>
+      <td>Weak</td>
+      <td>60</td>
     </tr>
     <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
+      <th>5</th>
+      <td>D6</td>
+      <td>Rain</td>
+      <td>Cool</td>
+      <td>Normal</td>
+      <td>Strong</td>
+      <td>10</td>
     </tr>
     <tr>
-      <th>995</th>
-      <td>0.161444</td>
-      <td>-0.969567</td>
-      <td>-2.079664</td>
-      <td>0</td>
+      <th>6</th>
+      <td>D7</td>
+      <td>Overcast</td>
+      <td>Cool</td>
+      <td>Normal</td>
+      <td>Strong</td>
+      <td>4</td>
     </tr>
     <tr>
-      <th>996</th>
-      <td>1.615938</td>
-      <td>0.219218</td>
-      <td>-0.322223</td>
-      <td>0</td>
+      <th>7</th>
+      <td>D8</td>
+      <td>Sunny</td>
+      <td>Mild</td>
+      <td>High</td>
+      <td>Weak</td>
+      <td>10</td>
     </tr>
     <tr>
-      <th>997</th>
-      <td>0.501970</td>
-      <td>-0.874313</td>
-      <td>1.571102</td>
-      <td>1</td>
+      <th>8</th>
+      <td>D9</td>
+      <td>Sunny</td>
+      <td>Cool</td>
+      <td>Normal</td>
+      <td>Weak</td>
+      <td>60</td>
     </tr>
     <tr>
-      <th>998</th>
-      <td>0.386063</td>
-      <td>-1.481215</td>
-      <td>-1.974313</td>
-      <td>1</td>
+      <th>9</th>
+      <td>D10</td>
+      <td>Rain</td>
+      <td>Mild</td>
+      <td>Normal</td>
+      <td>Weak</td>
+      <td>40</td>
     </tr>
     <tr>
-      <th>999</th>
-      <td>0.468528</td>
-      <td>1.060850</td>
-      <td>0.612252</td>
-      <td>1</td>
+      <th>10</th>
+      <td>D11</td>
+      <td>Sunny</td>
+      <td>Mild</td>
+      <td>High</td>
+      <td>Strong</td>
+      <td>45</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>D12</td>
+      <td>Overcast</td>
+      <td>Mild</td>
+      <td>High</td>
+      <td>Strong</td>
+      <td>40</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>D13</td>
+      <td>Overcast</td>
+      <td>Hot</td>
+      <td>Normal</td>
+      <td>Weak</td>
+      <td>35</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>D14</td>
+      <td>Rain</td>
+      <td>Mild</td>
+      <td>High</td>
+      <td>Strong</td>
+      <td>20</td>
     </tr>
   </tbody>
 </table>
-<p>1000 rows × 4 columns</p>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">X, y <span class="op" style="color: #5E5E5E;">=</span> df[[<span class="st" style="color: #20794D;">'A'</span>, <span class="st" style="color: #20794D;">'B'</span>, <span class="st" style="color: #20794D;">'C'</span>]], df[<span class="st" style="color: #20794D;">'D'</span>]</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">train_X, test_X <span class="op" style="color: #5E5E5E;">=</span> X[:<span class="dv" style="color: #AD0000;">800</span>], X[<span class="dv" style="color: #AD0000;">800</span>:]</span>
-<span id="cb4-2">train_y, test_y <span class="op" style="color: #5E5E5E;">=</span> y[:<span class="dv" style="color: #AD0000;">800</span>], y[<span class="dv" style="color: #AD0000;">800</span>:]</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;">from</span> sklearn.tree <span class="im" style="color: #00769E;">import</span> DecisionTreeClassifier</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">dt <span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier(max_depth<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span>
-<span id="cb6-2">dt.fit(train_X, train_y)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
-<style>#sk-container-id-2 {color: black;background-color: white;}#sk-container-id-2 pre{padding: 0;}#sk-container-id-2 div.sk-toggleable {background-color: white;}#sk-container-id-2 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-2 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-2 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-2 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-2 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-2 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-2 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-2 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-2 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-2 div.sk-item {position: relative;z-index: 1;}#sk-container-id-2 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-2 div.sk-item::before, #sk-container-id-2 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-2 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-2 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-2 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-2 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-2 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-2 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-2 div.sk-label-container {text-align: center;}#sk-container-id-2 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-2 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>DecisionTreeClassifier(max_depth=2)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked=""><label for="sk-estimator-id-2" class="sk-toggleable__label sk-toggleable__label-arrow">DecisionTreeClassifier</label><div class="sk-toggleable__content"><pre>DecisionTreeClassifier(max_depth=2)</pre></div></div></div></div></div>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">df[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>18.3111087402348</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="im" style="color: #00769E;">from</span> sklearn <span class="im" style="color: #00769E;">import</span> tree</span>
-<span id="cb7-2">tree.plot_tree(dt)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<pre><code>[Text(0.5, 0.8333333333333334, 'X[0] &lt;= -0.17\ngini = 0.5\nsamples = 800\nvalue = [400, 400]'),
- Text(0.25, 0.5, 'X[0] &lt;= -0.307\ngini = 0.495\nsamples = 348\nvalue = [157, 191]'),
- Text(0.125, 0.16666666666666666, 'gini = 0.499\nsamples = 316\nvalue = [153, 163]'),
- Text(0.375, 0.16666666666666666, 'gini = 0.219\nsamples = 32\nvalue = [4, 28]'),
- Text(0.75, 0.5, 'X[2] &lt;= 1.656\ngini = 0.497\nsamples = 452\nvalue = [243, 209]'),
- Text(0.625, 0.16666666666666666, 'gini = 0.495\nsamples = 434\nvalue = [239, 195]'),
- Text(0.875, 0.16666666666666666, 'gini = 0.346\nsamples = 18\nvalue = [4, 14]')]</code></pre>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb6-2"><span class="co" style="color: #5E5E5E;"># np.std(df["Minutes Played"].values)</span></span></code></pre></div>
 </div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/split_files/figure-html/cell-8-output-2.png" class="img-fluid"></p>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">df.query(<span class="st" style="color: #20794D;">"Wind=='Weak'"</span>)[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">len</span>(df.query(<span class="st" style="color: #20794D;">"Wind=='Weak'"</span>))<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(df)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>10.180585192846463</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">y_hat <span class="op" style="color: #5E5E5E;">=</span> dt.predict(test_X)</span>
-<span id="cb9-2">pd.DataFrame({<span class="st" style="color: #20794D;">"y_true"</span>: test_y, <span class="st" style="color: #20794D;">"y_hat"</span>: y_hat})</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">df.query(<span class="st" style="color: #20794D;">"Wind=='Strong'"</span>)[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">len</span>(df.query(<span class="st" style="color: #20794D;">"Wind=='Strong'"</span>))<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(df)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<pre><code>6.933944897151599</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">out <span class="op" style="color: #5E5E5E;">=</span> {}</span>
+<span id="cb11-2"><span class="cf" style="color: #003B4F;">for</span> temp <span class="kw" style="color: #003B4F;">in</span> df[<span class="st" style="color: #20794D;">"Temp"</span>].unique():</span>
+<span id="cb11-3">    <span class="bu" style="color: null;">print</span>(temp)</span>
+<span id="cb11-4">    out[temp] <span class="op" style="color: #5E5E5E;">=</span> df.query(<span class="st" style="color: #20794D;">"Temp==@temp"</span>)[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">len</span>(df.query(<span class="st" style="color: #20794D;">"Temp==@temp"</span>))<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(df)</span>
+<span id="cb11-5">    <span class="bu" style="color: null;">print</span>(out[temp])</span>
+<span id="cb11-6">    <span class="bu" style="color: null;">print</span>()</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Hot
+2.6636888135137133
 
-<div>
+Mild
+6.696785704762413
 
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>y_true</th>
-      <th>y_hat</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>800</th>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>801</th>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>802</th>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>803</th>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>804</th>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>995</th>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>996</th>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>997</th>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>998</th>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>999</th>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
-<p>200 rows × 2 columns</p>
+Cool
+8.770699519880226
+</code></pre>
 </div>
-</div>
-</div>
-<div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="im" style="color: #00769E;">from</span> sklearn.tree <span class="im" style="color: #00769E;">import</span> DecisionTreeClassifier</span>
-<span id="cb10-2"></span>
-<span id="cb10-3">train_scores <span class="op" style="color: #5E5E5E;">=</span> {}</span>
-<span id="cb10-4">test_scores <span class="op" style="color: #5E5E5E;">=</span> {}</span>
-<span id="cb10-5"></span>
-<span id="cb10-6"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">20</span>):</span>
-<span id="cb10-7">    dt <span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier(max_depth<span class="op" style="color: #5E5E5E;">=</span>i)</span>
-<span id="cb10-8">    dt.fit(train_X, train_y)</span>
-<span id="cb10-9">    train_scores[i] <span class="op" style="color: #5E5E5E;">=</span> dt.score(train_X, train_y)</span>
-<span id="cb10-10">    </span>
-<span id="cb10-11">    test_scores[i] <span class="op" style="color: #5E5E5E;">=</span> dt.score(test_X, test_y)</span></code></pre></div>
 </div>
 <div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">scores_df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame({<span class="st" style="color: #20794D;">'train'</span>: train_scores, <span class="st" style="color: #20794D;">'test'</span>: test_scores})</span>
-<span id="cb11-2">scores_df.plot()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">df[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std() <span class="op" style="color: #5E5E5E;">-</span> pd.Series(out).<span class="bu" style="color: null;">sum</span>()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
-<pre><code>&lt;AxesSubplot:&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/split_files/figure-html/cell-11-output-2.png" class="img-fluid"></p>
+<pre><code>0.17993470207844808</code></pre>
 </div>
 </div>
 
 
 
  ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/split.html</guid>
-  <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</guid>
+  <pubDate>Thu, 12 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Pandas tips</title>
@@ -2330,224 +2684,6 @@ dtype: int64</code></pre>
 
  ]]></description>
   <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross.html</guid>
-  <pubDate>Thu, 12 Jan 2023 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>DT Regression</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</link>
-  <description><![CDATA[ 
-
-
-
-<div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">df <span class="op" style="color: #5E5E5E;">=</span> pd.read_csv(<span class="st" style="color: #20794D;">"mins-played.csv"</span>)</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">df</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Day</th>
-      <th>Outlook</th>
-      <th>Temp</th>
-      <th>Humidity</th>
-      <th>Wind</th>
-      <th>Minutes Played</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>D1</td>
-      <td>Sunny</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>20</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>D2</td>
-      <td>Sunny</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>24</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>D3</td>
-      <td>Overcast</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>40</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>D4</td>
-      <td>Rain</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>50</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>D5</td>
-      <td>Rain</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>60</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>D6</td>
-      <td>Rain</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Strong</td>
-      <td>10</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>D7</td>
-      <td>Overcast</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Strong</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>D8</td>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>10</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>D9</td>
-      <td>Sunny</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>60</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>D10</td>
-      <td>Rain</td>
-      <td>Mild</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>40</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>D11</td>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>45</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>D12</td>
-      <td>Overcast</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>40</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>D13</td>
-      <td>Overcast</td>
-      <td>Hot</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>35</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>D14</td>
-      <td>Rain</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>20</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">df[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
-<pre><code>18.3111087402348</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb6-2"><span class="co" style="color: #5E5E5E;"># np.std(df["Minutes Played"].values)</span></span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">df.query(<span class="st" style="color: #20794D;">"Wind=='Weak'"</span>)[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">len</span>(df.query(<span class="st" style="color: #20794D;">"Wind=='Weak'"</span>))<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(df)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
-<pre><code>10.180585192846463</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">df.query(<span class="st" style="color: #20794D;">"Wind=='Strong'"</span>)[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">len</span>(df.query(<span class="st" style="color: #20794D;">"Wind=='Strong'"</span>))<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(df)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
-<pre><code>6.933944897151599</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">out <span class="op" style="color: #5E5E5E;">=</span> {}</span>
-<span id="cb11-2"><span class="cf" style="color: #003B4F;">for</span> temp <span class="kw" style="color: #003B4F;">in</span> df[<span class="st" style="color: #20794D;">"Temp"</span>].unique():</span>
-<span id="cb11-3">    <span class="bu" style="color: null;">print</span>(temp)</span>
-<span id="cb11-4">    out[temp] <span class="op" style="color: #5E5E5E;">=</span> df.query(<span class="st" style="color: #20794D;">"Temp==@temp"</span>)[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">len</span>(df.query(<span class="st" style="color: #20794D;">"Temp==@temp"</span>))<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(df)</span>
-<span id="cb11-5">    <span class="bu" style="color: null;">print</span>(out[temp])</span>
-<span id="cb11-6">    <span class="bu" style="color: null;">print</span>()</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Hot
-2.6636888135137133
-
-Mild
-6.696785704762413
-
-Cool
-8.770699519880226
-</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">df[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std() <span class="op" style="color: #5E5E5E;">-</span> pd.Series(out).<span class="bu" style="color: null;">sum</span>()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
-<pre><code>0.17993470207844808</code></pre>
-</div>
-</div>
-
-
-
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</guid>
   <pubDate>Thu, 12 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
