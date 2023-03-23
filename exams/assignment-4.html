@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-01-18">
 
-<title>ES654 - Quiz 1 (18 Jan)</title>
+<title>ES654 – assignment-4</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -62,7 +61,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -127,152 +125,66 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Quiz 1 (18 Jan)</h1>
-</div>
 
 
-
-<div class="quarto-title-meta">
-
-    
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">January 18, 2023</p>
-    </div>
-  </div>
-  
-    
-  </div>
-  
-
-</header>
-
-<section id="instructions" class="level3">
-<h3 class="anchored" data-anchor-id="instructions">Instructions</h3>
-<ul>
-<li>Total Time: 30 mins</li>
-</ul>
+<p>General instructions</p>
+<ol type="1">
+<li><p>Feel free to use any framework of your choice: PyTorch, JAX (+Flax/Equinox), Tensorflow (+Keras)</p></li>
+<li><p>We are not providing any code template. However, it is recommended you adhere to high code quality standards.</p></li>
+</ol>
 <hr>
 <ol type="1">
-<li>Remember the entropy discussion we had in the lecture. We saw that for the Tennis example, the maximum entropy is 1.0. What is the maximum entropy an Imagenet classification problem, where we have 1024 classes? <strong>[1 mark]</strong></li>
-<li>Given the following dataset, what attribute/feature would the decision tree algorithm choose to split the data on for the first iteration? Why? <strong>[1 mark]</strong></li>
-</ol>
-<table class="table">
-<colgroup>
-<col style="width: 14%">
-<col style="width: 21%">
-<col style="width: 21%">
-<col style="width: 20%">
-<col style="width: 22%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Sample #</th>
-<th>Tomato radius</th>
-<th>Tomato weight</th>
-<th>Tomato color</th>
-<th>Tomato quality</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td>1</td>
-<td>Good</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>1</td>
-<td>1</td>
-<td>2</td>
-<td>Good</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>1</td>
-<td>2</td>
-<td>1</td>
-<td>Bad</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td>1</td>
-<td>2</td>
-<td>2</td>
-<td>Bad</td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td>2</td>
-<td>1</td>
-<td>1</td>
-<td>Good</td>
-</tr>
-<tr class="even">
-<td>6</td>
-<td>2</td>
-<td>2</td>
-<td>2</td>
-<td>Good</td>
-</tr>
-</tbody>
-</table>
-<ol start="3" type="1">
-<li><p>In the lectures we saw that <code>np.std(x)</code> and <code>pd.Series(x).std()</code> are different. Why? <strong>[1 mark]</strong></p></li>
-<li><p>Quoting Wikipedia:</p></li>
-</ol>
-<blockquote class="blockquote">
-<p>Pruning is a data compression technique in machine learning and search algorithms that reduces the size of decision trees by removing sections of the tree that are non-critical and redundant to classify instances. Pruning reduces the complexity of the final classifier, and hence improves predictive accuracy by the reduction of overfitting.</p>
-</blockquote>
-<blockquote class="blockquote">
-<p>Pre-pruning procedures prevent a complete induction of the training set by replacing a stop () criterion in the induction algorithm (e.g.&nbsp;max. Tree depth or information gain (Attr)&gt; minGain). Pre-pruning methods are do not induce an entire set, but rather trees remain small from the start.</p>
-</blockquote>
-<p>Create a decision tree for the following classification problem. Explain why the pre-pruning using information gain approach can be limiting? <strong>[2 marks]</strong></p>
-<table class="table">
-<thead>
-<tr class="header">
-<th><span class="math inline">\(x_1\)</span></th>
-<th><span class="math inline">\(x_2\)</span></th>
-<th><span class="math inline">\(y\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td>0</td>
-<td>1</td>
-<td>1</td>
-</tr>
-<tr class="odd">
-<td>1</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>1</td>
-<td>0</td>
-</tr>
-</tbody>
-</table>
-<ol start="5" type="1">
-<li><p>Visualize the decision tree for the following regression problem, where the ground truth is the function <span class="math inline">\(y = x + 2\)</span>. Use <span class="math inline">\(x = \{1, 2, \cdots 4\}\)</span> as the training dataset. Also visualize the learnt function <strong>[2 marks]</strong></p></li>
-<li><p>Create an example ground truth and prediction where the mean absolute error is 100 and mean error is 0. <strong>[0.5 marks]</strong></p></li>
-<li><p>Create one confusion matrix for 100 total examples where the precision is 0.8, recall is 0.5. <strong>[1 mark]</strong></p></li>
-<li><p>Show visualisation of <code>1d</code> regression problem for continuous inputs showing a good fit, a high bias and a high variance fit. <strong>[1.5 mark]</strong></p></li>
+<li><p>In this question, you have to compare the performance on a binary classification task of the following models:</p>
+<ul>
+<li>VGG (1 block)</li>
+<li>VGG (3 blocks)</li>
+<li>VGG (3 blocks) with data augmentation</li>
+<li>Transfer learning using VGG16 or VGG19</li>
+</ul>
+<p><a href="https://machinelearningmastery.com/how-to-develop-a-convolutional-neural-network-to-classify-photos-of-dogs-and-cats/">Refer this article</a> You do not need to write your own code. You can reuse the code from the post. Or, you could roll out your own implemenation. Either way, you should be able to explain your code during the viva.</p>
+<p>You need to create the dataset on your own based on your first names. For instance if the first name of the team members are: <strong>S</strong>iya and <strong>R</strong>aghav, they can choose a dataset of their liking based on any names, place, animal or thing. As examples:</p>
+<ul>
+<li>Seoul v/s Riyadh</li>
+<li>Snake v/s Rat</li>
+<li>Squirrel v/s Rabbit</li>
+<li>Sambhar v/s Roti</li>
+</ul>
+<p>You can refer to <a href="https://course.fast.ai/videos/?lesson=3">resource 1</a> or <a href="https://course.fast.ai/images">resource 2</a> or plainly download 100 images of both classes (total 200 images). Of these 100 images of each class, we will use 80 for training and 20 for testing. You get 1 mark for dataset creation [1 mark]</p>
+<p>Create a table with models as rows and the following columns [2 marks (0.5 marks for each model)]</p>
+<ul>
+<li>Training time</li>
+<li>Training loss</li>
+<li>Training accuracy</li>
+<li>Testing accuracy</li>
+<li>Number of model parameters</li>
+</ul>
+<p>We will now be using Tensorboard for visualizing network performance. You are suggested to refer to:</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=RLqsxWaQdHE">PyTorch + Tensorboard</a></li>
+<li><a href="https://www.youtube.com/watch?v=k7KfYXXrOj0">Tensorflow + Tensorboard</a></li>
+</ul>
+<p>Use Tensorboard to log the following and present screenshots/images [1 mark]</p>
+<p>Scalars</p>
+<ul>
+<li>Training loss v/s iterations (and not epochs)</li>
+<li>Training accuracy v/s iterations (and not epochs)</li>
+<li>Testing accuracy v/s iterations (and not epochs)</li>
+</ul>
+<p>Images</p>
+<ul>
+<li>Show all images from the test set and their predictions</li>
+</ul>
+<p>Now you have to present various insights. For instance, you should discuss the following: [2 marks (0.5 marks for each question)]</p>
+<ul>
+<li>Are the results as expected? Why or why not?</li>
+<li>Does data augmentation help? Why or why not?</li>
+<li>Does it matter how many epochs you fine tune the model? Why or why not?</li>
+<li>Are there any particular images that the model is confused about? Why or why not?</li>
+</ul>
+<p>Now, create a MLP model with comparable number of parameters as VGG16 and compare your performance with the other models in the table. You can choose the distribution of number of neurons and number of layers. What can you conclude? [1 mark]</p></li>
 </ol>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
