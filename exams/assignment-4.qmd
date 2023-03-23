@@ -1,9 +1,11 @@
 ---
+title: Assignment 4
+date: 2023-03-26
 format:
   html:
     default
 ---
-General instructions
+#### General instructions
 
 
 1. Feel free to use any framework of your choice: PyTorch, JAX (+Flax/Equinox), Tensorflow (+Keras)
