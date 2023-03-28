@@ -19,7 +19,6 @@ format:
     # fontfamily: libertine
     # colorlinks: true
   html:
-    default
     include-in-header: 
         text: |
             \pagenumbering{gobble}
