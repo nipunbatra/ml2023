@@ -19,21 +19,22 @@ format:
     # fontfamily: libertine
     # colorlinks: true
   html:
-    include-in-header: 
-        text: |
-            \pagenumbering{gobble}
-            \usepackage{amsmath}
-            \usepackage{amsfonts}
-            \usepackage{bm}
+    default
+    # include-in-header: 
+    #     text: |
+    #         \pagenumbering{gobble}
+    #         \usepackage{amsmath}
+    #         \usepackage{amsfonts}
+    #         \usepackage{bm}
 
-    geometry:
-        - top=7mm
-        - left=7mm
-        - right=7mm
-        - bottom=7mm
-        - heightrounded
-    fontfamily: libertine
-    colorlinks: true
+    # geometry:
+    #     - top=7mm
+    #     - left=7mm
+    #     - right=7mm
+    #     - bottom=7mm
+    #     - heightrounded
+    # fontfamily: libertine
+    # colorlinks: true
 ---
 - Total Time: 1 hour 15 mins AND Total Marks: 10
 
