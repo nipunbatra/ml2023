@@ -2,7 +2,6 @@
 title: Quiz 4 (25 March)
 date: 2023-03-25
 format:
-  pdf:
     # include-in-header: 
     #     text: |
     #         \pagenumbering{gobble}
