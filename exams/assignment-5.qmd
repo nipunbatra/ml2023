@@ -33,7 +33,7 @@ format:
     - Squirrel v/s Rabbit
     - Sambhar v/s Roti
 
-     You can refer to [resource 1](https://course.fast.ai/videos/?lesson=3) or [resource 2](https://course.fast.ai/images) or plainly download 100 images of both classes (total 200 images). Of these 100 images of each class, we will use 80 for training and 20 for testing. You get 1 mark for dataset creation [1 mark]
+     You can refer to [resource 1](https://python.plainenglish.io/how-to-automatically-download-bulk-images-for-your-dataset-using-python-f1efffba7a03) or [resource 2](https://github.com/JorgePoblete/DuckDuckGoImages) or plainly download 100 images of both classes (total 200 images). Of these 100 images of each class, we will use 80 for training and 20 for testing. You get 1 mark for dataset creation [1 mark]
      
      
      Create a table with models as rows and the following columns [2 marks (0.5 marks for each model)]
