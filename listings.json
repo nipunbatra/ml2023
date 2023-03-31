@@ -4,6 +4,7 @@
     "items": [
       "/notebooks/posts/mle.html",
       "/notebooks/posts/log-sum-exp.html",
+      "/notebooks/posts/names.html",
       "/notebooks/posts/autodiff-jax-torch.html",
       "/notebooks/posts/logistic.html",
       "/notebooks/posts/nn.html",
@@ -13,7 +14,6 @@
       "/notebooks/posts/cnn-edge.html",
       "/notebooks/posts/projection.html",
       "/notebooks/posts/lowrank-matrix.html",
-      "/notebooks/posts/names.html",
       "/notebooks/posts/maths-jax.html",
       "/notebooks/posts/split.html",
       "/notebooks/posts/hyperparameter-1.html",
