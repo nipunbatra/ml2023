@@ -217,46 +217,51 @@ tensor([[-0.7321, -0.0133],
 <span id="cb24-13">    <span class="cf" style="color: #003B4F;">return</span> x</span>
 <span id="cb24-14">    </span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="16">
+<div class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><span class="co" style="color: #5E5E5E;"># Generate names from untrained model</span></span>
 <span id="cb25-2"></span>
 <span id="cb25-3"></span>
 <span id="cb25-4">model <span class="op" style="color: #5E5E5E;">=</span> NextChar(block_size, <span class="bu" style="color: null;">len</span>(stoi), emb_dim, <span class="dv" style="color: #AD0000;">50</span>).to(device)</span>
-<span id="cb25-5"></span>
-<span id="cb25-6">g <span class="op" style="color: #5E5E5E;">=</span> torch.Generator()</span>
-<span id="cb25-7">g.manual_seed(<span class="dv" style="color: #AD0000;">4000002</span>)</span>
-<span id="cb25-8"><span class="kw" style="color: #003B4F;">def</span> generate_name(model, itos, stoi, block_size, max_len<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10</span>):</span>
-<span id="cb25-9">    context <span class="op" style="color: #5E5E5E;">=</span> [<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">*</span> block_size</span>
-<span id="cb25-10">    name <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">''</span></span>
-<span id="cb25-11">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(max_len):</span>
-<span id="cb25-12">        x <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(context).view(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>).to(device)</span>
-<span id="cb25-13">        y_pred <span class="op" style="color: #5E5E5E;">=</span> model(x)</span>
-<span id="cb25-14">        ix <span class="op" style="color: #5E5E5E;">=</span> torch.distributions.categorical.Categorical(logits<span class="op" style="color: #5E5E5E;">=</span>y_pred).sample().item()</span>
-<span id="cb25-15">        ch <span class="op" style="color: #5E5E5E;">=</span> itos[ix]</span>
-<span id="cb25-16">        <span class="cf" style="color: #003B4F;">if</span> ch <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">'.'</span>:</span>
-<span id="cb25-17">            <span class="cf" style="color: #003B4F;">break</span></span>
-<span id="cb25-18">        name <span class="op" style="color: #5E5E5E;">+=</span> ch</span>
-<span id="cb25-19">        context <span class="op" style="color: #5E5E5E;">=</span> context[<span class="dv" style="color: #AD0000;">1</span>:] <span class="op" style="color: #5E5E5E;">+</span> [ix]</span>
-<span id="cb25-20">    <span class="cf" style="color: #003B4F;">return</span> name</span>
-<span id="cb25-21"></span>
-<span id="cb25-22"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">10</span>):</span>
-<span id="cb25-23">    <span class="bu" style="color: null;">print</span>(generate_name(model, itos, stoi, block_size))</span></code></pre></div>
+<span id="cb25-5">model <span class="op" style="color: #5E5E5E;">=</span> torch.<span class="bu" style="color: null;">compile</span>(model)</span>
+<span id="cb25-6"></span>
+<span id="cb25-7">g <span class="op" style="color: #5E5E5E;">=</span> torch.Generator()</span>
+<span id="cb25-8">g.manual_seed(<span class="dv" style="color: #AD0000;">4000002</span>)</span>
+<span id="cb25-9"><span class="kw" style="color: #003B4F;">def</span> generate_name(model, itos, stoi, block_size, max_len<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10</span>):</span>
+<span id="cb25-10">    context <span class="op" style="color: #5E5E5E;">=</span> [<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">*</span> block_size</span>
+<span id="cb25-11">    name <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">''</span></span>
+<span id="cb25-12">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(max_len):</span>
+<span id="cb25-13">        x <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(context).view(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>).to(device)</span>
+<span id="cb25-14">        y_pred <span class="op" style="color: #5E5E5E;">=</span> model(x)</span>
+<span id="cb25-15">        ix <span class="op" style="color: #5E5E5E;">=</span> torch.distributions.categorical.Categorical(logits<span class="op" style="color: #5E5E5E;">=</span>y_pred).sample().item()</span>
+<span id="cb25-16">        ch <span class="op" style="color: #5E5E5E;">=</span> itos[ix]</span>
+<span id="cb25-17">        <span class="cf" style="color: #003B4F;">if</span> ch <span class="op" style="color: #5E5E5E;">==</span> <span class="st" style="color: #20794D;">'.'</span>:</span>
+<span id="cb25-18">            <span class="cf" style="color: #003B4F;">break</span></span>
+<span id="cb25-19">        name <span class="op" style="color: #5E5E5E;">+=</span> ch</span>
+<span id="cb25-20">        context <span class="op" style="color: #5E5E5E;">=</span> context[<span class="dv" style="color: #AD0000;">1</span>:] <span class="op" style="color: #5E5E5E;">+</span> [ix]</span>
+<span id="cb25-21">    <span class="cf" style="color: #003B4F;">return</span> name</span>
+<span id="cb25-22"></span>
+<span id="cb25-23"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">10</span>):</span>
+<span id="cb25-24">    <span class="bu" style="color: null;">print</span>(generate_name(model, itos, stoi, block_size))</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/nipun.batra/miniforge3/lib/python3.9/site-packages/torch/_inductor/compile_fx.py:90: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(</code></pre>
+</div>
 <div class="cell-output cell-output-stdout">
-<pre><code>javfc
-gghtxcsror
-ktwofcwbdz
-
-nqbaasmdpq
-ynbcicsjfk
-iclljudine
-ajvigf
-ktmerqnkle
-wmjmjfjxet</code></pre>
+<pre><code>ihjzyewjrp
+puijjpnwfk
+gcvvflic
+eeokqgmlse
+yiaghsikiv
+smmggfnsot
+ptdmdlmwfi
+yitpyixshw
+gjqapafodl
+dfuhgoowtb</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><span class="cf" style="color: #003B4F;">for</span> param_name, param <span class="kw" style="color: #003B4F;">in</span> model.named_parameters():</span>
-<span id="cb27-2">    <span class="bu" style="color: null;">print</span>(param_name, param.shape)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><span class="cf" style="color: #003B4F;">for</span> param_name, param <span class="kw" style="color: #003B4F;">in</span> model.named_parameters():</span>
+<span id="cb28-2">    <span class="bu" style="color: null;">print</span>(param_name, param.shape)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>emb.weight torch.Size([27, 2])
 lin1.weight torch.Size([50, 8])
@@ -265,111 +270,111 @@ lin2.weight torch.Size([27, 50])
 lin2.bias torch.Size([27])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><span class="co" style="color: #5E5E5E;"># Train the model</span></span>
-<span id="cb29-2"></span>
-<span id="cb29-3">loss_fn <span class="op" style="color: #5E5E5E;">=</span> nn.CrossEntropyLoss()</span>
-<span id="cb29-4">opt <span class="op" style="color: #5E5E5E;">=</span> torch.optim.AdamW(model.parameters(), lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.001</span>)</span>
-<span id="cb29-5"><span class="im" style="color: #00769E;">import</span> time</span>
-<span id="cb29-6"><span class="co" style="color: #5E5E5E;"># Mini-batch training</span></span>
-<span id="cb29-7">batch_size <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">4096</span><span class="op" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">32</span></span>
-<span id="cb29-8">print_every <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">400</span></span>
-<span id="cb29-9">elapsed_time <span class="op" style="color: #5E5E5E;">=</span> []</span>
-<span id="cb29-10"><span class="cf" style="color: #003B4F;">for</span> epoch <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">10000</span>):</span>
-<span id="cb29-11">    start_time <span class="op" style="color: #5E5E5E;">=</span> time.time()</span>
-<span id="cb29-12">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">0</span>, X.shape[<span class="dv" style="color: #AD0000;">0</span>], batch_size):</span>
-<span id="cb29-13">        x <span class="op" style="color: #5E5E5E;">=</span> X[i:i<span class="op" style="color: #5E5E5E;">+</span>batch_size]</span>
-<span id="cb29-14">        y <span class="op" style="color: #5E5E5E;">=</span> Y[i:i<span class="op" style="color: #5E5E5E;">+</span>batch_size]</span>
-<span id="cb29-15">        y_pred <span class="op" style="color: #5E5E5E;">=</span> model(x)</span>
-<span id="cb29-16">        loss <span class="op" style="color: #5E5E5E;">=</span> loss_fn(y_pred, y)</span>
-<span id="cb29-17">        loss.backward()</span>
-<span id="cb29-18">        opt.step()</span>
-<span id="cb29-19">        opt.zero_grad()</span>
-<span id="cb29-20">    end_time <span class="op" style="color: #5E5E5E;">=</span> time.time()</span>
-<span id="cb29-21">    elapsed_time.append(end_time <span class="op" style="color: #5E5E5E;">-</span> start_time)</span>
-<span id="cb29-22">    <span class="cf" style="color: #003B4F;">if</span> epoch <span class="op" style="color: #5E5E5E;">%</span> print_every <span class="op" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>:</span>
-<span id="cb29-23">        <span class="bu" style="color: null;">print</span>(epoch, loss.item())</span>
-<span id="cb29-24">        <span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"Time taken for 1 epochs: </span><span class="sc" style="color: #5E5E5E;">{}</span><span class="st" style="color: #20794D;"> seconds"</span>.<span class="bu" style="color: null;">format</span>(<span class="bu" style="color: null;">sum</span>(elapsed_time)<span class="op" style="color: #5E5E5E;">/</span>print_every))</span></code></pre></div>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><span class="co" style="color: #5E5E5E;"># Train the model</span></span>
+<span id="cb30-2"></span>
+<span id="cb30-3">loss_fn <span class="op" style="color: #5E5E5E;">=</span> nn.CrossEntropyLoss()</span>
+<span id="cb30-4">opt <span class="op" style="color: #5E5E5E;">=</span> torch.optim.AdamW(model.parameters(), lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.01</span>)</span>
+<span id="cb30-5"><span class="im" style="color: #00769E;">import</span> time</span>
+<span id="cb30-6"><span class="co" style="color: #5E5E5E;"># Mini-batch training</span></span>
+<span id="cb30-7">batch_size <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">4096</span><span class="op" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">32</span></span>
+<span id="cb30-8">print_every <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">400</span></span>
+<span id="cb30-9">elapsed_time <span class="op" style="color: #5E5E5E;">=</span> []</span>
+<span id="cb30-10"><span class="cf" style="color: #003B4F;">for</span> epoch <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">10000</span>):</span>
+<span id="cb30-11">    start_time <span class="op" style="color: #5E5E5E;">=</span> time.time()</span>
+<span id="cb30-12">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">0</span>, X.shape[<span class="dv" style="color: #AD0000;">0</span>], batch_size):</span>
+<span id="cb30-13">        x <span class="op" style="color: #5E5E5E;">=</span> X[i:i<span class="op" style="color: #5E5E5E;">+</span>batch_size]</span>
+<span id="cb30-14">        y <span class="op" style="color: #5E5E5E;">=</span> Y[i:i<span class="op" style="color: #5E5E5E;">+</span>batch_size]</span>
+<span id="cb30-15">        y_pred <span class="op" style="color: #5E5E5E;">=</span> model(x)</span>
+<span id="cb30-16">        loss <span class="op" style="color: #5E5E5E;">=</span> loss_fn(y_pred, y)</span>
+<span id="cb30-17">        loss.backward()</span>
+<span id="cb30-18">        opt.step()</span>
+<span id="cb30-19">        opt.zero_grad()</span>
+<span id="cb30-20">    end_time <span class="op" style="color: #5E5E5E;">=</span> time.time()</span>
+<span id="cb30-21">    elapsed_time.append(end_time <span class="op" style="color: #5E5E5E;">-</span> start_time)</span>
+<span id="cb30-22">    <span class="cf" style="color: #003B4F;">if</span> epoch <span class="op" style="color: #5E5E5E;">%</span> print_every <span class="op" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>:</span>
+<span id="cb30-23">        <span class="bu" style="color: null;">print</span>(epoch, loss.item())</span>
+<span id="cb30-24">        <span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"Time taken for 1 epochs: </span><span class="sc" style="color: #5E5E5E;">{}</span><span class="st" style="color: #20794D;"> seconds"</span>.<span class="bu" style="color: null;">format</span>(<span class="bu" style="color: null;">sum</span>(elapsed_time)<span class="op" style="color: #5E5E5E;">/</span>print_every))</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0 3.2902398109436035
-Time taken for 1 epochs: 2.9494166374206542e-05 seconds
-400 2.4772419929504395
-Time taken for 1 epochs: 0.002739509344100952 seconds
-800 2.306926727294922
-Time taken for 1 epochs: 0.005415387749671936 seconds
-1200 2.2429263591766357
-Time taken for 1 epochs: 0.008078983426094056 seconds
-1600 2.2056057453155518
-Time taken for 1 epochs: 0.010743836760520936 seconds
-2000 2.1819005012512207
-Time taken for 1 epochs: 0.013408308029174804 seconds
-2400 2.1635985374450684
-Time taken for 1 epochs: 0.0160758376121521 seconds
-2800 2.1500418186187744
-Time taken for 1 epochs: 0.01874505341053009 seconds
-3200 2.141113758087158
-Time taken for 1 epochs: 0.02140929639339447 seconds
-3600 2.134887456893921
-Time taken for 1 epochs: 0.024080953001976012 seconds
-4000 2.1293864250183105
-Time taken for 1 epochs: 0.0267477285861969 seconds
-4400 2.1253926753997803
-Time taken for 1 epochs: 0.029409483075141907 seconds
-4800 2.122222423553467
-Time taken for 1 epochs: 0.03207272648811341 seconds
-5200 2.1200077533721924
-Time taken for 1 epochs: 0.03473249554634094 seconds
-5600 2.1182754039764404
-Time taken for 1 epochs: 0.03738842844963074 seconds
-6000 2.116624116897583
-Time taken for 1 epochs: 0.04004872798919678 seconds
-6400 2.1153581142425537
-Time taken for 1 epochs: 0.04270587742328644 seconds
-6800 2.1142661571502686
-Time taken for 1 epochs: 0.045376014709472653 seconds
-7200 2.113196849822998
-Time taken for 1 epochs: 0.04804417192935943 seconds
-7600 2.11206316947937
-Time taken for 1 epochs: 0.050713807344436646 seconds
-8000 2.1113688945770264
-Time taken for 1 epochs: 0.05338141441345215 seconds
-8400 2.110830068588257
-Time taken for 1 epochs: 0.05605903446674347 seconds
-8800 2.1102583408355713
-Time taken for 1 epochs: 0.05872469842433929 seconds
-9200 2.1097495555877686
-Time taken for 1 epochs: 0.0613911509513855 seconds
-9600 2.1093852519989014
-Time taken for 1 epochs: 0.0640592747926712 seconds</code></pre>
+<pre><code>0 2.0890238285064697
+Time taken for 1 epochs: 6.577968597412109e-06 seconds
+400 2.0890519618988037
+Time taken for 1 epochs: 0.0018871128559112549 seconds
+800 2.088754177093506
+Time taken for 1 epochs: 0.0037400954961776733 seconds
+1200 2.0887293815612793
+Time taken for 1 epochs: 0.005593389868736267 seconds
+1600 2.0884861946105957
+Time taken for 1 epochs: 0.007446771860122681 seconds
+2000 2.0891528129577637
+Time taken for 1 epochs: 0.009300289154052734 seconds
+2400 2.0879929065704346
+Time taken for 1 epochs: 0.011153245568275452 seconds
+2800 2.088449239730835
+Time taken for 1 epochs: 0.013006348609924317 seconds
+3200 2.0879693031311035
+Time taken for 1 epochs: 0.014860434532165527 seconds
+3600 2.0881006717681885
+Time taken for 1 epochs: 0.016712880134582518 seconds
+4000 2.087575912475586
+Time taken for 1 epochs: 0.01856597661972046 seconds
+4400 2.087235689163208
+Time taken for 1 epochs: 0.020418978929519653 seconds
+4800 2.087622880935669
+Time taken for 1 epochs: 0.02227234423160553 seconds
+5200 2.087576150894165
+Time taken for 1 epochs: 0.02412549138069153 seconds
+5600 2.0879015922546387
+Time taken for 1 epochs: 0.025978831052780153 seconds
+6000 2.088137626647949
+Time taken for 1 epochs: 0.027831865549087523 seconds
+6400 2.0875606536865234
+Time taken for 1 epochs: 0.029685078263282774 seconds
+6800 2.0870373249053955
+Time taken for 1 epochs: 0.031538299322128295 seconds
+7200 2.0867090225219727
+Time taken for 1 epochs: 0.033391504883766174 seconds
+7600 2.085026979446411
+Time taken for 1 epochs: 0.035245080590248105 seconds
+8000 2.0854732990264893
+Time taken for 1 epochs: 0.03710031807422638 seconds
+8400 2.0843679904937744
+Time taken for 1 epochs: 0.03895375490188599 seconds
+8800 2.084249258041382
+Time taken for 1 epochs: 0.04080682039260864 seconds
+9200 2.0851705074310303
+Time taken for 1 epochs: 0.042660011649131774 seconds
+9600 2.0844883918762207
+Time taken for 1 epochs: 0.044512977004051206 seconds</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><span class="co" style="color: #5E5E5E;"># Visualize the embedding</span></span>
-<span id="cb31-2"></span>
-<span id="cb31-3">plot_emb(model.emb, itos)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><span class="co" style="color: #5E5E5E;"># Visualize the embedding</span></span>
+<span id="cb32-2"></span>
+<span id="cb32-3">plot_emb(model.emb, itos)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
 <pre><code>&lt;AxesSubplot:&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/names_files/figure-html/cell-20-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="co" style="color: #5E5E5E;"># Generate names from trained model</span></span>
-<span id="cb33-2"></span>
-<span id="cb33-3"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">10</span>):</span>
-<span id="cb33-4">    <span class="bu" style="color: null;">print</span>(generate_name(model, itos, stoi, block_size))</span></code></pre></div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><span class="co" style="color: #5E5E5E;"># Generate names from trained model</span></span>
+<span id="cb34-2"></span>
+<span id="cb34-3"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">10</span>):</span>
+<span id="cb34-4">    <span class="bu" style="color: null;">print</span>(generate_name(model, itos, stoi, block_size))</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>sarshandun
-hesh
-tousishan
-aaljyuz
-gangidalin
-sahilukara
-shrav
-bajindervi
-nove
-makha</code></pre>
+<pre><code>swina
+miter
+jakul
+poshaban
+nahmishsir
+jaillanam
+fibwahir
+gurs
+sakinu
+ramta</code></pre>
 </div>
 </div>
 <p>Tuning knobs</p>
