@@ -24,6 +24,9 @@ title: "Schedule"
 |16| 2 Mar|Logistic regression [[Slides](lectures/logistic-1.pdf)]|
 |17| 14 Mar| Logistic regression [[Slides](lectures/logistic-1.pdf)]|
 |18| 16 Mar| MLP [[Slides](lectures/mlp.pdf)]|
+|19| 21 Mar| MLP [[Slides](lectures/mlp.pdf)], [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/nn.html)|
+|20| 28 Mar| MLP [[Slides](lectures/mlp.pdf)]|
+|21| 30 Mar| Next work prediction [[Slides](lectures/next-token.pdf)], [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/names.html)|
 
 
 
