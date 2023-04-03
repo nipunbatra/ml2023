@@ -27,6 +27,7 @@ title: "Schedule"
 |19| 21 Mar| MLP [[Slides](lectures/mlp.pdf)], [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/nn.html)|
 |20| 28 Mar| MLP [[Slides](lectures/mlp.pdf)]|
 |21| 30 Mar| Next work prediction [[Slides](lectures/next-token.pdf)], [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/names.html)|
+|22| 3 Apr | Convolutional Neural Networks [[Slides](lectures/CNN.pdf)], [Reference1](https://poloclub.github.io/cnn-explainer/), [Reference2](https://e2eml.school/how_convolutional_neural_networks_work.html), [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/cnn.html)|
 
 
 
