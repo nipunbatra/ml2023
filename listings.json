@@ -4,6 +4,7 @@
     "items": [
       "/notebooks/posts/mle.html",
       "/notebooks/posts/log-sum-exp.html",
+      "/notebooks/posts/1d-cnn.html",
       "/notebooks/posts/cnn.html",
       "/notebooks/posts/names.html",
       "/notebooks/posts/autodiff-jax-torch.html",

@@ -10,7 +10,133 @@
 <atom:link href="https://github.com/nipunbatra/ml2023/notebooks/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.2.475</generator>
-<lastBuildDate>Mon, 03 Apr 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 04 Apr 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>1d CNN</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> torch</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> torch.nn.functional <span class="im" style="color: #00769E;">as</span> F</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> torch.optim <span class="im" style="color: #00769E;">as</span> optim</span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="im" style="color: #00769E;">from</span> torch.utils.data <span class="im" style="color: #00769E;">import</span> DataLoader, TensorDataset</span>
+<span id="cb1-10"><span class="im" style="color: #00769E;">import</span> seaborn <span class="im" style="color: #00769E;">as</span> sns</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-13"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span>
+<span id="cb1-14"></span>
+<span id="cb1-15"><span class="co" style="color: #5E5E5E;"># Set random seed for reproducibility</span></span>
+<span id="cb1-16">torch.manual_seed(<span class="dv" style="color: #AD0000;">0</span>)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18"><span class="co" style="color: #5E5E5E;"># Torch version</span></span>
+<span id="cb1-19">torch.__version__</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>'2.0.0+cu118'</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># Simple 1d dataset</span></span>
+<span id="cb3-2"></span>
+<span id="cb3-3">y <span class="op" style="color: #5E5E5E;">=</span> torch.Tensor([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb3-4">x <span class="op" style="color: #5E5E5E;">=</span> torch.arange(<span class="dv" style="color: #AD0000;">0</span>, <span class="bu" style="color: null;">len</span>(y))</span>
+<span id="cb3-5"></span>
+<span id="cb3-6">plt.plot(x, y, <span class="st" style="color: #20794D;">'o-'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn_files/figure-html/cell-3-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Filter 1 (detect silence)</span></span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span class="cf" style="color: #003B4F;">with</span> torch.no_grad():</span>
+<span id="cb4-4">    f1 <span class="op" style="color: #5E5E5E;">=</span> nn.Conv1d(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>, padding<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb4-5">    f1.weight.data <span class="op" style="color: #5E5E5E;">=</span> torch.Tensor([[[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>]]])</span>
+<span id="cb4-6">    f1.bias.data <span class="op" style="color: #5E5E5E;">=</span> torch.Tensor([<span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb4-7">    y1 <span class="op" style="color: #5E5E5E;">=</span> F.relu(f1(y.view(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>))).view(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb4-8"></span>
+<span id="cb4-9">plt.plot(x, y, <span class="st" style="color: #20794D;">'o-'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'original'</span>)</span>
+<span id="cb4-10">plt.plot(x, y1, <span class="st" style="color: #20794D;">'o-'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'filtered f1 (silence)'</span>)</span>
+<span id="cb4-11">plt.legend()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7efecfcccb80&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># Filter 2 (detect falling edge)</span></span>
+<span id="cb6-2"></span>
+<span id="cb6-3"><span class="cf" style="color: #003B4F;">with</span> torch.no_grad():</span>
+<span id="cb6-4">    f2 <span class="op" style="color: #5E5E5E;">=</span> nn.Conv1d(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>, padding<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb6-5">    f2.weight.data <span class="op" style="color: #5E5E5E;">=</span> torch.Tensor([[[<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>]]])</span>
+<span id="cb6-6">    f2.bias.data <span class="op" style="color: #5E5E5E;">=</span> torch.Tensor([<span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb6-7">    y2 <span class="op" style="color: #5E5E5E;">=</span> F.relu(f2(y.view(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>))).view(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb6-8"></span>
+<span id="cb6-9">plt.plot(x, y, <span class="st" style="color: #20794D;">'o-'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'original'</span>)</span>
+<span id="cb6-10">plt.plot(x, y2, <span class="st" style="color: #20794D;">'o-'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'filtered f2 (falling edge)'</span>)</span>
+<span id="cb6-11">plt.legend()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7efecfbc7250&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn_files/figure-html/cell-5-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;"># Filter 3 (detect rising edge)</span></span>
+<span id="cb8-2"></span>
+<span id="cb8-3"><span class="cf" style="color: #003B4F;">with</span> torch.no_grad():</span>
+<span id="cb8-4">    f3 <span class="op" style="color: #5E5E5E;">=</span> nn.Conv1d(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>, padding<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb8-5">    f3.weight.data <span class="op" style="color: #5E5E5E;">=</span> torch.Tensor([[[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>]]])</span>
+<span id="cb8-6">    f3.bias.data <span class="op" style="color: #5E5E5E;">=</span> torch.Tensor([<span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb8-7">    y3 <span class="op" style="color: #5E5E5E;">=</span> F.relu(f3(y.view(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>))).view(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb8-8"></span>
+<span id="cb8-9">plt.plot(x, y, <span class="st" style="color: #20794D;">'o-'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'original'</span>)</span>
+<span id="cb8-10">plt.plot(x, y3, <span class="st" style="color: #20794D;">'o-'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'filtered f3 (rising edge)'</span>)</span>
+<span id="cb8-11">plt.legend()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7efecfbb88e0&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn_files/figure-html/cell-6-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;"># Filter 4 (detect high amplitude)</span></span>
+<span id="cb10-2"></span>
+<span id="cb10-3"><span class="cf" style="color: #003B4F;">with</span> torch.no_grad():</span>
+<span id="cb10-4">    f4 <span class="op" style="color: #5E5E5E;">=</span> nn.Conv1d(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>, padding<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb10-5">    f4.weight.data <span class="op" style="color: #5E5E5E;">=</span> torch.Tensor([[[<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>]]])</span>
+<span id="cb10-6">    f4.bias.data <span class="op" style="color: #5E5E5E;">=</span> torch.Tensor([<span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb10-7">    y4 <span class="op" style="color: #5E5E5E;">=</span> F.relu(f4(y.view(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>))).view(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb10-8"></span>
+<span id="cb10-9">plt.plot(x, y, <span class="st" style="color: #20794D;">'o-'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'original'</span>) </span>
+<span id="cb10-10">plt.plot(x, y4, <span class="st" style="color: #20794D;">'o-'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'filtered f4 (high amplitude)'</span>)</span>
+<span id="cb10-11">plt.legend()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7efecfb2dfd0&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn_files/figure-html/cell-7-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn.html</guid>
+  <pubDate>Tue, 04 Apr 2023 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>CNN</title>
   <dc:creator>Nipun Batra</dc:creator>
