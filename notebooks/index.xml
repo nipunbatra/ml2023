@@ -145,7 +145,7 @@
 
 
 
-<div class="cell" data-execution_count="1">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> torch</span>
 <span id="cb1-2"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
 <span id="cb1-3"><span class="im" style="color: #00769E;">import</span> torch.nn.functional <span class="im" style="color: #00769E;">as</span> F</span>
@@ -165,11 +165,11 @@
 <span id="cb1-17"></span>
 <span id="cb1-18"><span class="co" style="color: #5E5E5E;"># Torch version</span></span>
 <span id="cb1-19">torch.__version__</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>'2.0.0+cu118'</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># MNIST dataset</span></span>
 <span id="cb3-2"></span>
 <span id="cb3-3"><span class="im" style="color: #00769E;">from</span> torchvision <span class="im" style="color: #00769E;">import</span> datasets, transforms</span>
@@ -185,7 +185,7 @@
 <span id="cb3-13"><span class="co" style="color: #5E5E5E;"># Reduce the size of the training set to 5,000</span></span>
 <span id="cb3-14">train_data <span class="op" style="color: #5E5E5E;">=</span> torch.utils.data.Subset(train_data, <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">5000</span>))</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Create data loaders</span></span>
 <span id="cb4-2">batch_size <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">64</span></span>
 <span id="cb4-3"></span>
@@ -193,7 +193,7 @@
 <span id="cb4-5">val_loader <span class="op" style="color: #5E5E5E;">=</span> DataLoader(val_data, batch_size<span class="op" style="color: #5E5E5E;">=</span>batch_size, shuffle<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
 <span id="cb4-6">test_loader <span class="op" style="color: #5E5E5E;">=</span> DataLoader(test_data, batch_size<span class="op" style="color: #5E5E5E;">=</span>batch_size, shuffle<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">img, target <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">next</span>(<span class="bu" style="color: null;">iter</span>(train_loader))</span>
 <span id="cb5-2"><span class="bu" style="color: null;">print</span>(img.shape)</span>
 <span id="cb5-3"><span class="bu" style="color: null;">print</span>(target.shape)</span></code></pre></div>
@@ -202,19 +202,19 @@
 torch.Size([64])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
+<div class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">plt.imshow(img[<span class="dv" style="color: #AD0000;">0</span>].numpy().squeeze(), cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray_r'</span>)<span class="op" style="color: #5E5E5E;">;</span></span></code></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="6">
+<div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">img[<span class="dv" style="color: #AD0000;">0</span>].shape</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>torch.Size([1, 28, 28])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;"># Create a simple LeNet like CNN</span></span>
 <span id="cb10-2"></span>
 <span id="cb10-3"><span class="kw" style="color: #003B4F;">class</span> LeNet5(nn.Module):</span>
@@ -248,7 +248,7 @@ torch.Size([64])</code></pre>
 <span id="cb10-31">            num_features <span class="op" style="color: #5E5E5E;">*=</span> s</span>
 <span id="cb10-32">        <span class="cf" style="color: #003B4F;">return</span> num_features</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="8">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="co" style="color: #5E5E5E;"># Create a model</span></span>
 <span id="cb11-2"></span>
 <span id="cb11-3">model <span class="op" style="color: #5E5E5E;">=</span> LeNet5()</span>
@@ -263,7 +263,7 @@ torch.Size([64])</code></pre>
 )</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="co" style="color: #5E5E5E;"># Train the model</span></span>
 <span id="cb13-2"></span>
 <span id="cb13-3"><span class="co" style="color: #5E5E5E;"># Define the loss and optimizer</span></span>
@@ -322,7 +322,7 @@ Epoch: 9    Training Loss: 0.103402     Validation Loss: 0.167645
 Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="10">
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="co" style="color: #5E5E5E;"># Plot the training and validation loss</span></span>
 <span id="cb15-2"></span>
 <span id="cb15-3">plt.plot(train_losses, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Training loss'</span>)</span>
@@ -331,7 +331,7 @@ Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
+<div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="co" style="color: #5E5E5E;"># Test the model</span></span>
 <span id="cb16-2"></span>
 <span id="cb16-3"><span class="cf" style="color: #003B4F;">with</span> torch.no_grad():</span>
@@ -348,18 +348,18 @@ Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 <pre><code>Test Accuracy: 96.1%</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="23">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><span class="co" style="color: #5E5E5E;"># Now, let us take an image and walk it through the model</span></span>
 <span id="cb18-2"></span>
 <span id="cb18-3">test_img <span class="op" style="color: #5E5E5E;">=</span> train_data[<span class="dv" style="color: #AD0000;">1</span>][<span class="dv" style="color: #AD0000;">0</span>].unsqueeze(<span class="dv" style="color: #AD0000;">0</span>)</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="24">
+<div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">plt.imshow(test_img.numpy().squeeze(), cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray_r'</span>)<span class="op" style="color: #5E5E5E;">;</span></span></code></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-14-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><span class="co" style="color: #5E5E5E;"># Get weights and biases from the first convolutional layer</span></span>
 <span id="cb20-2"></span>
 <span id="cb20-3">weights <span class="op" style="color: #5E5E5E;">=</span> model.conv1.weight.data</span>
@@ -371,13 +371,13 @@ Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 <span id="cb20-9">ax <span class="op" style="color: #5E5E5E;">=</span> axes.ravel()</span>
 <span id="cb20-10"></span>
 <span id="cb20-11"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">6</span>):</span>
-<span id="cb20-12">    sns.heatmap(w[i][<span class="dv" style="color: #AD0000;">0</span>], ax<span class="op" style="color: #5E5E5E;">=</span>ax[i], cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>, cbar<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span>
+<span id="cb20-12">    sns.heatmap(w[i][<span class="dv" style="color: #AD0000;">0</span>], ax<span class="op" style="color: #5E5E5E;">=</span>ax[i], cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>, cbar<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, annot<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
 <span id="cb20-13">    ax[i].set_title(<span class="st" style="color: #20794D;">'Filter </span><span class="sc" style="color: #5E5E5E;">{}</span><span class="st" style="color: #20794D;">'</span>.<span class="bu" style="color: null;">format</span>(i<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>))</span></code></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-16-output-1.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="26">
+<div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Get output from model's first conv1 layer</span></span>
 <span id="cb21-2"></span>
 <span id="cb21-3">conv1 <span class="op" style="color: #5E5E5E;">=</span> F.relu(model.conv1(test_img))</span>
@@ -393,7 +393,7 @@ Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 1 image, 6 channels, 24x24 pixels</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="27">
+<div class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><span class="co" style="color: #5E5E5E;"># Visualizae the output of the first convolutional layer</span></span>
 <span id="cb23-2"></span>
 <span id="cb23-3">fig, axes <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">18</span>, <span class="dv" style="color: #AD0000;">10</span>))</span>
@@ -403,10 +403,10 @@ Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 <span id="cb23-7">    sns.heatmap(c1[<span class="dv" style="color: #AD0000;">0</span>][i].detach().numpy(), ax<span class="op" style="color: #5E5E5E;">=</span>ax[i], cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span>
 <span id="cb23-8">    ax[i].set_title(<span class="st" style="color: #20794D;">'Image </span><span class="sc" style="color: #5E5E5E;">{}</span><span class="st" style="color: #20794D;">'</span>.<span class="bu" style="color: null;">format</span>(i<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>))</span></code></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-18-output-1.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-17-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="28">
+<div class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="co" style="color: #5E5E5E;"># Get output from model after max pooling</span></span>
 <span id="cb24-2"></span>
 <span id="cb24-3">pool1 <span class="op" style="color: #5E5E5E;">=</span> F.max_pool2d(conv1, <span class="dv" style="color: #AD0000;">2</span>)</span>
@@ -431,10 +431,10 @@ Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 1 image, 6 channels, 12x12 pixels</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-19-output-2.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-18-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="30">
+<div class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><span class="co" style="color: #5E5E5E;"># Visualize the filters in the second convolutional layer</span></span>
 <span id="cb26-2"></span>
 <span id="cb26-3">weights <span class="op" style="color: #5E5E5E;">=</span> model.conv2.weight.data</span>
@@ -449,10 +449,10 @@ Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 <span id="cb26-12">    sns.heatmap(w[i][<span class="dv" style="color: #AD0000;">0</span>], ax<span class="op" style="color: #5E5E5E;">=</span>ax[i], cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>, cbar<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span>
 <span id="cb26-13">    ax[i].set_title(<span class="st" style="color: #20794D;">'Filter </span><span class="sc" style="color: #5E5E5E;">{}</span><span class="st" style="color: #20794D;">'</span>.<span class="bu" style="color: null;">format</span>(i<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>))</span></code></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-20-output-1.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-19-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="31">
+<div class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><span class="co" style="color: #5E5E5E;"># Get output from model's second conv2 layer</span></span>
 <span id="cb27-2"></span>
 <span id="cb27-3">conv2 <span class="op" style="color: #5E5E5E;">=</span> F.relu(model.conv2(pool1))</span>
@@ -477,10 +477,10 @@ Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 1 image, 16 channels, 8x8 pixels</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-21-output-2.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-20-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="32">
+<div class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><span class="co" style="color: #5E5E5E;"># Get output from model after max pooling</span></span>
 <span id="cb29-2"></span>
 <span id="cb29-3">pool2 <span class="op" style="color: #5E5E5E;">=</span> F.max_pool2d(conv2, <span class="dv" style="color: #AD0000;">2</span>)</span>
@@ -505,16 +505,127 @@ Epoch: 10   Training Loss: 0.089715     Validation Loss: 0.156438</code></pre>
 1 image, 16 channels, 4x4 pixels</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-22-output-2.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-21-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="20">
+<div class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><span class="co" style="color: #5E5E5E;"># Flatten the output of the second convolutional layer</span></span>
 <span id="cb31-2"></span>
 <span id="cb31-3">flat <span class="op" style="color: #5E5E5E;">=</span> pool2.view(pool2.size(<span class="dv" style="color: #AD0000;">0</span>), <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>)</span>
 <span id="cb31-4"><span class="bu" style="color: null;">print</span>(flat.shape)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch.Size([1, 256])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="46">
+<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="co" style="color: #5E5E5E;"># Repeat the above process as a function to visualize the convolution outputs for any image for any layer</span></span>
+<span id="cb33-2"><span class="kw" style="color: #003B4F;">def</span> scale_img(img):</span>
+<span id="cb33-3">    <span class="co" style="color: #5E5E5E;">"""</span></span>
+<span id="cb33-4"><span class="co" style="color: #5E5E5E;">    Scale the image to the same scale</span></span>
+<span id="cb33-5"><span class="co" style="color: #5E5E5E;">    """</span></span>
+<span id="cb33-6">    img <span class="op" style="color: #5E5E5E;">=</span> img <span class="op" style="color: #5E5E5E;">-</span> img.<span class="bu" style="color: null;">min</span>()</span>
+<span id="cb33-7">    img <span class="op" style="color: #5E5E5E;">=</span> img <span class="op" style="color: #5E5E5E;">/</span> img.<span class="bu" style="color: null;">max</span>()</span>
+<span id="cb33-8">    <span class="cf" style="color: #003B4F;">return</span> img</span>
+<span id="cb33-9"></span>
+<span id="cb33-10"><span class="kw" style="color: #003B4F;">def</span> visualize_conv_output(model, img):</span>
+<span id="cb33-11">    <span class="co" style="color: #5E5E5E;">"""</span></span>
+<span id="cb33-12"><span class="co" style="color: #5E5E5E;">    Visualize the output of a convolutional layer</span></span>
+<span id="cb33-13"><span class="co" style="color: #5E5E5E;">    """</span></span>
+<span id="cb33-14">    <span class="co" style="color: #5E5E5E;"># Get output from model's first conv1 layer</span></span>
+<span id="cb33-15">    conv1 <span class="op" style="color: #5E5E5E;">=</span> F.relu(model.conv1(img))</span>
+<span id="cb33-16"></span>
+<span id="cb33-17">    <span class="co" style="color: #5E5E5E;"># For plotting bring all the images to the same scale</span></span>
+<span id="cb33-18">    c1 <span class="op" style="color: #5E5E5E;">=</span> scale_img(conv1)</span>
+<span id="cb33-19"></span>
+<span id="cb33-20">    <span class="co" style="color: #5E5E5E;"># Visualizae the output of the first convolutional layer</span></span>
+<span id="cb33-21">    fig, axes <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">18</span>, <span class="dv" style="color: #AD0000;">10</span>))</span>
+<span id="cb33-22">    ax <span class="op" style="color: #5E5E5E;">=</span> axes.ravel()</span>
+<span id="cb33-23"></span>
+<span id="cb33-24"></span>
+<span id="cb33-25">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">6</span>):</span>
+<span id="cb33-26">        sns.heatmap(c1[<span class="dv" style="color: #AD0000;">0</span>][i].detach().numpy(), ax<span class="op" style="color: #5E5E5E;">=</span>ax[i], cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span>
+<span id="cb33-27">        ax[i].set_title(<span class="st" style="color: #20794D;">'Image </span><span class="sc" style="color: #5E5E5E;">{}</span><span class="st" style="color: #20794D;">'</span>.<span class="bu" style="color: null;">format</span>(i<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>))</span>
+<span id="cb33-28">    <span class="co" style="color: #5E5E5E;"># Add title to the figure</span></span>
+<span id="cb33-29">    fig.suptitle(<span class="st" style="color: #20794D;">'Convolutional Layer 1'</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
+<span id="cb33-30">    </span>
+<span id="cb33-31">    <span class="co" style="color: #5E5E5E;"># Get output from model after max pooling</span></span>
+<span id="cb33-32">    pool1 <span class="op" style="color: #5E5E5E;">=</span> F.max_pool2d(conv1, <span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb33-33"></span>
+<span id="cb33-34">    <span class="co" style="color: #5E5E5E;"># For plotting bring all the images to the same scale</span></span>
+<span id="cb33-35">    p1 <span class="op" style="color: #5E5E5E;">=</span> scale_img(pool1)</span>
+<span id="cb33-36"></span>
+<span id="cb33-37">    <span class="co" style="color: #5E5E5E;"># Visualizae the output of the first convolutional layer</span></span>
+<span id="cb33-38">    fig, axes <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">18</span>, <span class="dv" style="color: #AD0000;">10</span>))</span>
+<span id="cb33-39">    ax <span class="op" style="color: #5E5E5E;">=</span> axes.ravel()</span>
+<span id="cb33-40"></span>
+<span id="cb33-41"></span>
+<span id="cb33-42">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">6</span>):</span>
+<span id="cb33-43">        sns.heatmap(p1[<span class="dv" style="color: #AD0000;">0</span>][i].detach().numpy(), ax<span class="op" style="color: #5E5E5E;">=</span>ax[i], cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span>
+<span id="cb33-44">        ax[i].set_title(<span class="st" style="color: #20794D;">'Image </span><span class="sc" style="color: #5E5E5E;">{}</span><span class="st" style="color: #20794D;">'</span>.<span class="bu" style="color: null;">format</span>(i<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>))</span>
+<span id="cb33-45">    <span class="co" style="color: #5E5E5E;"># Add title to the figure</span></span>
+<span id="cb33-46">    fig.suptitle(<span class="st" style="color: #20794D;">'Max Pooling Layer 1'</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
+<span id="cb33-47"></span>
+<span id="cb33-48">    <span class="co" style="color: #5E5E5E;"># Get output from model's second conv2 layer</span></span>
+<span id="cb33-49">    conv2 <span class="op" style="color: #5E5E5E;">=</span> F.relu(model.conv2(pool1))</span>
+<span id="cb33-50"></span>
+<span id="cb33-51">    <span class="co" style="color: #5E5E5E;"># For plotting bring all the images to the same scale</span></span>
+<span id="cb33-52">    c2 <span class="op" style="color: #5E5E5E;">=</span> scale_img(conv2)</span>
+<span id="cb33-53"></span>
+<span id="cb33-54">    <span class="co" style="color: #5E5E5E;"># Visualizae the output of the first convolutional layer</span></span>
+<span id="cb33-55">    fig, axes <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">18</span>, <span class="dv" style="color: #AD0000;">18</span>))</span>
+<span id="cb33-56">    ax <span class="op" style="color: #5E5E5E;">=</span> axes.ravel()</span>
+<span id="cb33-57"></span>
+<span id="cb33-58">    </span>
+<span id="cb33-59">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">16</span>):</span>
+<span id="cb33-60">        sns.heatmap(c2[<span class="dv" style="color: #AD0000;">0</span>][i].detach().numpy(), ax<span class="op" style="color: #5E5E5E;">=</span>ax[i], cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span>
+<span id="cb33-61">        ax[i].set_title(<span class="st" style="color: #20794D;">'Image </span><span class="sc" style="color: #5E5E5E;">{}</span><span class="st" style="color: #20794D;">'</span>.<span class="bu" style="color: null;">format</span>(i<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>))</span>
+<span id="cb33-62">    <span class="co" style="color: #5E5E5E;"># Add title to the figure</span></span>
+<span id="cb33-63">    fig.suptitle(<span class="st" style="color: #20794D;">'Convolutional Layer 2'</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span>
+<span id="cb33-64"></span>
+<span id="cb33-65">    <span class="co" style="color: #5E5E5E;"># Get output from model after max pooling</span></span>
+<span id="cb33-66">    pool2 <span class="op" style="color: #5E5E5E;">=</span> F.max_pool2d(conv2, <span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb33-67"></span>
+<span id="cb33-68">    <span class="co" style="color: #5E5E5E;"># For plotting bring all the images to the same scale</span></span>
+<span id="cb33-69">    p2 <span class="op" style="color: #5E5E5E;">=</span> scale_img(pool2)</span>
+<span id="cb33-70"></span>
+<span id="cb33-71">    <span class="co" style="color: #5E5E5E;"># Visualizae the output of the first convolutional layer</span></span>
+<span id="cb33-72">    fig, axes <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">18</span>, <span class="dv" style="color: #AD0000;">18</span>))</span>
+<span id="cb33-73">    ax <span class="op" style="color: #5E5E5E;">=</span> axes.ravel()</span>
+<span id="cb33-74"></span>
+<span id="cb33-75">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">16</span>):</span>
+<span id="cb33-76">        sns.heatmap(p2[<span class="dv" style="color: #AD0000;">0</span>][i].detach().numpy(), ax<span class="op" style="color: #5E5E5E;">=</span>ax[i], cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span>
+<span id="cb33-77">        ax[i].set_title(<span class="st" style="color: #20794D;">'Image </span><span class="sc" style="color: #5E5E5E;">{}</span><span class="st" style="color: #20794D;">'</span>.<span class="bu" style="color: null;">format</span>(i<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>))</span>
+<span id="cb33-78">    <span class="co" style="color: #5E5E5E;"># Add title to the figure</span></span>
+<span id="cb33-79">    fig.suptitle(<span class="st" style="color: #20794D;">'Max Pooling Layer 2'</span>, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">16</span>)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="47">
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1">visualize_conv_output(model, train_data[<span class="dv" style="color: #AD0000;">2</span>][<span class="dv" style="color: #AD0000;">0</span>].unsqueeze(<span class="dv" style="color: #AD0000;">0</span>))</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-24-output-1.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-24-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-24-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-24-output-4.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="49">
+<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1">visualize_conv_output(model, train_data[<span class="dv" style="color: #AD0000;">4</span>][<span class="dv" style="color: #AD0000;">0</span>].unsqueeze(<span class="dv" style="color: #AD0000;">0</span>))</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-25-output-1.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-25-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-25-output-3.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/cnn_files/figure-html/cell-25-output-4.png" class="img-fluid"></p>
 </div>
 </div>
 
@@ -1954,7 +2065,7 @@ Global minimum: 0.0 at [0.28000003 0.84      ]</code></pre>
   <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
-  <title>CNN</title>
+  <title>CNN Edge 2d</title>
   <dc:creator>Nipun Batra</dc:creator>
   <link>https://github.com/nipunbatra/ml2023/notebooks/posts/cnn-edge.html</link>
   <description><![CDATA[ 
