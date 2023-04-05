@@ -27,8 +27,13 @@ title: "Schedule"
 |19| 21 Mar| MLP [[Slides](lectures/mlp.pdf)], [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/nn.html)|
 |20| 28 Mar| MLP [[Slides](lectures/mlp.pdf)]|
 |21| 30 Mar| Next work prediction [[Slides](lectures/next-token.pdf)], [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/names.html)|
-|22| 3 Apr | Convolutional Neural Networks [[Slides](lectures/CNN.pdf)], [Equivariance v/s Invariance](https://www.doc.ic.ac.uk/~bkainz/teaching/DL/notes/equivariance.pdf), [Reference1](https://poloclub.github.io/cnn-explainer/), [Reference2](https://e2eml.school/how_convolutional_neural_networks_work.html), [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/cnn.html)|
-
+|22| 4 Apr | Convolutional Neural Networks [[Slides](lectures/CNN.pdf)], [Equivariance v/s Invariance](https://www.doc.ic.ac.uk/~bkainz/teaching/DL/notes/equivariance.pdf), [Reference1](https://poloclub.github.io/cnn-explainer/), [Reference2](https://e2eml.school/how_convolutional_neural_networks_work.html), [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/cnn.html)|
+|23| 6 Apr| Autograd + Constrained Optimization and SVM-I?|
+|24| 11 Apr| SVM-II|
+|25| 13 Apr| SVM-III|
+|26| 18 Apr| Naive Bayes + KNN|
+|27| 20 Apr| KNN + Unsupervised|
+|28| 25 Apr| Unsupervised + RL?| 
 
 
 
