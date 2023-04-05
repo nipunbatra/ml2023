@@ -1,135 +1,139 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://github.com/nipunbatra/ml2023/schedule.html</loc>
-    <lastmod>2023-04-05T07:11:46.365Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/faq.html</loc>
-    <lastmod>2023-04-05T07:11:48.413Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/split.html</loc>
-    <lastmod>2023-04-05T07:11:48.801Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/cnn-edge.html</loc>
-    <lastmod>2023-04-05T07:11:49.213Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</loc>
-    <lastmod>2023-04-05T07:11:49.613Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</loc>
-    <lastmod>2023-04-05T07:11:49.949Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-jax-torch.html</loc>
-    <lastmod>2023-04-05T07:11:50.305Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/taylor.html</loc>
-    <lastmod>2023-04-05T07:11:50.669Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/hyperparameter-1.html</loc>
-    <lastmod>2023-04-05T07:11:51.065Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/gd.html</loc>
-    <lastmod>2023-04-05T07:11:51.533Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/mle.html</loc>
-    <lastmod>2023-04-05T07:11:51.893Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/log-sum-exp.html</loc>
-    <lastmod>2023-04-05T07:11:52.237Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/logistic.html</loc>
-    <lastmod>2023-04-05T07:11:52.653Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/lowrank-matrix.html</loc>
-    <lastmod>2023-04-05T07:11:53.053Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn.html</loc>
-    <lastmod>2023-04-05T07:11:53.421Z</lastmod>
+    <loc>https://github.com/nipunbatra/ml2023/index.html</loc>
+    <lastmod>2023-04-05T11:49:15.519Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/python-utils.html</loc>
-    <lastmod>2023-04-05T07:11:53.793Z</lastmod>
+    <lastmod>2023-04-05T11:49:17.615Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/nn.html</loc>
-    <lastmod>2023-04-05T07:11:54.201Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/cnn.html</loc>
-    <lastmod>2023-04-05T07:11:54.721Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross.html</loc>
-    <lastmod>2023-04-05T07:11:55.109Z</lastmod>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/logistic.html</loc>
+    <lastmod>2023-04-05T11:49:18.055Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/names.html</loc>
-    <lastmod>2023-04-05T07:11:55.533Z</lastmod>
+    <lastmod>2023-04-05T11:49:18.499Z</lastmod>
   </url>
   <url>
-    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</loc>
-    <lastmod>2023-04-05T07:11:55.893Z</lastmod>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</loc>
+    <lastmod>2023-04-05T11:49:18.895Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-helper.html</loc>
+    <lastmod>2023-04-05T11:49:19.251Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/mle.html</loc>
+    <lastmod>2023-04-05T11:49:19.587Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/nn.html</loc>
+    <lastmod>2023-04-05T11:49:20.011Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</loc>
+    <lastmod>2023-04-05T11:49:20.367Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/gd.html</loc>
+    <lastmod>2023-04-05T11:49:20.883Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/tips.html</loc>
-    <lastmod>2023-04-05T07:11:56.437Z</lastmod>
+    <lastmod>2023-04-05T11:49:21.455Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn.html</loc>
+    <lastmod>2023-04-05T11:49:21.863Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/taylor.html</loc>
+    <lastmod>2023-04-05T11:49:22.231Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/log-sum-exp.html</loc>
+    <lastmod>2023-04-05T11:49:22.587Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross.html</loc>
+    <lastmod>2023-04-05T11:49:22.999Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-jax-torch.html</loc>
+    <lastmod>2023-04-05T11:49:23.379Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/condition-inverse.html</loc>
-    <lastmod>2023-04-05T07:11:56.781Z</lastmod>
+    <lastmod>2023-04-05T11:49:23.723Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/cnn.html</loc>
+    <lastmod>2023-04-05T11:49:24.251Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</loc>
+    <lastmod>2023-04-05T11:49:24.619Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/cnn-edge.html</loc>
+    <lastmod>2023-04-05T11:49:25.023Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/lowrank-matrix.html</loc>
+    <lastmod>2023-04-05T11:49:25.471Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/split.html</loc>
+    <lastmod>2023-04-05T11:49:25.835Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/notebooks/posts/hyperparameter-1.html</loc>
+    <lastmod>2023-04-05T11:49:26.255Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/notebooks/index.html</loc>
-    <lastmod>2023-04-05T07:11:57.229Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/grading.html</loc>
-    <lastmod>2023-04-05T07:11:57.529Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/index.html</loc>
-    <lastmod>2023-04-05T07:11:57.849Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/exams/assignment-5.html</loc>
-    <lastmod>2023-04-05T07:11:58.229Z</lastmod>
+    <lastmod>2023-04-05T11:49:26.759Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/exams/q4.html</loc>
-    <lastmod>2023-04-05T07:11:58.565Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/exams/q3.html</loc>
-    <lastmod>2023-04-05T07:11:58.905Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/exams/q1.html</loc>
-    <lastmod>2023-04-05T07:11:59.269Z</lastmod>
-  </url>
-  <url>
-    <loc>https://github.com/nipunbatra/ml2023/exams/prereq.html</loc>
-    <lastmod>2023-04-05T07:11:59.629Z</lastmod>
+    <lastmod>2023-04-05T11:49:27.111Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/exams/q2.html</loc>
-    <lastmod>2023-04-05T07:11:59.981Z</lastmod>
+    <lastmod>2023-04-05T11:49:27.503Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/exams/prereq.html</loc>
+    <lastmod>2023-04-05T11:49:27.879Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/exams/q3.html</loc>
+    <lastmod>2023-04-05T11:49:28.243Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/exams/assignment-5.html</loc>
+    <lastmod>2023-04-05T11:49:28.603Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/exams/q1.html</loc>
+    <lastmod>2023-04-05T11:49:28.987Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/grading.html</loc>
+    <lastmod>2023-04-05T11:49:29.303Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/schedule.html</loc>
+    <lastmod>2023-04-05T11:49:29.731Z</lastmod>
+  </url>
+  <url>
+    <loc>https://github.com/nipunbatra/ml2023/faq.html</loc>
+    <lastmod>2023-04-05T11:49:30.115Z</lastmod>
   </url>
   <url>
     <loc>https://github.com/nipunbatra/ml2023/quizzes.html</loc>
-    <lastmod>2023-04-05T07:12:00.325Z</lastmod>
+    <lastmod>2023-04-05T11:49:30.479Z</lastmod>
   </url>
 </urlset>

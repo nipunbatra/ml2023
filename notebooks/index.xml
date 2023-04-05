@@ -12,6 +12,133 @@
 <generator>quarto-1.2.475</generator>
 <lastBuildDate>Tue, 04 Apr 2023 00:00:00 GMT</lastBuildDate>
 <item>
+  <title>Autodiff</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-helper.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> torch</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> torch.nn.functional <span class="im" style="color: #00769E;">as</span> F</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> torch.optim <span class="im" style="color: #00769E;">as</span> optim</span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="im" style="color: #00769E;">from</span> torch.utils.data <span class="im" style="color: #00769E;">import</span> DataLoader, TensorDataset</span>
+<span id="cb1-10"><span class="im" style="color: #00769E;">import</span> seaborn <span class="im" style="color: #00769E;">as</span> sns</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-13"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span>
+<span id="cb1-14"></span>
+<span id="cb1-15"><span class="co" style="color: #5E5E5E;"># Set random seed for reproducibility</span></span>
+<span id="cb1-16">torch.manual_seed(<span class="dv" style="color: #AD0000;">0</span>)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18"><span class="co" style="color: #5E5E5E;"># Torch version</span></span>
+<span id="cb1-19">torch.__version__</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>'2.0.0+cu118'</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">theta_0 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">1.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb3-2">theta_1 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">1.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb3-3">theta_2 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">2.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb3-4"></span>
+<span id="cb3-5">x1 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">1.0</span>)</span>
+<span id="cb3-6">x2 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">2.0</span>)</span>
+<span id="cb3-7"></span>
+<span id="cb3-8">f1 <span class="op" style="color: #5E5E5E;">=</span> theta_1<span class="op" style="color: #5E5E5E;">*</span>x1</span>
+<span id="cb3-9">f2 <span class="op" style="color: #5E5E5E;">=</span> theta_2<span class="op" style="color: #5E5E5E;">*</span>x2</span>
+<span id="cb3-10"></span>
+<span id="cb3-11">f3 <span class="op" style="color: #5E5E5E;">=</span> f1 <span class="op" style="color: #5E5E5E;">+</span> f2</span>
+<span id="cb3-12"></span>
+<span id="cb3-13">f4 <span class="op" style="color: #5E5E5E;">=</span> f3 <span class="op" style="color: #5E5E5E;">+</span> theta_0</span>
+<span id="cb3-14"></span>
+<span id="cb3-15">f5 <span class="op" style="color: #5E5E5E;">=</span> f4<span class="op" style="color: #5E5E5E;">*-</span><span class="dv" style="color: #AD0000;">1</span></span>
+<span id="cb3-16"></span>
+<span id="cb3-17">f6 <span class="op" style="color: #5E5E5E;">=</span> torch.exp(f5)</span>
+<span id="cb3-18"></span>
+<span id="cb3-19">f7 <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">+</span> f6</span>
+<span id="cb3-20"></span>
+<span id="cb3-21">f8 <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span>f7</span>
+<span id="cb3-22"></span>
+<span id="cb3-23">f9 <span class="op" style="color: #5E5E5E;">=</span> torch.log(f8)</span>
+<span id="cb3-24"></span>
+<span id="cb3-25">L <span class="op" style="color: #5E5E5E;">=</span> f9<span class="op" style="color: #5E5E5E;">*-</span><span class="dv" style="color: #AD0000;">1</span></span>
+<span id="cb3-26"></span>
+<span id="cb3-27">all_nodes <span class="op" style="color: #5E5E5E;">=</span> {<span class="st" style="color: #20794D;">"theta_0"</span>: theta_0, <span class="st" style="color: #20794D;">"theta_1"</span>: theta_1, <span class="st" style="color: #20794D;">"theta_2"</span>: theta_2,  </span>
+<span id="cb3-28">             <span class="st" style="color: #20794D;">"f1"</span>: f1, <span class="st" style="color: #20794D;">"f2"</span>: f2, <span class="st" style="color: #20794D;">"f3"</span>: f3, <span class="st" style="color: #20794D;">"f4"</span>: f4, <span class="st" style="color: #20794D;">"f5"</span>: f5, <span class="st" style="color: #20794D;">"f6"</span>: f6, <span class="st" style="color: #20794D;">"f7"</span>: f7, <span class="st" style="color: #20794D;">"f8"</span>: f8, <span class="st" style="color: #20794D;">"f9"</span>: f9, <span class="st" style="color: #20794D;">"L"</span>: L}</span>
+<span id="cb3-29"></span>
+<span id="cb3-30"><span class="co" style="color: #5E5E5E;"># Retain grad for all nodes</span></span>
+<span id="cb3-31"><span class="cf" style="color: #003B4F;">for</span> node <span class="kw" style="color: #003B4F;">in</span> all_nodes.values():</span>
+<span id="cb3-32">    node.retain_grad()</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Print out the function evaluation for all nodes along with name of the node</span></span>
+<span id="cb4-2"><span class="cf" style="color: #003B4F;">for</span> name, node <span class="kw" style="color: #003B4F;">in</span> all_nodes.items():</span>
+<span id="cb4-3">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"</span><span class="sc" style="color: #5E5E5E;">{</span>name<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">: </span><span class="sc" style="color: #5E5E5E;">{</span>node<span class="sc" style="color: #5E5E5E;">.</span>item()<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta_0: 1.0
+theta_1: 1.0
+theta_2: 2.0
+f1: 1.0
+f2: 4.0
+f3: 5.0
+f4: 6.0
+f5: -6.0
+f6: 0.0024787522852420807
+f7: 1.0024787187576294
+f8: 0.9975274205207825
+f9: -0.0024756414350122213
+L: 0.0024756414350122213</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">L.backward()</span>
+<span id="cb6-2"></span>
+<span id="cb6-3"><span class="co" style="color: #5E5E5E;"># Print out the gradient for all nodes along with name of the node</span></span>
+<span id="cb6-4"><span class="cf" style="color: #003B4F;">for</span> name, node <span class="kw" style="color: #003B4F;">in</span> all_nodes.items():</span>
+<span id="cb6-5">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"</span><span class="sc" style="color: #5E5E5E;">{</span>name<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">: </span><span class="sc" style="color: #5E5E5E;">{</span>node<span class="sc" style="color: #5E5E5E;">.</span>grad<span class="sc" style="color: #5E5E5E;">.</span>item()<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta_0: -0.00247262348420918
+theta_1: -0.00247262348420918
+theta_2: -0.00494524696841836
+f1: -0.00247262348420918
+f2: -0.00247262348420918
+f3: -0.00247262348420918
+f4: -0.00247262348420918
+f5: 0.00247262348420918
+f6: 0.9975274801254272
+f7: 0.9975274801254272
+f8: -1.0024787187576294
+f9: -1.0
+L: 1.0</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span>(f7<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span>))<span class="op" style="color: #5E5E5E;">*-</span><span class="fl" style="color: #AD0000;">1.00247</span></span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>tensor(0.9975, grad_fn=&lt;MulBackward0&gt;)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">torch.exp(f5)<span class="op" style="color: #5E5E5E;">*</span><span class="fl" style="color: #AD0000;">0.9975</span></span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>tensor(0.0025, grad_fn=&lt;MulBackward0&gt;)</code></pre>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-helper.html</guid>
+  <pubDate>Tue, 04 Apr 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
   <title>1d CNN</title>
   <dc:creator>Nipun Batra</dc:creator>
   <link>https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn.html</link>
@@ -2065,6 +2192,245 @@ Global minimum: 0.0 at [0.28000003 0.84      ]</code></pre>
   <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Linear Regression: Geometric Perspective</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-3"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-4"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Two three-dimensional vectors</span></span>
+<span id="cb2-2">v1 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb2-3">v2 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">2</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">2</span>])</span>
+<span id="cb2-4"></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;"># y-vector</span></span>
+<span id="cb2-6">y <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="fl" style="color: #AD0000;">2.5</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="fl" style="color: #AD0000;">0.8</span>, <span class="fl" style="color: #AD0000;">1.2</span>])</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># plot the vectors in 3D</span></span>
+<span id="cb3-2">fig <span class="op" style="color: #5E5E5E;">=</span> plt.figure(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
+<span id="cb3-3">ax <span class="op" style="color: #5E5E5E;">=</span> fig.add_subplot(<span class="dv" style="color: #AD0000;">111</span>, projection<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'3d'</span>)</span>
+<span id="cb3-4">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v1[<span class="dv" style="color: #AD0000;">0</span>], v1[<span class="dv" style="color: #AD0000;">1</span>], v1[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v1'</span>)</span>
+<span id="cb3-5">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v2[<span class="dv" style="color: #AD0000;">0</span>], v2[<span class="dv" style="color: #AD0000;">1</span>], v2[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'b'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v2'</span>)</span>
+<span id="cb3-6">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y[<span class="dv" style="color: #AD0000;">0</span>], y[<span class="dv" style="color: #AD0000;">1</span>], y[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'y'</span>)</span>
+<span id="cb3-7"></span>
+<span id="cb3-8">ax.set_xlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb3-9">ax.set_ylim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
+<span id="cb3-10">ax.set_zlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb3-11">ax.set_xlabel(<span class="st" style="color: #20794D;">'x'</span>)</span>
+<span id="cb3-12">ax.set_ylabel(<span class="st" style="color: #20794D;">'y'</span>)</span>
+<span id="cb3-13">ax.set_zlabel(<span class="st" style="color: #20794D;">'z'</span>)</span>
+<span id="cb3-14">ax.legend()</span>
+<span id="cb3-15"></span>
+<span id="cb3-16">ax.view_init(elev<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">45</span>, azim<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">60</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">theta <span class="op" style="color: #5E5E5E;">=</span> np.linalg.lstsq(np.array([v1, v2]).T, y, rcond<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">None</span>)[<span class="dv" style="color: #AD0000;">0</span>]</span>
+<span id="cb4-2">theta</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>array([0.525 , 0.6625])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># Projection of y onto the plane spanned by v1 and v2</span></span>
+<span id="cb6-2">y_proj <span class="op" style="color: #5E5E5E;">=</span> np.dot(np.array([v1, v2]).T, theta)</span>
+<span id="cb6-3">y_proj</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>array([ 1.85, -0.8 ,  1.85])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;"># Plot the x=z plane filled with color black</span></span>
+<span id="cb8-2">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
+<span id="cb8-3"><span class="co" style="color: #5E5E5E;"># 3d projection</span></span>
+<span id="cb8-4">ax <span class="op" style="color: #5E5E5E;">=</span> fig.add_subplot(<span class="dv" style="color: #AD0000;">111</span>, projection<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'3d'</span>)</span>
+<span id="cb8-5">xx, zz <span class="op" style="color: #5E5E5E;">=</span> np.meshgrid(np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>), np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>))</span>
+<span id="cb8-6">yy <span class="op" style="color: #5E5E5E;">=</span> np.zeros_like(xx)</span>
+<span id="cb8-7">ax.plot_surface(xx, yy, zz, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.2</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>)</span>
+<span id="cb8-8"></span>
+<span id="cb8-9"></span>
+<span id="cb8-10"><span class="co" style="color: #5E5E5E;"># plot the vectors in 3D</span></span>
+<span id="cb8-11">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v1[<span class="dv" style="color: #AD0000;">0</span>], v1[<span class="dv" style="color: #AD0000;">1</span>], v1[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v1'</span>)</span>
+<span id="cb8-12">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v2[<span class="dv" style="color: #AD0000;">0</span>], v2[<span class="dv" style="color: #AD0000;">1</span>], v2[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'b'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v2'</span>)</span>
+<span id="cb8-13">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y[<span class="dv" style="color: #AD0000;">0</span>], y[<span class="dv" style="color: #AD0000;">1</span>], y[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'y'</span>)</span>
+<span id="cb8-14"></span>
+<span id="cb8-15"></span>
+<span id="cb8-16"><span class="co" style="color: #5E5E5E;"># Limit the view to the x-z plane</span></span>
+<span id="cb8-17"></span>
+<span id="cb8-18">ax.set_xlabel(<span class="st" style="color: #20794D;">'x'</span>)</span>
+<span id="cb8-19">ax.set_ylabel(<span class="st" style="color: #20794D;">'y'</span>)</span>
+<span id="cb8-20">ax.set_zlabel(<span class="st" style="color: #20794D;">'z'</span>)</span>
+<span id="cb8-21"></span>
+<span id="cb8-22"><span class="co" style="color: #5E5E5E;"># Set the view angle so that we can see the x-z plane appear at a 45 degree angle</span></span>
+<span id="cb8-23"><span class="co" style="color: #5E5E5E;">#ax.view_init(azim=70, elev=200)</span></span>
+<span id="cb8-24">ax.view_init(elev<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">60</span>, azim<span class="op" style="color: #5E5E5E;">=-</span><span class="dv" style="color: #AD0000;">80</span>, roll<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">90</span>)</span>
+<span id="cb8-25">ax.view_init(<span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>)</span>
+<span id="cb8-26"><span class="co" style="color: #5E5E5E;">#ax.view_init(roll=45)</span></span>
+<span id="cb8-27"><span class="co" style="color: #5E5E5E;">#ax.view_init(elev=30, azim=45, roll=15)</span></span>
+<span id="cb8-28">ax.set_ylim(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
+<span id="cb8-29">ax.set_xlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
+<span id="cb8-30">ax.set_zlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
+<span id="cb8-31"></span>
+<span id="cb8-32"></span>
+<span id="cb8-33"><span class="co" style="color: #5E5E5E;"># Plot the projection of y onto the plane spanned by v1 and v2</span></span>
+<span id="cb8-34">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y_proj[<span class="dv" style="color: #AD0000;">0</span>], y_proj[<span class="dv" style="color: #AD0000;">1</span>], y_proj[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Projection of y onto</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;"> the plane spanned by v1 and v2'</span>)</span>
+<span id="cb8-35">plt.legend()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>&lt;matplotlib.legend.Legend at 0x111d52730&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-7-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</guid>
+  <pubDate>Tue, 31 Jan 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Maths and JAX</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> jax.numpy <span class="im" style="color: #00769E;">as</span> jnp</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> jax</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="kw" style="color: #003B4F;">def</span> func(x, y, z):</span>
+<span id="cb2-2">    <span class="cf" style="color: #003B4F;">return</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span> <span class="op" style="color: #5E5E5E;">+</span> jnp.sin(y) <span class="op" style="color: #5E5E5E;">+</span> z</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">func(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>DeviceArray(4.9092975, dtype=float32, weak_type=True)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;">from</span> sympy <span class="im" style="color: #00769E;">import</span> <span class="op" style="color: #5E5E5E;">*</span></span>
+<span id="cb5-2">init_printing()</span>
+<span id="cb5-3"></span>
+<span id="cb5-4">x, y, z <span class="op" style="color: #5E5E5E;">=</span> symbols(<span class="st" style="color: #20794D;">'x y z'</span>)</span>
+<span id="cb5-5">f <span class="op" style="color: #5E5E5E;">=</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span> <span class="op" style="color: #5E5E5E;">+</span> sin(y) <span class="op" style="color: #5E5E5E;">+</span> z</span>
+<span id="cb5-6">f</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20x%5E%7B2%7D%20+%20z%20+%20%5Csin%7B%5Cleft(y%20%5Cright)%7D"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">diff(f, x)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%202%20x"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;"># Find the derivative of f with respect to x, y, and z using sympy</span></span>
+<span id="cb7-2">del_x, del_y, del_z <span class="op" style="color: #5E5E5E;">=</span> diff(f, x), diff(f, y), diff(f, z)</span>
+<span id="cb7-3">del_x, del_y, del_z</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%202%20x,%20%5C%20%20%5Ccos%7B%5Cleft(y%20%5Cright)%7D,%20%5C%20%201%5Cright)"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">grad_f <span class="op" style="color: #5E5E5E;">=</span> lambdify((x, y, z), [del_x, del_y, del_z])</span>
+<span id="cb8-2">grad_f(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft%5B%202,%20%5C%20%20-0.416146836547142,%20%5C%20%201%5Cright%5D"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">grad_f_jax <span class="op" style="color: #5E5E5E;">=</span> jax.grad(func, argnums<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>))</span>
+<span id="cb9-2">grad_f_jax(<span class="fl" style="color: #AD0000;">1.</span>, <span class="fl" style="color: #AD0000;">2.</span>, <span class="fl" style="color: #AD0000;">3.</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<pre><code>(DeviceArray(2., dtype=float32, weak_type=True),
+ DeviceArray(-0.41614684, dtype=float32, weak_type=True),
+ DeviceArray(1., dtype=float32, weak_type=True))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="92">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">n <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">20</span></span>
+<span id="cb11-2">A <span class="op" style="color: #5E5E5E;">=</span> jax.random.normal(shape<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">1</span>, n), key<span class="op" style="color: #5E5E5E;">=</span>jax.random.PRNGKey(<span class="dv" style="color: #AD0000;">0</span>), dtype<span class="op" style="color: #5E5E5E;">=</span>jnp.float32)</span>
+<span id="cb11-3">theta <span class="op" style="color: #5E5E5E;">=</span> jax.random.normal(shape<span class="op" style="color: #5E5E5E;">=</span>(n, <span class="dv" style="color: #AD0000;">1</span>), key<span class="op" style="color: #5E5E5E;">=</span>jax.random.PRNGKey(<span class="dv" style="color: #AD0000;">0</span>), dtype<span class="op" style="color: #5E5E5E;">=</span>jnp.float32)</span>
+<span id="cb11-4">b <span class="op" style="color: #5E5E5E;">=</span> A <span class="op" style="color: #5E5E5E;">@</span> theta </span>
+<span id="cb11-5"></span>
+<span id="cb11-6">b</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="92">
+<pre><code>DeviceArray([[28.684494]], dtype=float32)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="93">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">b.flatten(), b.item()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="93">
+<pre><code>(DeviceArray([28.684494], dtype=float32), 28.684494018554688)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="94">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="kw" style="color: #003B4F;">def</span> a_theta(A, theta):</span>
+<span id="cb15-2">    <span class="cf" style="color: #003B4F;">return</span> A <span class="op" style="color: #5E5E5E;">@</span> theta</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="95">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">a_theta(A, theta)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="95">
+<pre><code>DeviceArray([[28.684494]], dtype=float32)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="96">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">grad_a_theta <span class="op" style="color: #5E5E5E;">=</span> jax.grad(a_theta, argnums<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="101">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">jax.jacobian(a_theta, argnums<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)(A, theta)[<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, :].shape</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="101">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%2020,%20%5C%20%201%5Cright)"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="102">
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">A.shape</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="102">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%201,%20%5C%20%2020%5Cright)"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="112">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Sympy version</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="109">
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">A <span class="op" style="color: #5E5E5E;">=</span> MatrixSymbol(<span class="st" style="color: #20794D;">'A'</span>, <span class="dv" style="color: #AD0000;">1</span>, n)</span>
+<span id="cb22-2">theta <span class="op" style="color: #5E5E5E;">=</span> MatrixSymbol(<span class="st" style="color: #20794D;">'theta'</span>, n, <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb22-3">A, theta</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="109">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%20A,%20%5C%20%20%5Ctheta%5Cright)"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="111">
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">diff(A<span class="op" style="color: #5E5E5E;">*</span>theta, theta)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="111">
+<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20A%5E%7BT%7D"></p>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</guid>
+  <pubDate>Tue, 31 Jan 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
   <title>CNN Edge 2d</title>
   <dc:creator>Nipun Batra</dc:creator>
   <link>https://github.com/nipunbatra/ml2023/notebooks/posts/cnn-edge.html</link>
@@ -2225,114 +2591,6 @@ Global minimum: 0.0 at [0.28000003 0.84      ]</code></pre>
 
  ]]></description>
   <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/cnn-edge.html</guid>
-  <pubDate>Tue, 31 Jan 2023 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Linear Regression: Geometric Perspective</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</link>
-  <description><![CDATA[ 
-
-
-
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
-<span id="cb1-3"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
-<span id="cb1-4"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Two three-dimensional vectors</span></span>
-<span id="cb2-2">v1 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>])</span>
-<span id="cb2-3">v2 <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">2</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">2</span>])</span>
-<span id="cb2-4"></span>
-<span id="cb2-5"><span class="co" style="color: #5E5E5E;"># y-vector</span></span>
-<span id="cb2-6">y <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="fl" style="color: #AD0000;">2.5</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="fl" style="color: #AD0000;">0.8</span>, <span class="fl" style="color: #AD0000;">1.2</span>])</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># plot the vectors in 3D</span></span>
-<span id="cb3-2">fig <span class="op" style="color: #5E5E5E;">=</span> plt.figure(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
-<span id="cb3-3">ax <span class="op" style="color: #5E5E5E;">=</span> fig.add_subplot(<span class="dv" style="color: #AD0000;">111</span>, projection<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'3d'</span>)</span>
-<span id="cb3-4">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v1[<span class="dv" style="color: #AD0000;">0</span>], v1[<span class="dv" style="color: #AD0000;">1</span>], v1[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v1'</span>)</span>
-<span id="cb3-5">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v2[<span class="dv" style="color: #AD0000;">0</span>], v2[<span class="dv" style="color: #AD0000;">1</span>], v2[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'b'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v2'</span>)</span>
-<span id="cb3-6">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y[<span class="dv" style="color: #AD0000;">0</span>], y[<span class="dv" style="color: #AD0000;">1</span>], y[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'y'</span>)</span>
-<span id="cb3-7"></span>
-<span id="cb3-8">ax.set_xlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
-<span id="cb3-9">ax.set_ylim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
-<span id="cb3-10">ax.set_zlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
-<span id="cb3-11">ax.set_xlabel(<span class="st" style="color: #20794D;">'x'</span>)</span>
-<span id="cb3-12">ax.set_ylabel(<span class="st" style="color: #20794D;">'y'</span>)</span>
-<span id="cb3-13">ax.set_zlabel(<span class="st" style="color: #20794D;">'z'</span>)</span>
-<span id="cb3-14">ax.legend()</span>
-<span id="cb3-15"></span>
-<span id="cb3-16">ax.view_init(elev<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">45</span>, azim<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">60</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">theta <span class="op" style="color: #5E5E5E;">=</span> np.linalg.lstsq(np.array([v1, v2]).T, y, rcond<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">None</span>)[<span class="dv" style="color: #AD0000;">0</span>]</span>
-<span id="cb4-2">theta</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>array([0.525 , 0.6625])</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># Projection of y onto the plane spanned by v1 and v2</span></span>
-<span id="cb6-2">y_proj <span class="op" style="color: #5E5E5E;">=</span> np.dot(np.array([v1, v2]).T, theta)</span>
-<span id="cb6-3">y_proj</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>array([ 1.85, -0.8 ,  1.85])</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;"># Plot the x=z plane filled with color black</span></span>
-<span id="cb8-2">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
-<span id="cb8-3"><span class="co" style="color: #5E5E5E;"># 3d projection</span></span>
-<span id="cb8-4">ax <span class="op" style="color: #5E5E5E;">=</span> fig.add_subplot(<span class="dv" style="color: #AD0000;">111</span>, projection<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'3d'</span>)</span>
-<span id="cb8-5">xx, zz <span class="op" style="color: #5E5E5E;">=</span> np.meshgrid(np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>), np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">100</span>))</span>
-<span id="cb8-6">yy <span class="op" style="color: #5E5E5E;">=</span> np.zeros_like(xx)</span>
-<span id="cb8-7">ax.plot_surface(xx, yy, zz, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.2</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>)</span>
-<span id="cb8-8"></span>
-<span id="cb8-9"></span>
-<span id="cb8-10"><span class="co" style="color: #5E5E5E;"># plot the vectors in 3D</span></span>
-<span id="cb8-11">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v1[<span class="dv" style="color: #AD0000;">0</span>], v1[<span class="dv" style="color: #AD0000;">1</span>], v1[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v1'</span>)</span>
-<span id="cb8-12">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, v2[<span class="dv" style="color: #AD0000;">0</span>], v2[<span class="dv" style="color: #AD0000;">1</span>], v2[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'b'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'v2'</span>)</span>
-<span id="cb8-13">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y[<span class="dv" style="color: #AD0000;">0</span>], y[<span class="dv" style="color: #AD0000;">1</span>], y[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'g'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'y'</span>)</span>
-<span id="cb8-14"></span>
-<span id="cb8-15"></span>
-<span id="cb8-16"><span class="co" style="color: #5E5E5E;"># Limit the view to the x-z plane</span></span>
-<span id="cb8-17"></span>
-<span id="cb8-18">ax.set_xlabel(<span class="st" style="color: #20794D;">'x'</span>)</span>
-<span id="cb8-19">ax.set_ylabel(<span class="st" style="color: #20794D;">'y'</span>)</span>
-<span id="cb8-20">ax.set_zlabel(<span class="st" style="color: #20794D;">'z'</span>)</span>
-<span id="cb8-21"></span>
-<span id="cb8-22"><span class="co" style="color: #5E5E5E;"># Set the view angle so that we can see the x-z plane appear at a 45 degree angle</span></span>
-<span id="cb8-23"><span class="co" style="color: #5E5E5E;">#ax.view_init(azim=70, elev=200)</span></span>
-<span id="cb8-24">ax.view_init(elev<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">60</span>, azim<span class="op" style="color: #5E5E5E;">=-</span><span class="dv" style="color: #AD0000;">80</span>, roll<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">90</span>)</span>
-<span id="cb8-25">ax.view_init(<span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">120</span>)</span>
-<span id="cb8-26"><span class="co" style="color: #5E5E5E;">#ax.view_init(roll=45)</span></span>
-<span id="cb8-27"><span class="co" style="color: #5E5E5E;">#ax.view_init(elev=30, azim=45, roll=15)</span></span>
-<span id="cb8-28">ax.set_ylim(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
-<span id="cb8-29">ax.set_xlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
-<span id="cb8-30">ax.set_zlim(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">4</span>)</span>
-<span id="cb8-31"></span>
-<span id="cb8-32"></span>
-<span id="cb8-33"><span class="co" style="color: #5E5E5E;"># Plot the projection of y onto the plane spanned by v1 and v2</span></span>
-<span id="cb8-34">ax.quiver(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, y_proj[<span class="dv" style="color: #AD0000;">0</span>], y_proj[<span class="dv" style="color: #AD0000;">1</span>], y_proj[<span class="dv" style="color: #AD0000;">2</span>], color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'k'</span>, label<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Projection of y onto</span><span class="ch" style="color: #20794D;">\n</span><span class="st" style="color: #20794D;"> the plane spanned by v1 and v2'</span>)</span>
-<span id="cb8-35">plt.legend()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>&lt;matplotlib.legend.Legend at 0x111d52730&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/projection_files/figure-html/cell-7-output-2.png" class="img-fluid"></p>
-</div>
-</div>
-
-
-
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/projection.html</guid>
   <pubDate>Tue, 31 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
@@ -2510,135 +2768,126 @@ Global minimum: 0.0 at [0.28000003 0.84      ]</code></pre>
   <media:content url="https://github.com/nipunbatra/ml2023/notebooks/posts/Ax-combined.png" medium="image" type="image/png"/>
 </item>
 <item>
-  <title>Maths and JAX</title>
+  <title>Some Python Utilities</title>
   <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</link>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/python-utils.html</link>
   <description><![CDATA[ 
 
 
 
+<section id="function-argument-unpacking" class="level4">
+<h4 class="anchored" data-anchor-id="function-argument-unpacking">Function Argument Unpacking</h4>
+<p>Reference: https://www.youtube.com/watch?v=YWY4BZi_o28</p>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> jax.numpy <span class="im" style="color: #00769E;">as</span> jnp</span>
-<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> jax</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="kw" style="color: #003B4F;">def</span> print_vec(x, y, z):</span>
+<span id="cb1-2">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"[</span><span class="sc" style="color: #5E5E5E;">{</span>x<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;"> </span><span class="ch" style="color: #20794D;">\n</span><span class="sc" style="color: #5E5E5E;">{</span>y<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;"> </span><span class="ch" style="color: #20794D;">\n</span><span class="sc" style="color: #5E5E5E;">{</span>z<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">]"</span>)</span></code></pre></div>
 </div>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="kw" style="color: #003B4F;">def</span> func(x, y, z):</span>
-<span id="cb2-2">    <span class="cf" style="color: #003B4F;">return</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span> <span class="op" style="color: #5E5E5E;">+</span> jnp.sin(y) <span class="op" style="color: #5E5E5E;">+</span> z</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">func(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>DeviceArray(4.9092975, dtype=float32, weak_type=True)</code></pre>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">print_vec(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1 
+2 
+3]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;">from</span> sympy <span class="im" style="color: #00769E;">import</span> <span class="op" style="color: #5E5E5E;">*</span></span>
-<span id="cb5-2">init_printing()</span>
-<span id="cb5-3"></span>
-<span id="cb5-4">x, y, z <span class="op" style="color: #5E5E5E;">=</span> symbols(<span class="st" style="color: #20794D;">'x y z'</span>)</span>
-<span id="cb5-5">f <span class="op" style="color: #5E5E5E;">=</span> x<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span> <span class="op" style="color: #5E5E5E;">+</span> sin(y) <span class="op" style="color: #5E5E5E;">+</span> z</span>
-<span id="cb5-6">f</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20x%5E%7B2%7D%20+%20z%20+%20%5Csin%7B%5Cleft(y%20%5Cright)%7D"></p>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">tuple_vec <span class="op" style="color: #5E5E5E;">=</span> (<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb4-2"><span class="co" style="color: #5E5E5E;">#print_vec(tuple_vec)</span></span>
+<span id="cb4-3">print_vec(tuple_vec[<span class="dv" style="color: #AD0000;">0</span>], tuple_vec[<span class="dv" style="color: #AD0000;">1</span>], tuple_vec[<span class="dv" style="color: #AD0000;">2</span>])</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1 
+0 
+1]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">diff(f, x)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%202%20x"></p>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">list_vec <span class="op" style="color: #5E5E5E;">=</span> [<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>]</span>
+<span id="cb6-2"></span>
+<span id="cb6-3">print_vec(tuple_vec[<span class="dv" style="color: #AD0000;">0</span>], tuple_vec[<span class="dv" style="color: #AD0000;">1</span>], tuple_vec[<span class="dv" style="color: #AD0000;">2</span>])</span>
+<span id="cb6-4"><span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"*"</span><span class="op" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">20</span>)</span>
+<span id="cb6-5">print_vec(<span class="op" style="color: #5E5E5E;">*</span>tuple_vec)</span>
+<span id="cb6-6"><span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"*"</span><span class="op" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">20</span>)</span>
+<span id="cb6-7"></span>
+<span id="cb6-8">print_vec(<span class="op" style="color: #5E5E5E;">*</span>list_vec)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1 
+0 
+1]
+********************
+[1 
+0 
+1]
+********************
+[1 
+0 
+1]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;"># Find the derivative of f with respect to x, y, and z using sympy</span></span>
-<span id="cb7-2">del_x, del_y, del_z <span class="op" style="color: #5E5E5E;">=</span> diff(f, x), diff(f, y), diff(f, z)</span>
-<span id="cb7-3">del_x, del_y, del_z</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%202%20x,%20%5C%20%20%5Ccos%7B%5Cleft(y%20%5Cright)%7D,%20%5C%20%201%5Cright)"></p>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">dictionary_vec <span class="op" style="color: #5E5E5E;">=</span> {<span class="st" style="color: #20794D;">"x"</span>: <span class="dv" style="color: #AD0000;">1</span>, <span class="st" style="color: #20794D;">"y"</span>: <span class="dv" style="color: #AD0000;">0</span>, <span class="st" style="color: #20794D;">"z"</span>: <span class="dv" style="color: #AD0000;">1</span>}</span>
+<span id="cb8-2">print_vec(<span class="op" style="color: #5E5E5E;">**</span>dictionary_vec)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1 
+0 
+1]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">grad_f <span class="op" style="color: #5E5E5E;">=</span> lambdify((x, y, z), [del_x, del_y, del_z])</span>
-<span id="cb8-2">grad_f(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft%5B%202,%20%5C%20%20-0.416146836547142,%20%5C%20%201%5Cright%5D"></p>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">dictionary_vec <span class="op" style="color: #5E5E5E;">=</span> {<span class="st" style="color: #20794D;">"a"</span>: <span class="dv" style="color: #AD0000;">1</span>, <span class="st" style="color: #20794D;">"b"</span>: <span class="dv" style="color: #AD0000;">0</span>, <span class="st" style="color: #20794D;">"c"</span>:<span class="dv" style="color: #AD0000;">1</span>}</span>
+<span id="cb10-2">print_vec(<span class="op" style="color: #5E5E5E;">**</span>dictionary_vec)</span></code></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>TypeError: print_vec() got an unexpected keyword argument 'a'</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">grad_f_jax <span class="op" style="color: #5E5E5E;">=</span> jax.grad(func, argnums<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>))</span>
-<span id="cb9-2">grad_f_jax(<span class="fl" style="color: #AD0000;">1.</span>, <span class="fl" style="color: #AD0000;">2.</span>, <span class="fl" style="color: #AD0000;">3.</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="29">
-<pre><code>(DeviceArray(2., dtype=float32, weak_type=True),
- DeviceArray(-0.41614684, dtype=float32, weak_type=True),
- DeviceArray(1., dtype=float32, weak_type=True))</code></pre>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="bu" style="color: null;">print</span>(<span class="op" style="color: #5E5E5E;">*</span>dictionary_vec)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>a b c</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="92">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">n <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">20</span></span>
-<span id="cb11-2">A <span class="op" style="color: #5E5E5E;">=</span> jax.random.normal(shape<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">1</span>, n), key<span class="op" style="color: #5E5E5E;">=</span>jax.random.PRNGKey(<span class="dv" style="color: #AD0000;">0</span>), dtype<span class="op" style="color: #5E5E5E;">=</span>jnp.float32)</span>
-<span id="cb11-3">theta <span class="op" style="color: #5E5E5E;">=</span> jax.random.normal(shape<span class="op" style="color: #5E5E5E;">=</span>(n, <span class="dv" style="color: #AD0000;">1</span>), key<span class="op" style="color: #5E5E5E;">=</span>jax.random.PRNGKey(<span class="dv" style="color: #AD0000;">0</span>), dtype<span class="op" style="color: #5E5E5E;">=</span>jnp.float32)</span>
-<span id="cb11-4">b <span class="op" style="color: #5E5E5E;">=</span> A <span class="op" style="color: #5E5E5E;">@</span> theta </span>
-<span id="cb11-5"></span>
-<span id="cb11-6">b</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="92">
-<pre><code>DeviceArray([[28.684494]], dtype=float32)</code></pre>
+</section>
+<section id="zip" class="level4">
+<h4 class="anchored" data-anchor-id="zip">Zip</h4>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="bu" style="color: null;">list</span>(<span class="bu" style="color: null;">zip</span>([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>], [<span class="st" style="color: #20794D;">'a'</span>, <span class="st" style="color: #20794D;">'b'</span>, <span class="st" style="color: #20794D;">'c'</span>], [<span class="dv" style="color: #AD0000;">7</span>, <span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">9</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>[(1, 'a', 7), (2, 'b', 8), (3, 'c', 9)]</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="93">
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">b.flatten(), b.item()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="93">
-<pre><code>(DeviceArray([28.684494], dtype=float32), 28.684494018554688)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="94">
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="kw" style="color: #003B4F;">def</span> a_theta(A, theta):</span>
-<span id="cb15-2">    <span class="cf" style="color: #003B4F;">return</span> A <span class="op" style="color: #5E5E5E;">@</span> theta</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="95">
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">a_theta(A, theta)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="95">
-<pre><code>DeviceArray([[28.684494]], dtype=float32)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="96">
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">grad_a_theta <span class="op" style="color: #5E5E5E;">=</span> jax.grad(a_theta, argnums<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="101">
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">jax.jacobian(a_theta, argnums<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)(A, theta)[<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>, :].shape</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="101">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%2020,%20%5C%20%201%5Cright)"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="102">
-<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">A.shape</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="102">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%201,%20%5C%20%2020%5Cright)"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="112">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Sympy version</span></span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="109">
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">A <span class="op" style="color: #5E5E5E;">=</span> MatrixSymbol(<span class="st" style="color: #20794D;">'A'</span>, <span class="dv" style="color: #AD0000;">1</span>, n)</span>
-<span id="cb22-2">theta <span class="op" style="color: #5E5E5E;">=</span> MatrixSymbol(<span class="st" style="color: #20794D;">'theta'</span>, n, <span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb22-3">A, theta</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="109">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20%5Cleft(%20A,%20%5C%20%20%5Ctheta%5Cright)"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="111">
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">diff(A<span class="op" style="color: #5E5E5E;">*</span>theta, theta)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="111">
-<p><img src="https://latex.codecogs.com/png.latex?%5Cdisplaystyle%20A%5E%7BT%7D"></p>
+</section>
+<section id="itertools-product" class="level4">
+<h4 class="anchored" data-anchor-id="itertools-product">Itertools Product</h4>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="im" style="color: #00769E;">import</span> itertools</span>
+<span id="cb16-2"><span class="bu" style="color: null;">list</span>(itertools.product([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>], [<span class="st" style="color: #20794D;">'a'</span>, <span class="st" style="color: #20794D;">'b'</span>, <span class="st" style="color: #20794D;">'c'</span>], [<span class="dv" style="color: #AD0000;">7</span>, <span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">9</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>[(1, 'a', 7),
+ (1, 'a', 8),
+ (1, 'a', 9),
+ (1, 'b', 7),
+ (1, 'b', 8),
+ (1, 'b', 9),
+ (1, 'c', 7),
+ (1, 'c', 8),
+ (1, 'c', 9),
+ (2, 'a', 7),
+ (2, 'a', 8),
+ (2, 'a', 9),
+ (2, 'b', 7),
+ (2, 'b', 8),
+ (2, 'b', 9),
+ (2, 'c', 7),
+ (2, 'c', 8),
+ (2, 'c', 9)]</code></pre>
 </div>
 </div>
 
 
+</section>
 
  ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/maths-jax.html</guid>
-  <pubDate>Tue, 31 Jan 2023 00:00:00 GMT</pubDate>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/python-utils.html</guid>
+  <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Dataset splitting for machine learning</title>
@@ -3196,128 +3445,6 @@ Length: 162, dtype: float64</code></pre>
 
  ]]></description>
   <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/hyperparameter-1.html</guid>
-  <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Some Python Utilities</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/python-utils.html</link>
-  <description><![CDATA[ 
-
-
-
-<section id="function-argument-unpacking" class="level4">
-<h4 class="anchored" data-anchor-id="function-argument-unpacking">Function Argument Unpacking</h4>
-<p>Reference: https://www.youtube.com/watch?v=YWY4BZi_o28</p>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="kw" style="color: #003B4F;">def</span> print_vec(x, y, z):</span>
-<span id="cb1-2">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"[</span><span class="sc" style="color: #5E5E5E;">{</span>x<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;"> </span><span class="ch" style="color: #20794D;">\n</span><span class="sc" style="color: #5E5E5E;">{</span>y<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;"> </span><span class="ch" style="color: #20794D;">\n</span><span class="sc" style="color: #5E5E5E;">{</span>z<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">]"</span>)</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">print_vec(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1 
-2 
-3]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">tuple_vec <span class="op" style="color: #5E5E5E;">=</span> (<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb4-2"><span class="co" style="color: #5E5E5E;">#print_vec(tuple_vec)</span></span>
-<span id="cb4-3">print_vec(tuple_vec[<span class="dv" style="color: #AD0000;">0</span>], tuple_vec[<span class="dv" style="color: #AD0000;">1</span>], tuple_vec[<span class="dv" style="color: #AD0000;">2</span>])</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1 
-0 
-1]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">list_vec <span class="op" style="color: #5E5E5E;">=</span> [<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>]</span>
-<span id="cb6-2"></span>
-<span id="cb6-3">print_vec(tuple_vec[<span class="dv" style="color: #AD0000;">0</span>], tuple_vec[<span class="dv" style="color: #AD0000;">1</span>], tuple_vec[<span class="dv" style="color: #AD0000;">2</span>])</span>
-<span id="cb6-4"><span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"*"</span><span class="op" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">20</span>)</span>
-<span id="cb6-5">print_vec(<span class="op" style="color: #5E5E5E;">*</span>tuple_vec)</span>
-<span id="cb6-6"><span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"*"</span><span class="op" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">20</span>)</span>
-<span id="cb6-7"></span>
-<span id="cb6-8">print_vec(<span class="op" style="color: #5E5E5E;">*</span>list_vec)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1 
-0 
-1]
-********************
-[1 
-0 
-1]
-********************
-[1 
-0 
-1]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">dictionary_vec <span class="op" style="color: #5E5E5E;">=</span> {<span class="st" style="color: #20794D;">"x"</span>: <span class="dv" style="color: #AD0000;">1</span>, <span class="st" style="color: #20794D;">"y"</span>: <span class="dv" style="color: #AD0000;">0</span>, <span class="st" style="color: #20794D;">"z"</span>: <span class="dv" style="color: #AD0000;">1</span>}</span>
-<span id="cb8-2">print_vec(<span class="op" style="color: #5E5E5E;">**</span>dictionary_vec)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1 
-0 
-1]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">dictionary_vec <span class="op" style="color: #5E5E5E;">=</span> {<span class="st" style="color: #20794D;">"a"</span>: <span class="dv" style="color: #AD0000;">1</span>, <span class="st" style="color: #20794D;">"b"</span>: <span class="dv" style="color: #AD0000;">0</span>, <span class="st" style="color: #20794D;">"c"</span>:<span class="dv" style="color: #AD0000;">1</span>}</span>
-<span id="cb10-2">print_vec(<span class="op" style="color: #5E5E5E;">**</span>dictionary_vec)</span></code></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>TypeError: print_vec() got an unexpected keyword argument 'a'</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="bu" style="color: null;">print</span>(<span class="op" style="color: #5E5E5E;">*</span>dictionary_vec)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>a b c</code></pre>
-</div>
-</div>
-</section>
-<section id="zip" class="level4">
-<h4 class="anchored" data-anchor-id="zip">Zip</h4>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="bu" style="color: null;">list</span>(<span class="bu" style="color: null;">zip</span>([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>], [<span class="st" style="color: #20794D;">'a'</span>, <span class="st" style="color: #20794D;">'b'</span>, <span class="st" style="color: #20794D;">'c'</span>], [<span class="dv" style="color: #AD0000;">7</span>, <span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">9</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<pre><code>[(1, 'a', 7), (2, 'b', 8), (3, 'c', 9)]</code></pre>
-</div>
-</div>
-</section>
-<section id="itertools-product" class="level4">
-<h4 class="anchored" data-anchor-id="itertools-product">Itertools Product</h4>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="im" style="color: #00769E;">import</span> itertools</span>
-<span id="cb16-2"><span class="bu" style="color: null;">list</span>(itertools.product([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>], [<span class="st" style="color: #20794D;">'a'</span>, <span class="st" style="color: #20794D;">'b'</span>, <span class="st" style="color: #20794D;">'c'</span>], [<span class="dv" style="color: #AD0000;">7</span>, <span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">9</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<pre><code>[(1, 'a', 7),
- (1, 'a', 8),
- (1, 'a', 9),
- (1, 'b', 7),
- (1, 'b', 8),
- (1, 'b', 9),
- (1, 'c', 7),
- (1, 'c', 8),
- (1, 'c', 9),
- (2, 'a', 7),
- (2, 'a', 8),
- (2, 'a', 9),
- (2, 'b', 7),
- (2, 'b', 8),
- (2, 'b', 9),
- (2, 'c', 7),
- (2, 'c', 8),
- (2, 'c', 9)]</code></pre>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/python-utils.html</guid>
   <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
