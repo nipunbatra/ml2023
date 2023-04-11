@@ -1605,31 +1605,61 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       dtype='object', name='Your name')</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="38">
+<div class="cell" data-execution_count="56">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get index for user and movie</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>user <span class="op">=</span> <span class="st">'Dhruv'</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df.loc[user]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="38">
-<pre><code>Sholay                      NaN
-Swades (We The People)      NaN
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>user <span class="op">=</span> <span class="st">'Ayush Shrivastava'</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the movie ratings for user</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>user_ratings <span class="op">=</span> df.loc[user]</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>user_ratings</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="56">
+<pre><code>Sholay                      5.0
+Swades (We The People)      4.0
 The Matrix (I)              5.0
 Interstellar                5.0
 Dangal                      3.0
-Taare Zameen Par            NaN
-Shawshank Redemption        5.0
-The Dark Knight             5.0
-Notting Hill                4.0
-Uri: The Surgical Strike    5.0
-Name: Dhruv, dtype: float64</code></pre>
+Taare Zameen Par            3.0
+Shawshank Redemption        4.0
+The Dark Knight             4.0
+Notting Hill                NaN
+Uri: The Surgical Strike    4.0
+Name: Ayush Shrivastava, dtype: float64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="42">
+<div class="cell" data-execution_count="57">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df_copy <span class="op">=</span> df.copy()</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df_copy.fillna(<span class="dv">0</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>np.nanmean(show_neighbors(df_copy, user, <span class="dv">5</span>)[<span class="dv">1</span>:], axis<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="42">
-<pre><code>array([4. , 2.6, 4.4, 4.8, 3.4, 2.6, 4.2, 4.8, 2.4, 4.4])</code></pre>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>pd.Series(np.nanmean(show_neighbors(df_copy, user, <span class="dv">5</span>)[<span class="dv">1</span>:], axis<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>            index<span class="op">=</span>df.columns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="57">
+<pre><code>Sholay                      4.2
+Swades (We The People)      1.8
+The Matrix (I)              4.6
+Interstellar                4.8
+Dangal                      3.4
+Taare Zameen Par            3.2
+Shawshank Redemption        4.0
+The Dark Knight             4.8
+Notting Hill                1.6
+Uri: The Surgical Strike    4.4
+dtype: float64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="55">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df.loc[user]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="55">
+<pre><code>Sholay                      3.0
+Swades (We The People)      3.0
+The Matrix (I)              2.0
+Interstellar                5.0
+Dangal                      2.0
+Taare Zameen Par            5.0
+Shawshank Redemption        5.0
+The Dark Knight             3.0
+Notting Hill                3.0
+Uri: The Surgical Strike    4.0
+Name: Ankit Yadav , dtype: float64</code></pre>
 </div>
 </div>
 

@@ -1523,31 +1523,61 @@ L: 1.0</code></pre>
       dtype='object', name='Your name')</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="38">
+<div class="cell" data-execution_count="56">
 <div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Get index for user and movie</span></span>
-<span id="cb21-2">user <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Dhruv'</span></span>
-<span id="cb21-3">df.loc[user]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="38">
-<pre><code>Sholay                      NaN
-Swades (We The People)      NaN
+<span id="cb21-2">user <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Ayush Shrivastava'</span></span>
+<span id="cb21-3"></span>
+<span id="cb21-4"><span class="co" style="color: #5E5E5E;"># Get the movie ratings for user</span></span>
+<span id="cb21-5">user_ratings <span class="op" style="color: #5E5E5E;">=</span> df.loc[user]</span>
+<span id="cb21-6">user_ratings</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="56">
+<pre><code>Sholay                      5.0
+Swades (We The People)      4.0
 The Matrix (I)              5.0
 Interstellar                5.0
 Dangal                      3.0
-Taare Zameen Par            NaN
-Shawshank Redemption        5.0
-The Dark Knight             5.0
-Notting Hill                4.0
-Uri: The Surgical Strike    5.0
-Name: Dhruv, dtype: float64</code></pre>
+Taare Zameen Par            3.0
+Shawshank Redemption        4.0
+The Dark Knight             4.0
+Notting Hill                NaN
+Uri: The Surgical Strike    4.0
+Name: Ayush Shrivastava, dtype: float64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="42">
+<div class="cell" data-execution_count="57">
 <div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">df_copy <span class="op" style="color: #5E5E5E;">=</span> df.copy()</span>
 <span id="cb23-2">df_copy.fillna(<span class="dv" style="color: #AD0000;">0</span>, inplace<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
 <span id="cb23-3"></span>
-<span id="cb23-4">np.nanmean(show_neighbors(df_copy, user, <span class="dv" style="color: #AD0000;">5</span>)[<span class="dv" style="color: #AD0000;">1</span>:], axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="42">
-<pre><code>array([4. , 2.6, 4.4, 4.8, 3.4, 2.6, 4.2, 4.8, 2.4, 4.4])</code></pre>
+<span id="cb23-4">pd.Series(np.nanmean(show_neighbors(df_copy, user, <span class="dv" style="color: #AD0000;">5</span>)[<span class="dv" style="color: #AD0000;">1</span>:], axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>),</span>
+<span id="cb23-5">            index<span class="op" style="color: #5E5E5E;">=</span>df.columns)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="57">
+<pre><code>Sholay                      4.2
+Swades (We The People)      1.8
+The Matrix (I)              4.6
+Interstellar                4.8
+Dangal                      3.4
+Taare Zameen Par            3.2
+Shawshank Redemption        4.0
+The Dark Knight             4.8
+Notting Hill                1.6
+Uri: The Surgical Strike    4.4
+dtype: float64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="55">
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1">df.loc[user]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="55">
+<pre><code>Sholay                      3.0
+Swades (We The People)      3.0
+The Matrix (I)              2.0
+Interstellar                5.0
+Dangal                      2.0
+Taare Zameen Par            5.0
+Shawshank Redemption        5.0
+The Dark Knight             3.0
+Notting Hill                3.0
+Uri: The Surgical Strike    4.0
+Name: Ankit Yadav , dtype: float64</code></pre>
 </div>
 </div>
 
