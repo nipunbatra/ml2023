@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.475">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Nipun Batra">
+<meta name="dcterms.date" content="2023-04-04">
+<meta name="description" content="KNN Movie Recommendation">
+
+<title>ES654 - KNN Movie Recommendation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ES654</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../grading.html">
+ <span class="menu-text">Grading Policy</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../faq.html">
+ <span class="menu-text">FAQs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../schedule.html">
+ <span class="menu-text">Schedule</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../quizzes.html">
+ <span class="menu-text">Quizzes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../notebooks/index.html">
+ <span class="menu-text">Notebooks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://nipunbatra.github.io">
+ <span class="menu-text">Instructor Homepage</span></a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">KNN Movie Recommendation</h1>
+</div>
+
+<div>
+  <div class="description">
+    KNN Movie Recommendation
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nipun Batra </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 4, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config InlineBackend.figure_format <span class="op">=</span> <span class="st">'retina'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate some toy user and movie data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of users</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>n_users <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of movies</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>n_movies <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of ratings</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>n_ratings <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate random user ids</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>user_ids <span class="op">=</span> np.random.randint(<span class="dv">0</span>, n_users, n_ratings)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate random movie ids</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>movie_ids <span class="op">=</span> np.random.randint(<span class="dv">0</span>, n_movies, n_ratings)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate random ratings</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>ratings <span class="op">=</span> np.random.randint(<span class="dv">1</span>, <span class="dv">6</span>, n_ratings)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dataframe with the data</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({<span class="st">'user_id'</span>: user_ids, <span class="st">'movie_id'</span>: movie_ids, <span class="st">'rating'</span>: ratings})</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># We should not have any duplicate ratings for the same user and movie</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop any rows that have duplicate user_id and movie_id pairs</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop_duplicates([<span class="st">'user_id'</span>, <span class="st">'movie_id'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>user_id</th>
+      <th>movie_id</th>
+      <th>rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>25</td>
+      <td>5</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>28</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>51</td>
+      <td>6</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>84</td>
+      <td>3</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>38</td>
+      <td>9</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>978</th>
+      <td>69</td>
+      <td>3</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>990</th>
+      <td>95</td>
+      <td>8</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>991</th>
+      <td>20</td>
+      <td>9</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>992</th>
+      <td>3</td>
+      <td>5</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>49</td>
+      <td>6</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+<p>625 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a user-item matrix</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> df.pivot(index<span class="op">=</span><span class="st">'user_id'</span>, columns<span class="op">=</span><span class="st">'movie_id'</span>, values<span class="op">=</span><span class="st">'rating'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>movie_id</th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+    </tr>
+    <tr>
+      <th>user_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>100 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill in the missing values with zeros</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> A.fillna(<span class="dv">0</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>A</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>movie_id</th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+    </tr>
+    <tr>
+      <th>user_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>100 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cosine similarity between U1 and U2</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># User 1</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>u1 <span class="op">=</span> A.loc[<span class="dv">0</span>]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># User 2</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>u2 <span class="op">=</span> A.loc[<span class="dv">1</span>]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the dot product</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>dot <span class="op">=</span> np.dot(u1, u2)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the L2 norm</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>norm_u1 <span class="op">=</span> np.linalg.norm(u1)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>norm_u2 <span class="op">=</span> np.linalg.norm(u2)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the cosine similarity</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>cos_sim <span class="op">=</span> dot <span class="op">/</span> (norm_u1 <span class="op">*</span> norm_u2)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>cos_sim</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>0.6074758080303854</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the cosine similarity between users</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics.pairwise <span class="im">import</span> cosine_similarity</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>sim_matrix <span class="op">=</span> cosine_similarity(A)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(sim_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>90</th>
+      <th>91</th>
+      <th>92</th>
+      <th>93</th>
+      <th>94</th>
+      <th>95</th>
+      <th>96</th>
+      <th>97</th>
+      <th>98</th>
+      <th>99</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1.000000</td>
+      <td>0.607476</td>
+      <td>0.483934</td>
+      <td>0.733966</td>
+      <td>0.538456</td>
+      <td>0.681371</td>
+      <td>0.553347</td>
+      <td>0.606397</td>
+      <td>0.736212</td>
+      <td>0.757769</td>
+      <td>...</td>
+      <td>0.374522</td>
+      <td>0.514039</td>
+      <td>0.634808</td>
+      <td>0.533855</td>
+      <td>0.637699</td>
+      <td>0.678595</td>
+      <td>0.692550</td>
+      <td>0.697265</td>
+      <td>0.754465</td>
+      <td>0.244853</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.607476</td>
+      <td>1.000000</td>
+      <td>0.311872</td>
+      <td>0.415830</td>
+      <td>0.311419</td>
+      <td>0.633928</td>
+      <td>0.217443</td>
+      <td>0.434216</td>
+      <td>0.464140</td>
+      <td>0.389999</td>
+      <td>...</td>
+      <td>0.391397</td>
+      <td>0.331274</td>
+      <td>0.767069</td>
+      <td>0.422236</td>
+      <td>0.587095</td>
+      <td>0.391940</td>
+      <td>0.418421</td>
+      <td>0.163401</td>
+      <td>0.259316</td>
+      <td>0.468458</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.483934</td>
+      <td>0.311872</td>
+      <td>1.000000</td>
+      <td>0.500000</td>
+      <td>0.081514</td>
+      <td>0.481604</td>
+      <td>0.000000</td>
+      <td>0.099449</td>
+      <td>0.629941</td>
+      <td>0.124274</td>
+      <td>...</td>
+      <td>0.328688</td>
+      <td>0.910465</td>
+      <td>0.216225</td>
+      <td>0.286534</td>
+      <td>0.537853</td>
+      <td>0.037796</td>
+      <td>0.127775</td>
+      <td>0.486513</td>
+      <td>0.296957</td>
+      <td>0.180702</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.733966</td>
+      <td>0.415830</td>
+      <td>0.500000</td>
+      <td>1.000000</td>
+      <td>0.421155</td>
+      <td>0.812116</td>
+      <td>0.743698</td>
+      <td>0.850842</td>
+      <td>0.839921</td>
+      <td>0.724931</td>
+      <td>...</td>
+      <td>0.727097</td>
+      <td>0.549170</td>
+      <td>0.336350</td>
+      <td>0.744989</td>
+      <td>0.796819</td>
+      <td>0.667737</td>
+      <td>0.425918</td>
+      <td>0.785905</td>
+      <td>0.831479</td>
+      <td>0.602339</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.538456</td>
+      <td>0.311419</td>
+      <td>0.081514</td>
+      <td>0.421155</td>
+      <td>1.000000</td>
+      <td>0.404120</td>
+      <td>0.522862</td>
+      <td>0.586369</td>
+      <td>0.233638</td>
+      <td>0.780014</td>
+      <td>...</td>
+      <td>0.323947</td>
+      <td>0.148431</td>
+      <td>0.616887</td>
+      <td>0.376040</td>
+      <td>0.511496</td>
+      <td>0.345065</td>
+      <td>0.637947</td>
+      <td>0.363019</td>
+      <td>0.711660</td>
+      <td>0.335101</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>0.678595</td>
+      <td>0.391940</td>
+      <td>0.037796</td>
+      <td>0.667737</td>
+      <td>0.345065</td>
+      <td>0.524672</td>
+      <td>0.505964</td>
+      <td>0.771811</td>
+      <td>0.700000</td>
+      <td>0.805555</td>
+      <td>...</td>
+      <td>0.537587</td>
+      <td>0.091766</td>
+      <td>0.343247</td>
+      <td>0.818746</td>
+      <td>0.537587</td>
+      <td>1.000000</td>
+      <td>0.439480</td>
+      <td>0.693103</td>
+      <td>0.722820</td>
+      <td>0.239046</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>0.692550</td>
+      <td>0.418421</td>
+      <td>0.127775</td>
+      <td>0.425918</td>
+      <td>0.637947</td>
+      <td>0.570123</td>
+      <td>0.694879</td>
+      <td>0.563349</td>
+      <td>0.211289</td>
+      <td>0.680818</td>
+      <td>...</td>
+      <td>0.293987</td>
+      <td>0.000000</td>
+      <td>0.676891</td>
+      <td>0.461311</td>
+      <td>0.494433</td>
+      <td>0.439480</td>
+      <td>1.000000</td>
+      <td>0.284521</td>
+      <td>0.517932</td>
+      <td>0.262640</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>0.697265</td>
+      <td>0.163401</td>
+      <td>0.486513</td>
+      <td>0.785905</td>
+      <td>0.363019</td>
+      <td>0.371073</td>
+      <td>0.438357</td>
+      <td>0.555787</td>
+      <td>0.841625</td>
+      <td>0.667395</td>
+      <td>...</td>
+      <td>0.641880</td>
+      <td>0.454311</td>
+      <td>0.094407</td>
+      <td>0.675566</td>
+      <td>0.704502</td>
+      <td>0.693103</td>
+      <td>0.284521</td>
+      <td>1.000000</td>
+      <td>0.715699</td>
+      <td>0.118345</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>0.754465</td>
+      <td>0.259316</td>
+      <td>0.296957</td>
+      <td>0.831479</td>
+      <td>0.711660</td>
+      <td>0.683110</td>
+      <td>0.679102</td>
+      <td>0.840680</td>
+      <td>0.667823</td>
+      <td>0.878315</td>
+      <td>...</td>
+      <td>0.496904</td>
+      <td>0.450615</td>
+      <td>0.449467</td>
+      <td>0.631355</td>
+      <td>0.596285</td>
+      <td>0.722820</td>
+      <td>0.517932</td>
+      <td>0.715699</td>
+      <td>1.000000</td>
+      <td>0.450749</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>0.244853</td>
+      <td>0.468458</td>
+      <td>0.180702</td>
+      <td>0.602339</td>
+      <td>0.335101</td>
+      <td>0.662938</td>
+      <td>0.554348</td>
+      <td>0.649937</td>
+      <td>0.318728</td>
+      <td>0.373339</td>
+      <td>...</td>
+      <td>0.585845</td>
+      <td>0.274204</td>
+      <td>0.569803</td>
+      <td>0.416806</td>
+      <td>0.453557</td>
+      <td>0.239046</td>
+      <td>0.262640</td>
+      <td>0.118345</td>
+      <td>0.450749</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+<p>100 rows × 100 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the most similar users to user u </span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> k_nearest_neighbors(A, u, k):</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Find the k nearest neighbors for user u"""</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Find the index of the user in the matrix</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    u_index <span class="op">=</span> A.index.get_loc(u)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute the similarity between the user and all other users</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    sim_matrix <span class="op">=</span> cosine_similarity(A)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Find the k most similar users</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    k_nearest <span class="op">=</span> np.argsort(sim_matrix[u_index])[::<span class="op">-</span><span class="dv">1</span>][<span class="dv">1</span>:k<span class="op">+</span><span class="dv">1</span>]</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return the user ids</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> A.index[k_nearest]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>k_nearest_neighbors(A, <span class="dv">0</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>Int64Index([22, 43, 36, 53, 83], dtype='int64', name='user_id')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show matrix of movie ratings for u and k nearest neighbors</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_neighbors(A, u, k):</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Show the movie ratings for user u and k nearest neighbors"""</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get the user ids of the k nearest neighbors</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    neighbors <span class="op">=</span> k_nearest_neighbors(A, u, k)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get the movie ratings for user u and the k nearest neighbors</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> A.loc[[u] <span class="op">+</span> <span class="bu">list</span>(neighbors)]</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return the dataframe</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>show_neighbors(A, <span class="dv">0</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>movie_id</th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+    </tr>
+    <tr>
+      <th>user_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>83</th>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rating for user u for movie 0 is: (4.0 + 3.0) / 2 = 3.5 (Discard 0s)</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_rating(A, u, m, k<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Predict the rating for user u for movie m"""</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get the user ids of the k nearest neighbors</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    neighbors <span class="op">=</span> k_nearest_neighbors(A, u, k)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get the movie ratings for user u and the k nearest neighbors</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> A.loc[[u] <span class="op">+</span> <span class="bu">list</span>(neighbors)]</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get the ratings for movie m</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    ratings <span class="op">=</span> df[m]</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate the mean of the ratings</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    mean <span class="op">=</span> ratings[ratings <span class="op">!=</span> <span class="dv">0</span>].mean()</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return the mean</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mean</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>predict_rating(A, <span class="dv">0</span>, <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<pre><code>3.2</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now working with real data</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the data</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_excel(<span class="st">"mov-rec.xlsx"</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="30">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Timestamp</th>
+      <th>Your name</th>
+      <th>Sholay</th>
+      <th>Swades (We The People)</th>
+      <th>The Matrix (I)</th>
+      <th>Interstellar</th>
+      <th>Dangal</th>
+      <th>Taare Zameen Par</th>
+      <th>Shawshank Redemption</th>
+      <th>The Dark Knight</th>
+      <th>Notting Hill</th>
+      <th>Uri: The Surgical Strike</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-04-11 10:58:44.990</td>
+      <td>Nipun</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-04-11 10:59:49.617</td>
+      <td>Gautam Vashishtha</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2023-04-11 11:12:44.033</td>
+      <td>Eshan Gujarathi</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2023-04-11 11:13:48.674</td>
+      <td>Sai Krishna Avula</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2023-04-11 11:13:55.658</td>
+      <td>Ankit Yadav</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Discard the timestamp column</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.drop(<span class="st">'Timestamp'</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Make the "Your Name" column the index</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.set_index(<span class="st">'Your name'</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="31">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Sholay</th>
+      <th>Swades (We The People)</th>
+      <th>The Matrix (I)</th>
+      <th>Interstellar</th>
+      <th>Dangal</th>
+      <th>Taare Zameen Par</th>
+      <th>Shawshank Redemption</th>
+      <th>The Dark Knight</th>
+      <th>Notting Hill</th>
+      <th>Uri: The Surgical Strike</th>
+    </tr>
+    <tr>
+      <th>Your name</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Nipun</th>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Gautam Vashishtha</th>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Eshan Gujarathi</th>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Sai Krishna Avula</th>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Ankit Yadav</th>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Dhruv</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Saatvik Rao</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Zeel B Patel</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Neel</th>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Sachin Jalan</th>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Ayush Shrivastava</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>....</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Hari Hara Sudhan</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Etikikota Hrushikesh</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Chirag</th>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df.index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="36">
+<pre><code>Index(['Nipun', 'Gautam Vashishtha', 'Eshan Gujarathi', 'Sai Krishna Avula',
+       'Ankit Yadav ', 'Dhruv', 'Saatvik Rao ', 'Zeel B Patel', 'Neel ',
+       'Sachin Jalan ', 'Ayush Shrivastava', '....', 'Hari Hara Sudhan',
+       'Etikikota Hrushikesh', 'Chirag'],
+      dtype='object', name='Your name')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="38">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get index for user and movie</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>user <span class="op">=</span> <span class="st">'Dhruv'</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df.loc[user]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="38">
+<pre><code>Sholay                      NaN
+Swades (We The People)      NaN
+The Matrix (I)              5.0
+Interstellar                5.0
+Dangal                      3.0
+Taare Zameen Par            NaN
+Shawshank Redemption        5.0
+The Dark Knight             5.0
+Notting Hill                4.0
+Uri: The Surgical Strike    5.0
+Name: Dhruv, dtype: float64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="42">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df_copy <span class="op">=</span> df.copy()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df_copy.fillna(<span class="dv">0</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>np.nanmean(show_neighbors(df_copy, user, <span class="dv">5</span>)[<span class="dv">1</span>:], axis<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="42">
+<pre><code>array([4. , 2.6, 4.4, 4.8, 3.4, 2.6, 4.2, 4.8, 2.4, 4.4])</code></pre>
+</div>
+</div>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

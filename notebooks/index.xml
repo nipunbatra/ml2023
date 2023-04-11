@@ -139,6 +139,1425 @@ L: 1.0</code></pre>
   <pubDate>Tue, 04 Apr 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>KNN Movie Recommendation</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Generate some toy user and movie data</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;"># Number of users</span></span>
+<span id="cb2-4">n_users <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">100</span></span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;"># Number of movies</span></span>
+<span id="cb2-7">n_movies <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">10</span></span>
+<span id="cb2-8"></span>
+<span id="cb2-9"><span class="co" style="color: #5E5E5E;"># Number of ratings</span></span>
+<span id="cb2-10">n_ratings <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1000</span></span>
+<span id="cb2-11"></span>
+<span id="cb2-12"><span class="co" style="color: #5E5E5E;"># Generate random user ids</span></span>
+<span id="cb2-13">user_ids <span class="op" style="color: #5E5E5E;">=</span> np.random.randint(<span class="dv" style="color: #AD0000;">0</span>, n_users, n_ratings)</span>
+<span id="cb2-14"></span>
+<span id="cb2-15"><span class="co" style="color: #5E5E5E;"># Generate random movie ids</span></span>
+<span id="cb2-16">movie_ids <span class="op" style="color: #5E5E5E;">=</span> np.random.randint(<span class="dv" style="color: #AD0000;">0</span>, n_movies, n_ratings)</span>
+<span id="cb2-17"></span>
+<span id="cb2-18"><span class="co" style="color: #5E5E5E;"># Generate random ratings</span></span>
+<span id="cb2-19">ratings <span class="op" style="color: #5E5E5E;">=</span> np.random.randint(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">6</span>, n_ratings)</span>
+<span id="cb2-20"></span>
+<span id="cb2-21"><span class="co" style="color: #5E5E5E;"># Create a dataframe with the data</span></span>
+<span id="cb2-22">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame({<span class="st" style="color: #20794D;">'user_id'</span>: user_ids, <span class="st" style="color: #20794D;">'movie_id'</span>: movie_ids, <span class="st" style="color: #20794D;">'rating'</span>: ratings})</span>
+<span id="cb2-23"></span>
+<span id="cb2-24"><span class="co" style="color: #5E5E5E;"># We should not have any duplicate ratings for the same user and movie</span></span>
+<span id="cb2-25"><span class="co" style="color: #5E5E5E;"># Drop any rows that have duplicate user_id and movie_id pairs</span></span>
+<span id="cb2-26">df <span class="op" style="color: #5E5E5E;">=</span> df.drop_duplicates([<span class="st" style="color: #20794D;">'user_id'</span>, <span class="st" style="color: #20794D;">'movie_id'</span>])</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">df</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>user_id</th>
+      <th>movie_id</th>
+      <th>rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>25</td>
+      <td>5</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>28</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>51</td>
+      <td>6</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>84</td>
+      <td>3</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>38</td>
+      <td>9</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>978</th>
+      <td>69</td>
+      <td>3</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>990</th>
+      <td>95</td>
+      <td>8</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>991</th>
+      <td>20</td>
+      <td>9</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>992</th>
+      <td>3</td>
+      <td>5</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>996</th>
+      <td>49</td>
+      <td>6</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+<p>625 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Create a user-item matrix</span></span>
+<span id="cb4-2"></span>
+<span id="cb4-3">A <span class="op" style="color: #5E5E5E;">=</span> df.pivot(index<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'user_id'</span>, columns<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'movie_id'</span>, values<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'rating'</span>)</span>
+<span id="cb4-4">A</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>movie_id</th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+    </tr>
+    <tr>
+      <th>user_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>100 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;"># Fill in the missing values with zeros</span></span>
+<span id="cb5-2">A <span class="op" style="color: #5E5E5E;">=</span> A.fillna(<span class="dv" style="color: #AD0000;">0</span>)</span>
+<span id="cb5-3"></span>
+<span id="cb5-4">A</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>movie_id</th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+    </tr>
+    <tr>
+      <th>user_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>100 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># Cosine similarity between U1 and U2</span></span>
+<span id="cb6-2"></span>
+<span id="cb6-3"><span class="co" style="color: #5E5E5E;"># User 1</span></span>
+<span id="cb6-4">u1 <span class="op" style="color: #5E5E5E;">=</span> A.loc[<span class="dv" style="color: #AD0000;">0</span>]</span>
+<span id="cb6-5"></span>
+<span id="cb6-6"><span class="co" style="color: #5E5E5E;"># User 2</span></span>
+<span id="cb6-7">u2 <span class="op" style="color: #5E5E5E;">=</span> A.loc[<span class="dv" style="color: #AD0000;">1</span>]</span>
+<span id="cb6-8"></span>
+<span id="cb6-9"><span class="co" style="color: #5E5E5E;"># Compute the dot product</span></span>
+<span id="cb6-10">dot <span class="op" style="color: #5E5E5E;">=</span> np.dot(u1, u2)</span>
+<span id="cb6-11"></span>
+<span id="cb6-12"><span class="co" style="color: #5E5E5E;"># Compute the L2 norm</span></span>
+<span id="cb6-13">norm_u1 <span class="op" style="color: #5E5E5E;">=</span> np.linalg.norm(u1)</span>
+<span id="cb6-14">norm_u2 <span class="op" style="color: #5E5E5E;">=</span> np.linalg.norm(u2)</span>
+<span id="cb6-15"></span>
+<span id="cb6-16"><span class="co" style="color: #5E5E5E;"># Compute the cosine similarity</span></span>
+<span id="cb6-17">cos_sim <span class="op" style="color: #5E5E5E;">=</span> dot <span class="op" style="color: #5E5E5E;">/</span> (norm_u1 <span class="op" style="color: #5E5E5E;">*</span> norm_u2)</span>
+<span id="cb6-18">cos_sim</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>0.6074758080303854</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;"># Calculate the cosine similarity between users</span></span>
+<span id="cb8-2"><span class="im" style="color: #00769E;">from</span> sklearn.metrics.pairwise <span class="im" style="color: #00769E;">import</span> cosine_similarity</span>
+<span id="cb8-3"></span>
+<span id="cb8-4">sim_matrix <span class="op" style="color: #5E5E5E;">=</span> cosine_similarity(A)</span>
+<span id="cb8-5"></span>
+<span id="cb8-6">pd.DataFrame(sim_matrix)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>90</th>
+      <th>91</th>
+      <th>92</th>
+      <th>93</th>
+      <th>94</th>
+      <th>95</th>
+      <th>96</th>
+      <th>97</th>
+      <th>98</th>
+      <th>99</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1.000000</td>
+      <td>0.607476</td>
+      <td>0.483934</td>
+      <td>0.733966</td>
+      <td>0.538456</td>
+      <td>0.681371</td>
+      <td>0.553347</td>
+      <td>0.606397</td>
+      <td>0.736212</td>
+      <td>0.757769</td>
+      <td>...</td>
+      <td>0.374522</td>
+      <td>0.514039</td>
+      <td>0.634808</td>
+      <td>0.533855</td>
+      <td>0.637699</td>
+      <td>0.678595</td>
+      <td>0.692550</td>
+      <td>0.697265</td>
+      <td>0.754465</td>
+      <td>0.244853</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.607476</td>
+      <td>1.000000</td>
+      <td>0.311872</td>
+      <td>0.415830</td>
+      <td>0.311419</td>
+      <td>0.633928</td>
+      <td>0.217443</td>
+      <td>0.434216</td>
+      <td>0.464140</td>
+      <td>0.389999</td>
+      <td>...</td>
+      <td>0.391397</td>
+      <td>0.331274</td>
+      <td>0.767069</td>
+      <td>0.422236</td>
+      <td>0.587095</td>
+      <td>0.391940</td>
+      <td>0.418421</td>
+      <td>0.163401</td>
+      <td>0.259316</td>
+      <td>0.468458</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.483934</td>
+      <td>0.311872</td>
+      <td>1.000000</td>
+      <td>0.500000</td>
+      <td>0.081514</td>
+      <td>0.481604</td>
+      <td>0.000000</td>
+      <td>0.099449</td>
+      <td>0.629941</td>
+      <td>0.124274</td>
+      <td>...</td>
+      <td>0.328688</td>
+      <td>0.910465</td>
+      <td>0.216225</td>
+      <td>0.286534</td>
+      <td>0.537853</td>
+      <td>0.037796</td>
+      <td>0.127775</td>
+      <td>0.486513</td>
+      <td>0.296957</td>
+      <td>0.180702</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.733966</td>
+      <td>0.415830</td>
+      <td>0.500000</td>
+      <td>1.000000</td>
+      <td>0.421155</td>
+      <td>0.812116</td>
+      <td>0.743698</td>
+      <td>0.850842</td>
+      <td>0.839921</td>
+      <td>0.724931</td>
+      <td>...</td>
+      <td>0.727097</td>
+      <td>0.549170</td>
+      <td>0.336350</td>
+      <td>0.744989</td>
+      <td>0.796819</td>
+      <td>0.667737</td>
+      <td>0.425918</td>
+      <td>0.785905</td>
+      <td>0.831479</td>
+      <td>0.602339</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.538456</td>
+      <td>0.311419</td>
+      <td>0.081514</td>
+      <td>0.421155</td>
+      <td>1.000000</td>
+      <td>0.404120</td>
+      <td>0.522862</td>
+      <td>0.586369</td>
+      <td>0.233638</td>
+      <td>0.780014</td>
+      <td>...</td>
+      <td>0.323947</td>
+      <td>0.148431</td>
+      <td>0.616887</td>
+      <td>0.376040</td>
+      <td>0.511496</td>
+      <td>0.345065</td>
+      <td>0.637947</td>
+      <td>0.363019</td>
+      <td>0.711660</td>
+      <td>0.335101</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>0.678595</td>
+      <td>0.391940</td>
+      <td>0.037796</td>
+      <td>0.667737</td>
+      <td>0.345065</td>
+      <td>0.524672</td>
+      <td>0.505964</td>
+      <td>0.771811</td>
+      <td>0.700000</td>
+      <td>0.805555</td>
+      <td>...</td>
+      <td>0.537587</td>
+      <td>0.091766</td>
+      <td>0.343247</td>
+      <td>0.818746</td>
+      <td>0.537587</td>
+      <td>1.000000</td>
+      <td>0.439480</td>
+      <td>0.693103</td>
+      <td>0.722820</td>
+      <td>0.239046</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>0.692550</td>
+      <td>0.418421</td>
+      <td>0.127775</td>
+      <td>0.425918</td>
+      <td>0.637947</td>
+      <td>0.570123</td>
+      <td>0.694879</td>
+      <td>0.563349</td>
+      <td>0.211289</td>
+      <td>0.680818</td>
+      <td>...</td>
+      <td>0.293987</td>
+      <td>0.000000</td>
+      <td>0.676891</td>
+      <td>0.461311</td>
+      <td>0.494433</td>
+      <td>0.439480</td>
+      <td>1.000000</td>
+      <td>0.284521</td>
+      <td>0.517932</td>
+      <td>0.262640</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>0.697265</td>
+      <td>0.163401</td>
+      <td>0.486513</td>
+      <td>0.785905</td>
+      <td>0.363019</td>
+      <td>0.371073</td>
+      <td>0.438357</td>
+      <td>0.555787</td>
+      <td>0.841625</td>
+      <td>0.667395</td>
+      <td>...</td>
+      <td>0.641880</td>
+      <td>0.454311</td>
+      <td>0.094407</td>
+      <td>0.675566</td>
+      <td>0.704502</td>
+      <td>0.693103</td>
+      <td>0.284521</td>
+      <td>1.000000</td>
+      <td>0.715699</td>
+      <td>0.118345</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>0.754465</td>
+      <td>0.259316</td>
+      <td>0.296957</td>
+      <td>0.831479</td>
+      <td>0.711660</td>
+      <td>0.683110</td>
+      <td>0.679102</td>
+      <td>0.840680</td>
+      <td>0.667823</td>
+      <td>0.878315</td>
+      <td>...</td>
+      <td>0.496904</td>
+      <td>0.450615</td>
+      <td>0.449467</td>
+      <td>0.631355</td>
+      <td>0.596285</td>
+      <td>0.722820</td>
+      <td>0.517932</td>
+      <td>0.715699</td>
+      <td>1.000000</td>
+      <td>0.450749</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>0.244853</td>
+      <td>0.468458</td>
+      <td>0.180702</td>
+      <td>0.602339</td>
+      <td>0.335101</td>
+      <td>0.662938</td>
+      <td>0.554348</td>
+      <td>0.649937</td>
+      <td>0.318728</td>
+      <td>0.373339</td>
+      <td>...</td>
+      <td>0.585845</td>
+      <td>0.274204</td>
+      <td>0.569803</td>
+      <td>0.416806</td>
+      <td>0.453557</td>
+      <td>0.239046</td>
+      <td>0.262640</td>
+      <td>0.118345</td>
+      <td>0.450749</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+<p>100 rows × 100 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="co" style="color: #5E5E5E;"># Find the most similar users to user u </span></span>
+<span id="cb9-2"></span>
+<span id="cb9-3"><span class="kw" style="color: #003B4F;">def</span> k_nearest_neighbors(A, u, k):</span>
+<span id="cb9-4">    <span class="co" style="color: #5E5E5E;">"""Find the k nearest neighbors for user u"""</span></span>
+<span id="cb9-5">    <span class="co" style="color: #5E5E5E;"># Find the index of the user in the matrix</span></span>
+<span id="cb9-6">    u_index <span class="op" style="color: #5E5E5E;">=</span> A.index.get_loc(u)</span>
+<span id="cb9-7">    </span>
+<span id="cb9-8">    <span class="co" style="color: #5E5E5E;"># Compute the similarity between the user and all other users</span></span>
+<span id="cb9-9">    sim_matrix <span class="op" style="color: #5E5E5E;">=</span> cosine_similarity(A)</span>
+<span id="cb9-10"></span>
+<span id="cb9-11">    <span class="co" style="color: #5E5E5E;"># Find the k most similar users</span></span>
+<span id="cb9-12">    k_nearest <span class="op" style="color: #5E5E5E;">=</span> np.argsort(sim_matrix[u_index])[::<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>][<span class="dv" style="color: #AD0000;">1</span>:k<span class="op" style="color: #5E5E5E;">+</span><span class="dv" style="color: #AD0000;">1</span>]</span>
+<span id="cb9-13">    </span>
+<span id="cb9-14">    <span class="co" style="color: #5E5E5E;"># Return the user ids</span></span>
+<span id="cb9-15">    <span class="cf" style="color: #003B4F;">return</span> A.index[k_nearest]</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">k_nearest_neighbors(A, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>Int64Index([22, 43, 36, 53, 83], dtype='int64', name='user_id')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="co" style="color: #5E5E5E;"># Show matrix of movie ratings for u and k nearest neighbors</span></span>
+<span id="cb12-2"></span>
+<span id="cb12-3"><span class="kw" style="color: #003B4F;">def</span> show_neighbors(A, u, k):</span>
+<span id="cb12-4">    <span class="co" style="color: #5E5E5E;">"""Show the movie ratings for user u and k nearest neighbors"""</span></span>
+<span id="cb12-5">    <span class="co" style="color: #5E5E5E;"># Get the user ids of the k nearest neighbors</span></span>
+<span id="cb12-6">    neighbors <span class="op" style="color: #5E5E5E;">=</span> k_nearest_neighbors(A, u, k)</span>
+<span id="cb12-7">    </span>
+<span id="cb12-8">    <span class="co" style="color: #5E5E5E;"># Get the movie ratings for user u and the k nearest neighbors</span></span>
+<span id="cb12-9">    df <span class="op" style="color: #5E5E5E;">=</span> A.loc[[u] <span class="op" style="color: #5E5E5E;">+</span> <span class="bu" style="color: null;">list</span>(neighbors)]</span>
+<span id="cb12-10">    </span>
+<span id="cb12-11">    <span class="co" style="color: #5E5E5E;"># Return the dataframe</span></span>
+<span id="cb12-12">    <span class="cf" style="color: #003B4F;">return</span> df</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">show_neighbors(A, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>movie_id</th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+    </tr>
+    <tr>
+      <th>user_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>83</th>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="co" style="color: #5E5E5E;"># Rating for user u for movie 0 is: (4.0 + 3.0) / 2 = 3.5 (Discard 0s)</span></span>
+<span id="cb14-2"></span>
+<span id="cb14-3"><span class="kw" style="color: #003B4F;">def</span> predict_rating(A, u, m, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>):</span>
+<span id="cb14-4">    <span class="co" style="color: #5E5E5E;">"""Predict the rating for user u for movie m"""</span></span>
+<span id="cb14-5">    <span class="co" style="color: #5E5E5E;"># Get the user ids of the k nearest neighbors</span></span>
+<span id="cb14-6">    neighbors <span class="op" style="color: #5E5E5E;">=</span> k_nearest_neighbors(A, u, k)</span>
+<span id="cb14-7">    </span>
+<span id="cb14-8">    <span class="co" style="color: #5E5E5E;"># Get the movie ratings for user u and the k nearest neighbors</span></span>
+<span id="cb14-9">    df <span class="op" style="color: #5E5E5E;">=</span> A.loc[[u] <span class="op" style="color: #5E5E5E;">+</span> <span class="bu" style="color: null;">list</span>(neighbors)]</span>
+<span id="cb14-10">    </span>
+<span id="cb14-11">    <span class="co" style="color: #5E5E5E;"># Get the ratings for movie m</span></span>
+<span id="cb14-12">    ratings <span class="op" style="color: #5E5E5E;">=</span> df[m]</span>
+<span id="cb14-13">    </span>
+<span id="cb14-14">    <span class="co" style="color: #5E5E5E;"># Calculate the mean of the ratings</span></span>
+<span id="cb14-15">    mean <span class="op" style="color: #5E5E5E;">=</span> ratings[ratings <span class="op" style="color: #5E5E5E;">!=</span> <span class="dv" style="color: #AD0000;">0</span>].mean()</span>
+<span id="cb14-16">    </span>
+<span id="cb14-17">    <span class="co" style="color: #5E5E5E;"># Return the mean</span></span>
+<span id="cb14-18">    <span class="cf" style="color: #003B4F;">return</span> mean</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">predict_rating(A, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<pre><code>3.2</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><span class="co" style="color: #5E5E5E;"># Now working with real data</span></span>
+<span id="cb17-2"></span>
+<span id="cb17-3"><span class="co" style="color: #5E5E5E;"># Load the data</span></span>
+<span id="cb17-4"></span>
+<span id="cb17-5">df <span class="op" style="color: #5E5E5E;">=</span> pd.read_excel(<span class="st" style="color: #20794D;">"mov-rec.xlsx"</span>)</span>
+<span id="cb17-6">df.head()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="30">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Timestamp</th>
+      <th>Your name</th>
+      <th>Sholay</th>
+      <th>Swades (We The People)</th>
+      <th>The Matrix (I)</th>
+      <th>Interstellar</th>
+      <th>Dangal</th>
+      <th>Taare Zameen Par</th>
+      <th>Shawshank Redemption</th>
+      <th>The Dark Knight</th>
+      <th>Notting Hill</th>
+      <th>Uri: The Surgical Strike</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2023-04-11 10:58:44.990</td>
+      <td>Nipun</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2023-04-11 10:59:49.617</td>
+      <td>Gautam Vashishtha</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2023-04-11 11:12:44.033</td>
+      <td>Eshan Gujarathi</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2023-04-11 11:13:48.674</td>
+      <td>Sai Krishna Avula</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2023-04-11 11:13:55.658</td>
+      <td>Ankit Yadav</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><span class="co" style="color: #5E5E5E;"># Discard the timestamp column</span></span>
+<span id="cb18-2"></span>
+<span id="cb18-3">df <span class="op" style="color: #5E5E5E;">=</span> df.drop(<span class="st" style="color: #20794D;">'Timestamp'</span>, axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb18-4"></span>
+<span id="cb18-5"><span class="co" style="color: #5E5E5E;"># Make the "Your Name" column the index</span></span>
+<span id="cb18-6"></span>
+<span id="cb18-7">df <span class="op" style="color: #5E5E5E;">=</span> df.set_index(<span class="st" style="color: #20794D;">'Your name'</span>)</span>
+<span id="cb18-8">df</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="31">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Sholay</th>
+      <th>Swades (We The People)</th>
+      <th>The Matrix (I)</th>
+      <th>Interstellar</th>
+      <th>Dangal</th>
+      <th>Taare Zameen Par</th>
+      <th>Shawshank Redemption</th>
+      <th>The Dark Knight</th>
+      <th>Notting Hill</th>
+      <th>Uri: The Surgical Strike</th>
+    </tr>
+    <tr>
+      <th>Your name</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Nipun</th>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Gautam Vashishtha</th>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Eshan Gujarathi</th>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Sai Krishna Avula</th>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Ankit Yadav</th>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Dhruv</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Saatvik Rao</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Zeel B Patel</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Neel</th>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Sachin Jalan</th>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Ayush Shrivastava</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>....</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Hari Hara Sudhan</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Etikikota Hrushikesh</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Chirag</th>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">df.index</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="36">
+<pre><code>Index(['Nipun', 'Gautam Vashishtha', 'Eshan Gujarathi', 'Sai Krishna Avula',
+       'Ankit Yadav ', 'Dhruv', 'Saatvik Rao ', 'Zeel B Patel', 'Neel ',
+       'Sachin Jalan ', 'Ayush Shrivastava', '....', 'Hari Hara Sudhan',
+       'Etikikota Hrushikesh', 'Chirag'],
+      dtype='object', name='Your name')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="38">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Get index for user and movie</span></span>
+<span id="cb21-2">user <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Dhruv'</span></span>
+<span id="cb21-3">df.loc[user]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="38">
+<pre><code>Sholay                      NaN
+Swades (We The People)      NaN
+The Matrix (I)              5.0
+Interstellar                5.0
+Dangal                      3.0
+Taare Zameen Par            NaN
+Shawshank Redemption        5.0
+The Dark Knight             5.0
+Notting Hill                4.0
+Uri: The Surgical Strike    5.0
+Name: Dhruv, dtype: float64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="42">
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">df_copy <span class="op" style="color: #5E5E5E;">=</span> df.copy()</span>
+<span id="cb23-2">df_copy.fillna(<span class="dv" style="color: #AD0000;">0</span>, inplace<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb23-3"></span>
+<span id="cb23-4">np.nanmean(show_neighbors(df_copy, user, <span class="dv" style="color: #AD0000;">5</span>)[<span class="dv" style="color: #AD0000;">1</span>:], axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="42">
+<pre><code>array([4. , 2.6, 4.4, 4.8, 3.4, 2.6, 4.2, 4.8, 2.4, 4.4])</code></pre>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn.html</guid>
+  <pubDate>Tue, 04 Apr 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
   <title>1d CNN</title>
   <dc:creator>Nipun Batra</dc:creator>
   <link>https://github.com/nipunbatra/ml2023/notebooks/posts/1d-cnn.html</link>
@@ -272,7 +1691,7 @@ L: 1.0</code></pre>
 
 
 
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
 <span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
 <span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
@@ -280,7 +1699,7 @@ L: 1.0</code></pre>
 <span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
 <span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Generate some data</span></span>
 <span id="cb2-2"></span>
 <span id="cb2-3">X <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">3000</span>, <span class="dv" style="color: #AD0000;">2</span>)</span>
@@ -288,14 +1707,14 @@ L: 1.0</code></pre>
 <span id="cb2-5"><span class="co" style="color: #5E5E5E;"># Plot the data</span></span>
 <span id="cb2-6"></span>
 <span id="cb2-7">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f6268340400&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f77a2c0e7c0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/knn-lsh_files/figure-html/cell-3-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Naive KNN</span></span>
 <span id="cb4-2"></span>
 <span id="cb4-3"><span class="kw" style="color: #003B4F;">def</span> naive_knn_for_loop(X, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>):</span>
@@ -305,165 +1724,388 @@ L: 1.0</code></pre>
 <span id="cb4-7">    </span>
 <span id="cb4-8">    <span class="co" style="color: #5E5E5E;"># Time complexity to create the distance array: O(N*D)</span></span>
 <span id="cb4-9"></span>
-<span id="cb4-10">    <span class="co" style="color: #5E5E5E;"># Now, we need to sort the distances</span></span>
-<span id="cb4-11">    <span class="co" style="color: #5E5E5E;"># Time complexity: O(N*log(N))</span></span>
-<span id="cb4-12">    sorted_dists <span class="op" style="color: #5E5E5E;">=</span> np.argsort(dists)</span>
-<span id="cb4-13"></span>
-<span id="cb4-14">    <span class="co" style="color: #5E5E5E;"># Time complexity: O(k)</span></span>
-<span id="cb4-15">    <span class="cf" style="color: #003B4F;">return</span> sorted_dists[:k]</span></code></pre></div>
+<span id="cb4-10">    <span class="co" style="color: #5E5E5E;"># Now, we need to find the k smallest distances</span></span>
+<span id="cb4-11">    <span class="cf" style="color: #003B4F;">return</span> np.argpartition(dists, k)[:k] <span class="co" style="color: #5E5E5E;"># Time complexity: O(Nk) or O(N) depending on the implementation</span></span>
+<span id="cb4-12">  </span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>array([1384, 1388, 2929])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">X[naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>array([[-0.02403045, -0.00673354],
+       [-0.00243893,  0.02568723],
+       [-0.02888503, -0.03127704]])</code></pre>
+</div>
 </div>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>12.7 ms ± 41.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</code></pre>
+<pre><code>12.4 ms ± 60.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;"># Implement using numpy</span></span>
-<span id="cb7-2"></span>
-<span id="cb7-3"><span class="kw" style="color: #003B4F;">def</span> naive_knn_numpy(X, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>):</span>
-<span id="cb7-4">    dists <span class="op" style="color: #5E5E5E;">=</span> np.<span class="bu" style="color: null;">sum</span>((X <span class="op" style="color: #5E5E5E;">-</span> x_test)<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span>, axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb7-5">    sorted_dists <span class="op" style="color: #5E5E5E;">=</span> np.argsort(dists)</span>
-<span id="cb7-6">    <span class="cf" style="color: #003B4F;">return</span> sorted_dists[:k]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="co" style="color: #5E5E5E;"># Implement using numpy</span></span>
+<span id="cb11-2"></span>
+<span id="cb11-3"><span class="kw" style="color: #003B4F;">def</span> naive_knn_numpy(X, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>):</span>
+<span id="cb11-4">    dists <span class="op" style="color: #5E5E5E;">=</span> np.<span class="bu" style="color: null;">sum</span>((X <span class="op" style="color: #5E5E5E;">-</span> x_test)<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span>, axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb11-5">    <span class="co" style="color: #5E5E5E;">#return np.partition(dists, k)[:k]</span></span>
+<span id="cb11-6">    sorted_dists <span class="op" style="color: #5E5E5E;">=</span> np.argsort(dists)</span>
+<span id="cb11-7">    <span class="cf" style="color: #003B4F;">return</span> sorted_dists[:k]</span></code></pre></div>
 </div>
 <div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_numpy(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>242 µs ± 1.72 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</code></pre>
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">naive_knn_numpy(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>array([1384, 1388, 2929])</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;"># Show LSH implementation step by step</span></span>
-<span id="cb10-2"></span>
-<span id="cb10-3"><span class="co" style="color: #5E5E5E;"># Creating a random separating hyperplane</span></span>
-<span id="cb10-4"></span>
-<span id="cb10-5">w <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">2</span>)</span>
-<span id="cb10-6">b <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb10-7"></span>
-<span id="cb10-8"><span class="co" style="color: #5E5E5E;"># Plot the separating hyperplane</span></span>
-<span id="cb10-9"></span>
-<span id="cb10-10">x <span class="op" style="color: #5E5E5E;">=</span> np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">3</span>, <span class="dv" style="color: #AD0000;">3</span>, <span class="dv" style="color: #AD0000;">100</span>)</span>
-<span id="cb10-11">y <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">-</span>(w[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">*</span> x <span class="op" style="color: #5E5E5E;">+</span> b) <span class="op" style="color: #5E5E5E;">/</span> w[<span class="dv" style="color: #AD0000;">1</span>]</span>
-<span id="cb10-12"></span>
-<span id="cb10-13">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>)</span>
-<span id="cb10-14">plt.plot(x, y, <span class="st" style="color: #20794D;">'r'</span>)</span>
-<span id="cb10-15"></span>
-<span id="cb10-16"><span class="co" style="color: #5E5E5E;"># Color the points based on which side of the hyperplane they are on</span></span>
-<span id="cb10-17"></span>
-<span id="cb10-18">colors <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">0</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">+</span> X[:, <span class="dv" style="color: #AD0000;">1</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">1</span>] <span class="op" style="color: #5E5E5E;">+</span> b <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="dv" style="color: #AD0000;">0</span></span>
-<span id="cb10-19"></span>
-<span id="cb10-20">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>, c<span class="op" style="color: #5E5E5E;">=</span>colors)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f619ec76b20&gt;</code></pre>
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_numpy(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>241 µs ± 519 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="co" style="color: #5E5E5E;"># Implement using numpy</span></span>
+<span id="cb16-2"></span>
+<span id="cb16-3"><span class="kw" style="color: #003B4F;">def</span> naive_knn_numpy(X, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>):</span>
+<span id="cb16-4">    dists <span class="op" style="color: #5E5E5E;">=</span> np.<span class="bu" style="color: null;">sum</span>((X <span class="op" style="color: #5E5E5E;">-</span> x_test)<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span>, axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb16-5">    <span class="cf" style="color: #003B4F;">return</span> np.argpartition(dists, k)[:k]</span>
+<span id="cb16-6">    <span class="co" style="color: #5E5E5E;">#sorted_dists = np.argsort(dists)</span></span>
+<span id="cb16-7">    <span class="co" style="color: #5E5E5E;">#return sorted_dists[:k]</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_numpy(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>85.3 µs ± 110 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="co" style="color: #5E5E5E;"># Show LSH implementation step by step</span></span>
+<span id="cb19-2"></span>
+<span id="cb19-3"><span class="co" style="color: #5E5E5E;"># Creating a random separating hyperplane</span></span>
+<span id="cb19-4"></span>
+<span id="cb19-5">w <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb19-6">b <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">1</span>)<span class="op" style="color: #5E5E5E;">/</span><span class="fl" style="color: #AD0000;">4.0</span></span>
+<span id="cb19-7"></span>
+<span id="cb19-8"><span class="co" style="color: #5E5E5E;"># Plot the separating hyperplane</span></span>
+<span id="cb19-9"></span>
+<span id="cb19-10">x <span class="op" style="color: #5E5E5E;">=</span> np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">3</span>, <span class="dv" style="color: #AD0000;">3</span>, <span class="dv" style="color: #AD0000;">100</span>)</span>
+<span id="cb19-11">y <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">-</span>(w[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">*</span> x <span class="op" style="color: #5E5E5E;">+</span> b) <span class="op" style="color: #5E5E5E;">/</span> w[<span class="dv" style="color: #AD0000;">1</span>]</span>
+<span id="cb19-12"></span>
+<span id="cb19-13">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>)</span>
+<span id="cb19-14">plt.plot(x, y, <span class="st" style="color: #20794D;">'r'</span>, linewidth<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb19-15"></span>
+<span id="cb19-16"><span class="co" style="color: #5E5E5E;"># Color the points based on which side of the hyperplane they are on</span></span>
+<span id="cb19-17"></span>
+<span id="cb19-18">colors <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">0</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">+</span> X[:, <span class="dv" style="color: #AD0000;">1</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">1</span>] <span class="op" style="color: #5E5E5E;">+</span> b <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="dv" style="color: #AD0000;">0</span></span>
+<span id="cb19-19"></span>
+<span id="cb19-20">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>, c<span class="op" style="color: #5E5E5E;">=</span>colors)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f77a0a14be0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/knn-lsh_files/figure-html/cell-8-output-2.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/knn-lsh_files/figure-html/cell-13-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Create three random hyperplanes and color the points based on which side of the hyperplane they are on. </span></span>
+<span id="cb21-2"><span class="co" style="color: #5E5E5E;"># there should be 2^3 = 8 different colors</span></span>
+<span id="cb21-3"><span class="co" style="color: #5E5E5E;"># each separating hyperplane corresponds to a bit in the hash</span></span>
+<span id="cb21-4"></span>
+<span id="cb21-5"><span class="bu" style="color: null;">hash</span> <span class="op" style="color: #5E5E5E;">=</span> np.zeros((X.shape[<span class="dv" style="color: #AD0000;">0</span>], <span class="dv" style="color: #AD0000;">3</span>)).astype(<span class="bu" style="color: null;">int</span>)</span>
+<span id="cb21-6">ws <span class="op" style="color: #5E5E5E;">=</span> []</span>
+<span id="cb21-7">bs <span class="op" style="color: #5E5E5E;">=</span> []</span>
+<span id="cb21-8"><span class="co" style="color: #5E5E5E;"># Cost for creating the hash table: O(N*H*D) </span></span>
+<span id="cb21-9"><span class="cf" style="color: #003B4F;">for</span> H <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">3</span>): <span class="co" style="color: #5E5E5E;"># H = number of hyperplanes</span></span>
+<span id="cb21-10">    w <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb21-11">    b <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">1</span>)<span class="op" style="color: #5E5E5E;">/</span><span class="fl" style="color: #AD0000;">4.0</span></span>
+<span id="cb21-12">    ws.append(w)</span>
+<span id="cb21-13">    bs.append(b)</span>
+<span id="cb21-14">    <span class="bu" style="color: null;">hash</span>[:, H] <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">0</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">+</span> X[:, <span class="dv" style="color: #AD0000;">1</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">1</span>] <span class="op" style="color: #5E5E5E;">+</span> b <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="dv" style="color: #AD0000;">0</span> <span class="co" style="color: #5E5E5E;"># D computations per iteration</span></span>
+<span id="cb21-15"></span>
+<span id="cb21-16"><span class="co" style="color: #5E5E5E;"># Convert the hash to a decimal number</span></span>
+<span id="cb21-17"></span>
+<span id="cb21-18">hash_dec <span class="op" style="color: #5E5E5E;">=</span> np.<span class="bu" style="color: null;">sum</span>(<span class="bu" style="color: null;">hash</span> <span class="op" style="color: #5E5E5E;">*</span> <span class="dv" style="color: #AD0000;">2</span><span class="op" style="color: #5E5E5E;">**</span>np.arange(<span class="dv" style="color: #AD0000;">3</span>)[::<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>], axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb21-19"></span>
+<span id="cb21-20"><span class="co" style="color: #5E5E5E;"># Plot the hash</span></span>
+<span id="cb21-21"></span>
+<span id="cb21-22">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>, c<span class="op" style="color: #5E5E5E;">=</span><span class="bu" style="color: null;">hash</span>)</span>
+<span id="cb21-23"></span>
+<span id="cb21-24"><span class="co" style="color: #5E5E5E;"># Plot the hash with the separating hyperplanes</span></span>
+<span id="cb21-25"></span>
+<span id="cb21-26">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>, c<span class="op" style="color: #5E5E5E;">=</span>hash_dec)</span>
+<span id="cb21-27"><span class="cf" style="color: #003B4F;">for</span> w, b <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">zip</span>(ws, bs):</span>
+<span id="cb21-28">    <span class="bu" style="color: null;">print</span>(w, b)</span>
+<span id="cb21-29">    x <span class="op" style="color: #5E5E5E;">=</span> np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">3</span>, <span class="dv" style="color: #AD0000;">3</span>, <span class="dv" style="color: #AD0000;">100</span>)</span>
+<span id="cb21-30">    y <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">-</span>(w[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">*</span> x <span class="op" style="color: #5E5E5E;">+</span> b) <span class="op" style="color: #5E5E5E;">/</span> w[<span class="dv" style="color: #AD0000;">1</span>]</span>
+<span id="cb21-31">    plt.plot(x, y, <span class="st" style="color: #20794D;">'r'</span>)</span>
+<span id="cb21-32"></span>
+<span id="cb21-33"><span class="co" style="color: #5E5E5E;"># Mark the test point</span></span>
+<span id="cb21-34"></span>
+<span id="cb21-35">x_test <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb21-36">plt.scatter(x_test[<span class="dv" style="color: #AD0000;">0</span>], x_test[<span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">100</span>, c<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[-0.33410199 -1.27040586] [-0.17918695]
+[-0.42003734  1.39768761] [-0.43795823]
+[0.71691338 0.21293161] [-0.1219637]</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f77a07b5640&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/knn-lsh_files/figure-html/cell-14-output-3.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="co" style="color: #5E5E5E;"># Create three random hyperplanes and color the points based on which side of the hyperplane they are on. </span></span>
-<span id="cb12-2"><span class="co" style="color: #5E5E5E;"># there should be 2^3 = 8 different colors</span></span>
-<span id="cb12-3"><span class="co" style="color: #5E5E5E;"># each separating hyperplane corresponds to a bit in the hash</span></span>
-<span id="cb12-4"></span>
-<span id="cb12-5"><span class="bu" style="color: null;">hash</span> <span class="op" style="color: #5E5E5E;">=</span> np.zeros((X.shape[<span class="dv" style="color: #AD0000;">0</span>], <span class="dv" style="color: #AD0000;">3</span>)).astype(<span class="bu" style="color: null;">int</span>)</span>
-<span id="cb12-6">ws <span class="op" style="color: #5E5E5E;">=</span> []</span>
-<span id="cb12-7">bs <span class="op" style="color: #5E5E5E;">=</span> []</span>
-<span id="cb12-8"><span class="cf" style="color: #003B4F;">for</span> s_h <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">3</span>):</span>
-<span id="cb12-9">    w <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">2</span>)</span>
-<span id="cb12-10">    b <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb12-11">    ws.append(w)</span>
-<span id="cb12-12">    bs.append(b)</span>
-<span id="cb12-13">    <span class="bu" style="color: null;">hash</span>[:, s_h] <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">0</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">+</span> X[:, <span class="dv" style="color: #AD0000;">1</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">1</span>] <span class="op" style="color: #5E5E5E;">+</span> b <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="dv" style="color: #AD0000;">0</span></span>
-<span id="cb12-14"></span>
-<span id="cb12-15"><span class="co" style="color: #5E5E5E;"># Convert the hash to a decimal number</span></span>
-<span id="cb12-16"></span>
-<span id="cb12-17">hash_dec <span class="op" style="color: #5E5E5E;">=</span> np.<span class="bu" style="color: null;">sum</span>(<span class="bu" style="color: null;">hash</span> <span class="op" style="color: #5E5E5E;">*</span> <span class="dv" style="color: #AD0000;">2</span><span class="op" style="color: #5E5E5E;">**</span>np.arange(<span class="dv" style="color: #AD0000;">3</span>)[::<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>], axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb12-18"></span>
-<span id="cb12-19"><span class="co" style="color: #5E5E5E;"># Plot the hash</span></span>
-<span id="cb12-20"></span>
-<span id="cb12-21">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>, c<span class="op" style="color: #5E5E5E;">=</span><span class="bu" style="color: null;">hash</span>)</span>
-<span id="cb12-22"></span>
-<span id="cb12-23"><span class="co" style="color: #5E5E5E;"># Plot the hash with the separating hyperplanes</span></span>
-<span id="cb12-24"></span>
-<span id="cb12-25">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>, c<span class="op" style="color: #5E5E5E;">=</span>hash_dec)</span>
-<span id="cb12-26"><span class="cf" style="color: #003B4F;">for</span> w, b <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">zip</span>(ws, bs):</span>
-<span id="cb12-27">    <span class="bu" style="color: null;">print</span>(w, b)</span>
-<span id="cb12-28">    x <span class="op" style="color: #5E5E5E;">=</span> np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">3</span>, <span class="dv" style="color: #AD0000;">3</span>, <span class="dv" style="color: #AD0000;">100</span>)</span>
-<span id="cb12-29">    y <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">-</span>(w[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">*</span> x <span class="op" style="color: #5E5E5E;">+</span> b) <span class="op" style="color: #5E5E5E;">/</span> w[<span class="dv" style="color: #AD0000;">1</span>]</span>
-<span id="cb12-30">    plt.plot(x, y, <span class="st" style="color: #20794D;">'r'</span>)</span>
-<span id="cb12-31"></span>
-<span id="cb12-32"><span class="co" style="color: #5E5E5E;"># Mark the test point</span></span>
-<span id="cb12-33"></span>
-<span id="cb12-34">x_test <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>])</span>
-<span id="cb12-35">plt.scatter(x_test[<span class="dv" style="color: #AD0000;">0</span>], x_test[<span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">100</span>, c<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[-0.44543684 -2.02573568] [0.26697028]
-[ 0.02870215 -1.02628883] [-0.01423546]
-[-0.08089755  0.22046497] [0.07259317]</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(<span class="bu" style="color: null;">hash</span>)</span>
+<span id="cb24-2">df.columns <span class="op" style="color: #5E5E5E;">=</span> [<span class="st" style="color: #20794D;">'h1'</span>, <span class="st" style="color: #20794D;">'h2'</span>, <span class="st" style="color: #20794D;">'h3'</span>]</span>
+<span id="cb24-3">df[<span class="st" style="color: #20794D;">'hash_dec'</span>] <span class="op" style="color: #5E5E5E;">=</span> hash_dec</span>
+<span id="cb24-4">df[<span class="st" style="color: #20794D;">'x'</span>] <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">0</span>]</span>
+<span id="cb24-5">df[<span class="st" style="color: #20794D;">'y'</span>] <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">1</span>]</span>
+<span id="cb24-6"></span>
+<span id="cb24-7">df.head(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="17">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f619e8e5970&gt;</code></pre>
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>h1</th>
+      <th>h2</th>
+      <th>h3</th>
+      <th>hash_dec</th>
+      <th>x</th>
+      <th>y</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>2</td>
+      <td>-0.246232</td>
+      <td>1.244987</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0.871390</td>
+      <td>0.846192</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4</td>
+      <td>-0.105102</td>
+      <td>-1.672524</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0.529090</td>
+      <td>0.588405</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1.423872</td>
+      <td>-0.466313</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>2</td>
+      <td>0.037017</td>
+      <td>0.396019</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4</td>
+      <td>-0.883974</td>
+      <td>-1.743182</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>5</td>
+      <td>0.337388</td>
+      <td>-0.393713</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1.708228</td>
+      <td>-0.014551</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>4</td>
+      <td>-0.495120</td>
+      <td>-0.765020</td>
+    </tr>
+  </tbody>
+</table>
 </div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/knn-lsh_files/figure-html/cell-9-output-3.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">pd.DataFrame(<span class="bu" style="color: null;">hash</span>).head()</span>
-<span id="cb15-2"></span>
-<span id="cb15-3">pd.DataFrame(<span class="bu" style="color: null;">hash</span>).value_counts()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"></span>
+<span id="cb25-2">pd.DataFrame(<span class="bu" style="color: null;">hash</span>).value_counts()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>0  1  2
-0  0  1    1273
-1  1  0    1032
-      1     408
-   0  1     201
-0  1  0      51
-   0  0      33
-   1  1       2
+1  0  0    943
+0  1  0    559
+      1    506
+   0  1    461
+1  0  1    347
+0  0  0    112
+1  1  0     72
 dtype: int64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><span class="co" style="color: #5E5E5E;"># Predict the K nearest neighbors using LSH</span></span>
-<span id="cb17-2"></span>
-<span id="cb17-3"><span class="co" style="color: #5E5E5E;"># Compute the hash for the test point</span></span>
-<span id="cb17-4"></span>
-<span id="cb17-5">x_test <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>])</span>
-<span id="cb17-6">hash_test <span class="op" style="color: #5E5E5E;">=</span> x_test[<span class="dv" style="color: #AD0000;">0</span>]<span class="op" style="color: #5E5E5E;">*</span>ws[<span class="dv" style="color: #AD0000;">0</span>][<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">+</span> x_test[<span class="dv" style="color: #AD0000;">1</span>]<span class="op" style="color: #5E5E5E;">*</span>ws[<span class="dv" style="color: #AD0000;">0</span>][<span class="dv" style="color: #AD0000;">1</span>] <span class="op" style="color: #5E5E5E;">+</span> bs[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="dv" style="color: #AD0000;">0</span></span>
-<span id="cb17-7"></span>
-<span id="cb17-8"><span class="co" style="color: #5E5E5E;">#convert to decimal</span></span>
-<span id="cb17-9">hash_test_dec <span class="op" style="color: #5E5E5E;">=</span> np.<span class="bu" style="color: null;">sum</span>(hash_test <span class="op" style="color: #5E5E5E;">*</span> <span class="dv" style="color: #AD0000;">2</span><span class="op" style="color: #5E5E5E;">**</span>np.arange(<span class="dv" style="color: #AD0000;">3</span>)[::<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>])</span>
-<span id="cb17-10"></span>
-<span id="cb17-11">hash_test_dec</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><span class="co" style="color: #5E5E5E;"># Predict the K nearest neighbors using LSH</span></span>
+<span id="cb27-2"></span>
+<span id="cb27-3"><span class="co" style="color: #5E5E5E;"># Compute the hash for the test point</span></span>
+<span id="cb27-4"></span>
+<span id="cb27-5">x_test <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb27-6">hash_test <span class="op" style="color: #5E5E5E;">=</span> x_test[<span class="dv" style="color: #AD0000;">0</span>]<span class="op" style="color: #5E5E5E;">*</span>ws[<span class="dv" style="color: #AD0000;">0</span>][<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">+</span> x_test[<span class="dv" style="color: #AD0000;">1</span>]<span class="op" style="color: #5E5E5E;">*</span>ws[<span class="dv" style="color: #AD0000;">0</span>][<span class="dv" style="color: #AD0000;">1</span>] <span class="op" style="color: #5E5E5E;">+</span> bs[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="dv" style="color: #AD0000;">0</span></span>
+<span id="cb27-7"></span>
+<span id="cb27-8"><span class="co" style="color: #5E5E5E;">#convert to decimal</span></span>
+<span id="cb27-9">hash_test_dec <span class="op" style="color: #5E5E5E;">=</span> np.<span class="bu" style="color: null;">sum</span>(hash_test <span class="op" style="color: #5E5E5E;">*</span> <span class="dv" style="color: #AD0000;">2</span><span class="op" style="color: #5E5E5E;">**</span>np.arange(<span class="dv" style="color: #AD0000;">3</span>)[::<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb27-10"></span>
+<span id="cb27-11">hash_test_dec</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="19">
-<pre><code>7</code></pre>
+<pre><code>0</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="co" style="color: #5E5E5E;"># Find subset of points with the same hash</span></span>
-<span id="cb19-2"></span>
-<span id="cb19-3">X_subset <span class="op" style="color: #5E5E5E;">=</span> X[hash_dec <span class="op" style="color: #5E5E5E;">==</span> hash_test_dec]</span>
-<span id="cb19-4">X_subset.shape</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><span class="co" style="color: #5E5E5E;"># Find subset of points with the same hash</span></span>
+<span id="cb29-2"></span>
+<span id="cb29-3">X_subset <span class="op" style="color: #5E5E5E;">=</span> X[hash_dec <span class="op" style="color: #5E5E5E;">==</span> hash_test_dec]</span>
+<span id="cb29-4">X_subset.shape</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="20">
-<pre><code>(408, 2)</code></pre>
+<pre><code>(112, 2)</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Now, we can use the naive KNN implementation to find the K nearest neighbors</span></span>
-<span id="cb21-2"></span>
-<span id="cb21-3">naive_knn_numpy(X_subset, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><span class="co" style="color: #5E5E5E;"># Now, we can use the naive KNN implementation to find the K nearest neighbors</span></span>
+<span id="cb31-2"></span>
+<span id="cb31-3">ix <span class="op" style="color: #5E5E5E;">=</span> naive_knn_numpy(X_subset, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb31-4">X_subset[ix]</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="21">
-<pre><code>array([396, 263,  92])</code></pre>
+<pre><code>array([[-0.00243893,  0.02568723],
+       [-0.02403045, -0.00673354],
+       [-0.02888503, -0.03127704]])</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">X_subset[naive_knn_numpy(X_subset, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
-<pre><code>array([[-0.02365365, -0.05081177],
-       [ 0.02026029, -0.05361056],
-       [-0.03790977, -0.04458837]])</code></pre>
+<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_numpy(X_subset, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>12.6 µs ± 110 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</code></pre>
 </div>
+</div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><span class="co" style="color: #5E5E5E;"># Using FAISS from Facebook</span></span>
+<span id="cb35-2"></span>
+<span id="cb35-3"><span class="im" style="color: #00769E;">import</span> faiss</span>
+<span id="cb35-4"></span>
+<span id="cb35-5"><span class="co" style="color: #5E5E5E;"># Create an index</span></span>
+<span id="cb35-6">index <span class="op" style="color: #5E5E5E;">=</span> faiss.IndexFlatL2(<span class="dv" style="color: #AD0000;">2</span>)   <span class="co" style="color: #5E5E5E;"># build the index</span></span>
+<span id="cb35-7"></span>
+<span id="cb35-8"><span class="co" style="color: #5E5E5E;"># Add the data to the index</span></span>
+<span id="cb35-9">index.add(X.astype(np.float32))                  <span class="co" style="color: #5E5E5E;"># add vectors to the index</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><span class="co" style="color: #5E5E5E;"># Search for the K nearest neighbors</span></span>
+<span id="cb36-2">D, I <span class="op" style="color: #5E5E5E;">=</span> index.search(x_test.astype(np.float32).reshape(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>), k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)     <span class="co" style="color: #5E5E5E;"># actual search</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>51.3 µs ± 256 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1">D</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<pre><code>array([[0.0006228 , 0.00066578, 0.0018126 ]], dtype=float32)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1">I</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="30">
+<pre><code>array([[1384, 1388, 2929]])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb42" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1">X[I[<span class="dv" style="color: #AD0000;">0</span>]]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="31">
+<pre><code>array([[-0.02403045, -0.00673354],
+       [-0.00243893,  0.02568723],
+       [-0.02888503, -0.03127704]])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb44" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><span class="op" style="color: #5E5E5E;">%</span>timeit index.search(x_test.astype(np.float32).reshape(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>), k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>51.4 µs ± 240 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb46" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><span class="co" style="color: #5E5E5E;"># Now, run on GPU</span></span>
+<span id="cb46-2"></span>
+<span id="cb46-3">res <span class="op" style="color: #5E5E5E;">=</span> faiss.StandardGpuResources()  <span class="co" style="color: #5E5E5E;"># use a single GPU</span></span>
+<span id="cb46-4"></span>
+<span id="cb46-5"><span class="co" style="color: #5E5E5E;"># Create an index</span></span>
+<span id="cb46-6">index <span class="op" style="color: #5E5E5E;">=</span> faiss.IndexFlatL2(<span class="dv" style="color: #AD0000;">2</span>)   <span class="co" style="color: #5E5E5E;"># build the index</span></span>
+<span id="cb46-7"></span>
+<span id="cb46-8">gpu_index_flat <span class="op" style="color: #5E5E5E;">=</span> faiss.index_cpu_to_gpu(res, <span class="dv" style="color: #AD0000;">0</span>, index)</span>
+<span id="cb46-9"></span>
+<span id="cb46-10"><span class="co" style="color: #5E5E5E;"># Add the data to the index</span></span>
+<span id="cb46-11">gpu_index_flat.add(X.astype(np.float32))                  <span class="co" style="color: #5E5E5E;"># add vectors to the index</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="38">
+<div class="sourceCode cell-code" id="cb47" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><span class="op" style="color: #5E5E5E;">%</span>timeit gpu_index_flat.search(x_test.astype(np.float32).reshape(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>), k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>79.6 µs ± 73.3 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><span class="co" style="color: #5E5E5E;"># The above is slow because</span></span>
+<span id="cb49-2"><span class="co" style="color: #5E5E5E;"># 1. We are copying the data to the GPU</span></span>
+<span id="cb49-3"><span class="co" style="color: #5E5E5E;"># 2. We are copying the data back to the CPU</span></span>
+<span id="cb49-4"><span class="co" style="color: #5E5E5E;"># 3. Not enough data and low dimensional data</span></span></code></pre></div>
 </div>
 
 
@@ -3871,501 +5513,6 @@ Cool
 
  ]]></description>
   <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</guid>
-  <pubDate>Thu, 12 Jan 2023 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Pandas tips</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross.html</link>
-  <description><![CDATA[ 
-
-
-
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span></code></pre></div>
-</div>
-<section id="dataset-creation" class="level3">
-<h3 class="anchored" data-anchor-id="dataset-creation">Dataset creation</h3>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Create a DataFrame for whether or not a person plays tennis. </span></span>
-<span id="cb2-2"><span class="co" style="color: #5E5E5E;"># It has discrete features and 14 rows.</span></span>
-<span id="cb2-3"></span>
-<span id="cb2-4">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame({</span>
-<span id="cb2-5">    <span class="st" style="color: #20794D;">'Outlook'</span>: [<span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Overcast'</span>, <span class="st" style="color: #20794D;">'Rain'</span>, <span class="st" style="color: #20794D;">'Rain'</span>, <span class="st" style="color: #20794D;">'Rain'</span>, <span class="st" style="color: #20794D;">'Overcast'</span>, <span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Rain'</span>, <span class="st" style="color: #20794D;">'Sunny'</span>, <span class="st" style="color: #20794D;">'Overcast'</span>, <span class="st" style="color: #20794D;">'Overcast'</span>, <span class="st" style="color: #20794D;">'Rain'</span>],</span>
-<span id="cb2-6">    <span class="st" style="color: #20794D;">'Temperature'</span>: [<span class="st" style="color: #20794D;">'Hot'</span>, <span class="st" style="color: #20794D;">'Hot'</span>, <span class="st" style="color: #20794D;">'Hot'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Cool'</span>, <span class="st" style="color: #20794D;">'Cool'</span>, <span class="st" style="color: #20794D;">'Cool'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Cool'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Mild'</span>, <span class="st" style="color: #20794D;">'Hot'</span>, <span class="st" style="color: #20794D;">'Mild'</span>],</span>
-<span id="cb2-7">    <span class="st" style="color: #20794D;">'Humidity'</span>: [<span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'High'</span>, <span class="st" style="color: #20794D;">'Normal'</span>, <span class="st" style="color: #20794D;">'High'</span>],</span>
-<span id="cb2-8">    <span class="st" style="color: #20794D;">'Wind'</span>: [<span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Strong'</span>, <span class="st" style="color: #20794D;">'Weak'</span>, <span class="st" style="color: #20794D;">'Strong'</span>],</span>
-<span id="cb2-9">    <span class="st" style="color: #20794D;">'PlayTennis'</span>: [<span class="st" style="color: #20794D;">'No'</span>, <span class="st" style="color: #20794D;">'No'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'No'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'No'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'Yes'</span>, <span class="st" style="color: #20794D;">'No'</span>]</span>
-<span id="cb2-10">})</span></code></pre></div>
-</div>
-</section>
-<section id="counting-values-of-outcome-variable-useful-for-calculating-entropy" class="level3">
-<h3 class="anchored" data-anchor-id="counting-values-of-outcome-variable-useful-for-calculating-entropy">Counting values of outcome variable (useful for calculating entropy)</h3>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">ser <span class="op" style="color: #5E5E5E;">=</span> df[<span class="st" style="color: #20794D;">'PlayTennis'</span>].value_counts()</span>
-<span id="cb3-2">ser</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>Yes    9
-No     5
-Name: PlayTennis, dtype: int64</code></pre>
-</div>
-</div>
-</section>
-<section id="using-cross-tab-to-quickly-capture-the-relationship-between-two-variables" class="level3">
-<h3 class="anchored" data-anchor-id="using-cross-tab-to-quickly-capture-the-relationship-between-two-variables">Using cross tab to quickly capture the relationship between two variables</h3>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">df_out <span class="op" style="color: #5E5E5E;">=</span> pd.crosstab(df[<span class="st" style="color: #20794D;">'Outlook'</span>], df[<span class="st" style="color: #20794D;">'PlayTennis'</span>])</span>
-<span id="cb5-2">df_out</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>2</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>3</td>
-      <td>2</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">df_out.index, df_out.columns</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
-<pre><code>(Index(['Overcast', 'Rain', 'Sunny'], dtype='object', name='Outlook'),
- Index(['No', 'Yes'], dtype='object', name='PlayTennis'))</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">e <span class="op" style="color: #5E5E5E;">=</span> df_out.<span class="bu" style="color: null;">sum</span>(axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb8-2">e</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<pre><code>Outlook
-Overcast    4
-Rain        5
-Sunny       5
-dtype: int64</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;"># Find the fraction of each row that is a 'Yes' and 'No' for PlayTennis</span></span>
-<span id="cb10-2">df_out[<span class="st" style="color: #20794D;">'Yes'</span>] <span class="op" style="color: #5E5E5E;">=</span> df_out[<span class="st" style="color: #20794D;">'Yes'</span>] <span class="op" style="color: #5E5E5E;">/</span> e</span>
-<span id="cb10-3">df_out[<span class="st" style="color: #20794D;">'No'</span>] <span class="op" style="color: #5E5E5E;">=</span> df_out[<span class="st" style="color: #20794D;">'No'</span>] <span class="op" style="color: #5E5E5E;">/</span> e</span>
-<span id="cb10-4">df_out</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0.0</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>0.4</td>
-      <td>0.6</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>0.6</td>
-      <td>0.4</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-</section>
-<section id="more-efficient-cross-tabulation-using-normalize" class="level3">
-<h3 class="anchored" data-anchor-id="more-efficient-cross-tabulation-using-normalize">More efficient cross tabulation (using normalize)</h3>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">pd.crosstab(df[<span class="st" style="color: #20794D;">'Outlook'</span>], df[<span class="st" style="color: #20794D;">'PlayTennis'</span>], normalize<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'index'</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0.0</td>
-      <td>1.0</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>0.4</td>
-      <td>0.6</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>0.6</td>
-      <td>0.4</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-</section>
-<section id="using-pd.groupby" class="level3">
-<h3 class="anchored" data-anchor-id="using-pd.groupby">Using pd.groupby()</h3>
-<div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>]).groups</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
-<pre><code>{'Overcast': [2, 6, 11, 12], 'Rain': [3, 4, 5, 9, 13], 'Sunny': [0, 1, 7, 8, 10]}</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>]).get_group(<span class="st" style="color: #20794D;">"Sunny"</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Outlook</th>
-      <th>Temperature</th>
-      <th>Humidity</th>
-      <th>Wind</th>
-      <th>PlayTennis</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Sunny</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>No</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Sunny</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>No</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>No</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>Sunny</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>Normal</td>
-      <td>Strong</td>
-      <td>Yes</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>]).get_group(<span class="st" style="color: #20794D;">"Sunny"</span>)[<span class="st" style="color: #20794D;">"PlayTennis"</span>]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
-<pre><code>0      No
-1      No
-7      No
-8     Yes
-10    Yes
-Name: PlayTennis, dtype: object</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>]).get_group(<span class="st" style="color: #20794D;">"Sunny"</span>)[<span class="st" style="color: #20794D;">"PlayTennis"</span>].value_counts()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<pre><code>No     3
-Yes    2
-Name: PlayTennis, dtype: int64</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).groups</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
-<pre><code>{('Overcast', 'Yes'): [2, 6, 11, 12], ('Rain', 'No'): [5, 13], ('Rain', 'Yes'): [3, 4, 9], ('Sunny', 'No'): [0, 1, 7], ('Sunny', 'Yes'): [8, 10]}</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).get_group((<span class="st" style="color: #20794D;">"Sunny"</span>, <span class="st" style="color: #20794D;">"Yes"</span>))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Outlook</th>
-      <th>Temperature</th>
-      <th>Humidity</th>
-      <th>Wind</th>
-      <th>PlayTennis</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>8</th>
-      <td>Sunny</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>Normal</td>
-      <td>Strong</td>
-      <td>Yes</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).size()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
-<pre><code>Outlook   PlayTennis
-Overcast  Yes           4
-Rain      No            2
-          Yes           3
-Sunny     No            3
-          Yes           2
-dtype: int64</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).size().index</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<pre><code>MultiIndex([('Overcast', 'Yes'),
-            (    'Rain',  'No'),
-            (    'Rain', 'Yes'),
-            (   'Sunny',  'No'),
-            (   'Sunny', 'Yes')],
-           names=['Outlook', 'PlayTennis'])</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).size().unstack()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>NaN</td>
-      <td>4.0</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>2.0</td>
-      <td>3.0</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>3.0</td>
-      <td>2.0</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">df.groupby([<span class="st" style="color: #20794D;">"Outlook"</span>, <span class="st" style="color: #20794D;">"PlayTennis"</span>]).size().unstack(fill_value<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>2</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>3</td>
-      <td>2</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-</section>
-<section id="using-pd.pivot_table" class="level3">
-<h3 class="anchored" data-anchor-id="using-pd.pivot_table">Using pd.pivot_table</h3>
-<div class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">pivot_table <span class="op" style="color: #5E5E5E;">=</span> df.pivot_table(index<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Outlook'</span>, columns<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'PlayTennis'</span>, aggfunc<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'size'</span>, fill_value<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)</span>
-<span id="cb28-2">pivot_table</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="23">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th>PlayTennis</th>
-      <th>No</th>
-      <th>Yes</th>
-    </tr>
-    <tr>
-      <th>Outlook</th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Overcast</th>
-      <td>0</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>Rain</th>
-      <td>2</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>Sunny</th>
-      <td>3</td>
-      <td>2</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="24">
-<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">df_out.plot(kind<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'bar'</span>, stacked<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
-<pre><code>&lt;AxesSubplot:xlabel='Outlook'&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross_files/figure-html/cell-21-output-2.png" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1">df_out.plot(kind<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'bar'</span>, stacked<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
-<pre><code>&lt;AxesSubplot:xlabel='Outlook'&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross_files/figure-html/cell-22-output-2.png" class="img-fluid"></p>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/pivot-cross.html</guid>
   <pubDate>Thu, 12 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 </channel>
