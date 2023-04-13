@@ -10,7 +10,238 @@
 <atom:link href="https://github.com/nipunbatra/ml2023/notebooks/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.2.475</generator>
-<lastBuildDate>Tue, 04 Apr 2023 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 13 May 2023 00:00:00 GMT</lastBuildDate>
+<item>
+  <title>Parametric v/s Non-Parametric</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;">import</span> LinearRegression, LogisticRegression</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;">from</span> sklearn.neighbors <span class="im" style="color: #00769E;">import</span> KNeighborsClassifier, KNeighborsRegressor</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;">from</span> sklearn.tree <span class="im" style="color: #00769E;">import</span> DecisionTreeClassifier, DecisionTreeRegressor</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;">from</span> sklearn.neural_network <span class="im" style="color: #00769E;">import</span> MLPClassifier, MLPRegressor</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-10"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+</div>
+<p>Aim:</p>
+<p>Given Dataset (X, y), learn a function <code>f</code> that maps <code>X</code> to <code>y</code>, i.e.&nbsp;<code>y = f(X)</code>.</p>
+<p>We will consider two cases: - Parametric: <code>f</code> is a function of a fixed number of parameters, e.g.&nbsp;<code>f(x) = ax + b</code> - Non-parametric: <code>f</code> is a function of number of parameters that grows with the size of the dataset.</p>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Dataset for classification. Trivial dataset with 1 point in each class.</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3">X <span class="op" style="color: #5E5E5E;">=</span> np.array([[<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>], [<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>]])</span>
+<span id="cb2-4">y <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>])</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># Plot the dataset</span></span>
+<span id="cb3-2"></span>
+<span id="cb3-3">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], c<span class="op" style="color: #5E5E5E;">=</span>y, s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">100</span>, cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'viridis'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f1587ff8430&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;"># Plot the decision boundary of a logistic regression classifier, KNN classifier, decision tree classifier, and a neural network classifier.</span></span>
+<span id="cb5-2"></span>
+<span id="cb5-3"><span class="kw" style="color: #003B4F;">def</span> plot_decision_boundary(model, X, y):</span>
+<span id="cb5-4">    h <span class="op" style="color: #5E5E5E;">=</span> <span class="fl" style="color: #AD0000;">0.02</span></span>
+<span id="cb5-5">    x_min, x_max <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">0</span>].<span class="bu" style="color: null;">min</span>() <span class="op" style="color: #5E5E5E;">-</span> <span class="fl" style="color: #AD0000;">.5</span>, X[:, <span class="dv" style="color: #AD0000;">0</span>].<span class="bu" style="color: null;">max</span>() <span class="op" style="color: #5E5E5E;">+</span> <span class="fl" style="color: #AD0000;">.5</span></span>
+<span id="cb5-6">    y_min, y_max <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">1</span>].<span class="bu" style="color: null;">min</span>() <span class="op" style="color: #5E5E5E;">-</span> <span class="fl" style="color: #AD0000;">.5</span>, X[:, <span class="dv" style="color: #AD0000;">1</span>].<span class="bu" style="color: null;">max</span>() <span class="op" style="color: #5E5E5E;">+</span> <span class="fl" style="color: #AD0000;">.5</span></span>
+<span id="cb5-7">    xx, yy <span class="op" style="color: #5E5E5E;">=</span> np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))</span>
+<span id="cb5-8">    Z <span class="op" style="color: #5E5E5E;">=</span> model.predict(np.c_[xx.ravel(), yy.ravel()])</span>
+<span id="cb5-9">    Z <span class="op" style="color: #5E5E5E;">=</span> Z.reshape(xx.shape)</span>
+<span id="cb5-10">    plt.contourf(xx, yy, Z, cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'viridis'</span>, alpha<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.4</span>)</span>
+<span id="cb5-11">    plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], c<span class="op" style="color: #5E5E5E;">=</span>y, s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">100</span>, cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'viridis'</span>)</span>
+<span id="cb5-12">    plt.xlim(xx.<span class="bu" style="color: null;">min</span>(), xx.<span class="bu" style="color: null;">max</span>())</span>
+<span id="cb5-13">    plt.ylim(yy.<span class="bu" style="color: null;">min</span>(), yy.<span class="bu" style="color: null;">max</span>())</span>
+<span id="cb5-14"></span>
+<span id="cb5-15">    </span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># Instantiate the models</span></span>
+<span id="cb6-2"></span>
+<span id="cb6-3">lr <span class="op" style="color: #5E5E5E;">=</span> LogisticRegression()</span>
+<span id="cb6-4">knn <span class="op" style="color: #5E5E5E;">=</span> KNeighborsClassifier(n_neighbors<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb6-5">dt <span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier()</span>
+<span id="cb6-6">nn <span class="op" style="color: #5E5E5E;">=</span> MLPClassifier(hidden_layer_sizes<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">100</span>, <span class="dv" style="color: #AD0000;">100</span>), activation<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'logistic'</span>, max_iter<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000</span>)</span>
+<span id="cb6-7"></span>
+<span id="cb6-8"><span class="co" style="color: #5E5E5E;"># Plot the decision boundaries</span></span>
+<span id="cb6-9"></span>
+<span id="cb6-10">plt.figure(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">12</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
+<span id="cb6-11"></span>
+<span id="cb6-12"><span class="cf" style="color: #003B4F;">for</span> i, model <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">enumerate</span>([lr, knn, dt, nn]):</span>
+<span id="cb6-13">    plt.subplot(<span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">2</span>, i <span class="op" style="color: #5E5E5E;">+</span> <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb6-14">    model.fit(X, y)</span>
+<span id="cb6-15">    plot_decision_boundary(model, X, y)</span>
+<span id="cb6-16">    plt.title(model.__class__.<span class="va" style="color: #111111;">__name__</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<section id="learnt-functions" class="level2">
+<h2 class="anchored" data-anchor-id="learnt-functions">Learnt functions</h2>
+<section id="logistic-regression" class="level3">
+<h3 class="anchored" data-anchor-id="logistic-regression">Logistic Regression</h3>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">logits <span class="op" style="color: #5E5E5E;">=</span> X <span class="op" style="color: #5E5E5E;">@</span> w <span class="op" style="color: #5E5E5E;">+</span> b</span>
+<span id="cb7-2">prob <span class="op" style="color: #5E5E5E;">=</span> sigmoid(logits)</span>
+<span id="cb7-3">y_pred <span class="op" style="color: #5E5E5E;">=</span> prob <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="fl" style="color: #AD0000;">0.5</span></span></code></pre></div>
+</section>
+<section id="decision-tree" class="level3">
+<h3 class="anchored" data-anchor-id="decision-tree">Decision Tree</h3>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="im" style="color: #00769E;">from</span> sklearn.tree <span class="im" style="color: #00769E;">import</span> export_graphviz</span>
+<span id="cb8-2"><span class="im" style="color: #00769E;">import</span> graphviz</span>
+<span id="cb8-3"></span>
+<span id="cb8-4">dot_data <span class="op" style="color: #5E5E5E;">=</span> export_graphviz(dt, out_file<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">None</span>, feature_names<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'x1'</span>, <span class="st" style="color: #20794D;">'x2'</span>], class_names<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'0'</span>, <span class="st" style="color: #20794D;">'1'</span>], filled<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, rounded<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, special_characters<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb8-5">graph <span class="op" style="color: #5E5E5E;">=</span> graphviz.Source(dot_data)</span>
+<span id="cb8-6">graph</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric_files/figure-html/cell-7-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="mlp" class="level3">
+<h3 class="anchored" data-anchor-id="mlp">MLP</h3>
+<pre><code>logits = nn.predict(X)
+probs = sigmoid(logits)
+y_pred = probs&gt;0.5</code></pre>
+</section>
+<section id="knn" class="level3">
+<h3 class="anchored" data-anchor-id="knn">KNN</h3>
+<pre><code>if X1 &lt; 0.5 and X2 &lt; 0.5:
+    y = 0
+elif X1 &lt; 0.5 and X2 &gt;= 0.5:
+    ...</code></pre>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="co" style="color: #5E5E5E;"># Sophisticated dataset with 2 classes</span></span>
+<span id="cb11-2"></span>
+<span id="cb11-3"><span class="im" style="color: #00769E;">from</span> sklearn.datasets <span class="im" style="color: #00769E;">import</span> make_blobs</span>
+<span id="cb11-4"></span>
+<span id="cb11-5">X, y <span class="op" style="color: #5E5E5E;">=</span> make_blobs(n_samples<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">100</span>, centers<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, n_features<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, random_state<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>, cluster_std<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb11-6"></span>
+<span id="cb11-7"><span class="co" style="color: #5E5E5E;"># Plot the dataset</span></span>
+<span id="cb11-8"></span>
+<span id="cb11-9">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], c<span class="op" style="color: #5E5E5E;">=</span>y, cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'viridis'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f18607e16d0&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric_files/figure-html/cell-8-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">lr <span class="op" style="color: #5E5E5E;">=</span> LogisticRegression()</span>
+<span id="cb13-2">knn <span class="op" style="color: #5E5E5E;">=</span> KNeighborsClassifier(n_neighbors<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb13-3">dt <span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier()</span>
+<span id="cb13-4">nn <span class="op" style="color: #5E5E5E;">=</span> MLPClassifier(hidden_layer_sizes<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">100</span>, <span class="dv" style="color: #AD0000;">100</span>), activation<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'logistic'</span>, max_iter<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000</span>)</span>
+<span id="cb13-5"></span>
+<span id="cb13-6"><span class="co" style="color: #5E5E5E;"># Plot the decision boundaries</span></span>
+<span id="cb13-7"></span>
+<span id="cb13-8">plt.figure(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">12</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
+<span id="cb13-9"></span>
+<span id="cb13-10"><span class="cf" style="color: #003B4F;">for</span> i, model <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">enumerate</span>([lr, knn, dt, nn]):</span>
+<span id="cb13-11">    plt.subplot(<span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">2</span>, i <span class="op" style="color: #5E5E5E;">+</span> <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb13-12">    model.fit(X, y)</span>
+<span id="cb13-13">    plot_decision_boundary(model, X, y)</span>
+<span id="cb13-14">    plt.title(model.__class__.<span class="va" style="color: #111111;">__name__</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">dot_data <span class="op" style="color: #5E5E5E;">=</span> export_graphviz(dt, out_file<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">None</span>, feature_names<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'x1'</span>, <span class="st" style="color: #20794D;">'x2'</span>], class_names<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'0'</span>, <span class="st" style="color: #20794D;">'1'</span>], filled<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, rounded<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, special_characters<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb14-2">graph <span class="op" style="color: #5E5E5E;">=</span> graphviz.Source(dot_data)</span>
+<span id="cb14-3">graph</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric_files/figure-html/cell-10-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">dt.get_depth(), dt.get_n_leaves()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="30">
+<pre><code>(10, 25)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">lr.coef_</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="28">
+<pre><code>array([[ 0.19758375, -0.7298237 ]])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="co" style="color: #5E5E5E;"># Now, more noise</span></span>
+<span id="cb19-2"></span>
+<span id="cb19-3">X, y <span class="op" style="color: #5E5E5E;">=</span> make_blobs(n_samples<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">100</span>, centers<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, n_features<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, random_state<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>, cluster_std<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>)</span>
+<span id="cb19-4"></span>
+<span id="cb19-5"><span class="co" style="color: #5E5E5E;"># Plot the dataset</span></span>
+<span id="cb19-6"></span>
+<span id="cb19-7">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], c<span class="op" style="color: #5E5E5E;">=</span>y, cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'viridis'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="31">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f1587e38f10&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric_files/figure-html/cell-13-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">lr <span class="op" style="color: #5E5E5E;">=</span> LogisticRegression()</span>
+<span id="cb21-2">knn <span class="op" style="color: #5E5E5E;">=</span> KNeighborsClassifier(n_neighbors<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb21-3">dt <span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier()</span>
+<span id="cb21-4">nn <span class="op" style="color: #5E5E5E;">=</span> MLPClassifier(hidden_layer_sizes<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">100</span>, <span class="dv" style="color: #AD0000;">100</span>), activation<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'logistic'</span>, max_iter<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10000</span>)</span>
+<span id="cb21-5"></span>
+<span id="cb21-6"><span class="co" style="color: #5E5E5E;"># Plot the decision boundaries</span></span>
+<span id="cb21-7"></span>
+<span id="cb21-8">plt.figure(figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">12</span>, <span class="dv" style="color: #AD0000;">8</span>))</span>
+<span id="cb21-9"></span>
+<span id="cb21-10"><span class="cf" style="color: #003B4F;">for</span> i, model <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">enumerate</span>([lr, knn, dt, nn]):</span>
+<span id="cb21-11">    plt.subplot(<span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">2</span>, i <span class="op" style="color: #5E5E5E;">+</span> <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb21-12">    model.fit(X, y)</span>
+<span id="cb21-13">    plot_decision_boundary(model, X, y)</span>
+<span id="cb21-14">    plt.title(model.__class__.<span class="va" style="color: #111111;">__name__</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric_files/figure-html/cell-14-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">dot_data <span class="op" style="color: #5E5E5E;">=</span> export_graphviz(dt, out_file<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">None</span>, feature_names<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'x1'</span>, <span class="st" style="color: #20794D;">'x2'</span>], class_names<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'0'</span>, <span class="st" style="color: #20794D;">'1'</span>], filled<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, rounded<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, special_characters<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb22-2">graph <span class="op" style="color: #5E5E5E;">=</span> graphviz.Source(dot_data)</span>
+<span id="cb22-3">graph</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="33">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric_files/figure-html/cell-15-output-1.svg" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">dt.get_depth(), dt.get_n_leaves()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="36">
+<pre><code>(11, 35)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1">lr.coef_</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="37">
+<pre><code>array([[ 0.03933004, -0.10323595]])</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/parametric-non-parametric.html</guid>
+  <pubDate>Sat, 13 May 2023 00:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Autodiff</title>
   <dc:creator>Nipun Batra</dc:creator>
@@ -200,33 +431,33 @@ L: 1.0</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>21</td>
-      <td>9</td>
-      <td>2</td>
+      <td>41</td>
+      <td>0</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>65</td>
-      <td>9</td>
-      <td>3</td>
+      <td>67</td>
+      <td>2</td>
+      <td>4</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>42</td>
+      <td>61</td>
+      <td>6</td>
       <td>1</td>
-      <td>3</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>11</td>
-      <td>3</td>
-      <td>5</td>
+      <td>60</td>
+      <td>0</td>
+      <td>4</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>84</td>
-      <td>6</td>
+      <td>72</td>
       <td>3</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>...</th>
@@ -235,38 +466,38 @@ L: 1.0</code></pre>
       <td>...</td>
     </tr>
     <tr>
-      <th>989</th>
-      <td>16</td>
-      <td>4</td>
-      <td>4</td>
+      <th>980</th>
+      <td>69</td>
+      <td>7</td>
+      <td>3</td>
     </tr>
     <tr>
-      <th>993</th>
-      <td>6</td>
+      <th>987</th>
+      <td>52</td>
       <td>8</td>
       <td>5</td>
     </tr>
     <tr>
-      <th>994</th>
-      <td>83</td>
-      <td>9</td>
+      <th>988</th>
+      <td>31</td>
+      <td>4</td>
       <td>2</td>
     </tr>
     <tr>
-      <th>995</th>
-      <td>78</td>
+      <th>991</th>
+      <td>59</td>
       <td>0</td>
-      <td>1</td>
+      <td>3</td>
     </tr>
     <tr>
-      <th>998</th>
-      <td>26</td>
-      <td>0</td>
-      <td>2</td>
+      <th>997</th>
+      <td>82</td>
+      <td>7</td>
+      <td>4</td>
     </tr>
   </tbody>
 </table>
-<p>636 rows × 3 columns</p>
+<p>650 rows × 3 columns</p>
 </div>
 </div>
 </div>
@@ -311,66 +542,66 @@ L: 1.0</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
       <td>2.0</td>
       <td>NaN</td>
+      <td>1.0</td>
+      <td>1.0</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>NaN</td>
+      <td>1.0</td>
       <td>3.0</td>
+      <td>4.0</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>NaN</td>
-      <td>3.0</td>
-      <td>5.0</td>
-      <td>NaN</td>
       <td>4.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
       <td>1.0</td>
       <td>NaN</td>
-      <td>4.0</td>
       <td>NaN</td>
-      <td>2.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
     </tr>
     <tr>
       <th>2</th>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
       <td>5.0</td>
       <td>4.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
       <td>NaN</td>
     </tr>
     <tr>
       <th>3</th>
       <td>NaN</td>
+      <td>NaN</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>4.0</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>5.0</td>
       <td>3.0</td>
       <td>NaN</td>
+      <td>5.0</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>NaN</td>
-      <td>2.0</td>
+      <td>4.0</td>
       <td>1.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
       <td>NaN</td>
       <td>5.0</td>
     </tr>
@@ -391,66 +622,66 @@ L: 1.0</code></pre>
       <th>95</th>
       <td>5.0</td>
       <td>NaN</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>5.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
       <td>NaN</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>NaN</td>
+      <td>1.0</td>
       <td>2.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
     </tr>
     <tr>
       <th>96</th>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
       <td>4.0</td>
       <td>NaN</td>
-      <td>2.0</td>
       <td>1.0</td>
-      <td>NaN</td>
       <td>5.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>4.0</td>
     </tr>
     <tr>
       <th>97</th>
+      <td>NaN</td>
       <td>1.0</td>
       <td>2.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
       <td>NaN</td>
-      <td>3.0</td>
-      <td>NaN</td>
       <td>4.0</td>
-      <td>NaN</td>
+      <td>5.0</td>
       <td>NaN</td>
     </tr>
     <tr>
       <th>98</th>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>NaN</td>
       <td>2.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>NaN</td>
       <td>2.0</td>
       <td>5.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
       <td>NaN</td>
-      <td>3.0</td>
     </tr>
     <tr>
       <th>99</th>
+      <td>NaN</td>
+      <td>4.0</td>
       <td>2.0</td>
-      <td>2.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
       <td>4.0</td>
       <td>3.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
     </tr>
   </tbody>
 </table>
@@ -499,66 +730,66 @@ L: 1.0</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
       <td>2.0</td>
       <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.0</td>
+      <td>1.0</td>
       <td>3.0</td>
+      <td>4.0</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>5.0</td>
-      <td>0.0</td>
       <td>4.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
       <td>1.0</td>
       <td>0.0</td>
-      <td>4.0</td>
       <td>0.0</td>
-      <td>2.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
     </tr>
     <tr>
       <th>2</th>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
       <td>5.0</td>
       <td>4.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
       <td>0.0</td>
     </tr>
     <tr>
       <th>3</th>
       <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
       <td>4.0</td>
       <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>5.0</td>
       <td>3.0</td>
       <td>0.0</td>
+      <td>5.0</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>2.0</td>
+      <td>4.0</td>
       <td>1.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
       <td>0.0</td>
       <td>5.0</td>
     </tr>
@@ -579,66 +810,66 @@ L: 1.0</code></pre>
       <th>95</th>
       <td>5.0</td>
       <td>0.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>5.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
       <td>0.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
+      <td>1.0</td>
       <td>2.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
     </tr>
     <tr>
       <th>96</th>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
       <td>4.0</td>
       <td>0.0</td>
-      <td>2.0</td>
       <td>1.0</td>
-      <td>0.0</td>
       <td>5.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>4.0</td>
     </tr>
     <tr>
       <th>97</th>
+      <td>0.0</td>
       <td>1.0</td>
       <td>2.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
       <td>0.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
       <td>4.0</td>
-      <td>0.0</td>
+      <td>5.0</td>
       <td>0.0</td>
     </tr>
     <tr>
       <th>98</th>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
       <td>2.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
       <td>2.0</td>
       <td>5.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
       <td>0.0</td>
-      <td>3.0</td>
     </tr>
     <tr>
       <th>99</th>
+      <td>0.0</td>
+      <td>4.0</td>
       <td>2.0</td>
-      <td>2.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
       <td>4.0</td>
       <td>3.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
     </tr>
   </tbody>
 </table>
@@ -666,7 +897,7 @@ L: 1.0</code></pre>
 <span id="cb6-17">cos_sim <span class="op" style="color: #5E5E5E;">=</span> dot <span class="op" style="color: #5E5E5E;">/</span> (norm_u1 <span class="op" style="color: #5E5E5E;">*</span> norm_u2)</span>
 <span id="cb6-18">cos_sim</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
-<pre><code>0.4628528545997305</code></pre>
+<pre><code>0.4170288281141495</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="7">
@@ -711,122 +942,122 @@ L: 1.0</code></pre>
     <tr>
       <th>0</th>
       <td>1.000000</td>
-      <td>0.462853</td>
-      <td>0.425532</td>
-      <td>0.259554</td>
-      <td>0.707107</td>
-      <td>0.706417</td>
-      <td>0.402906</td>
-      <td>0.456468</td>
-      <td>0.504497</td>
-      <td>0.260133</td>
+      <td>0.417029</td>
+      <td>0.524901</td>
+      <td>0.601407</td>
+      <td>0.592315</td>
+      <td>0.402657</td>
+      <td>0.879499</td>
+      <td>0.347011</td>
+      <td>0.555937</td>
+      <td>0.849385</td>
       <td>...</td>
-      <td>0.447905</td>
-      <td>0.824086</td>
-      <td>0.426058</td>
-      <td>0.297406</td>
-      <td>0.441511</td>
-      <td>0.479054</td>
-      <td>0.458831</td>
-      <td>0.495309</td>
-      <td>0.550120</td>
-      <td>0.577350</td>
+      <td>0.735436</td>
+      <td>0.513870</td>
+      <td>0.367990</td>
+      <td>0.568574</td>
+      <td>0.558489</td>
+      <td>0.824958</td>
+      <td>0.567178</td>
+      <td>0.417836</td>
+      <td>0.543305</td>
+      <td>0.466673</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.462853</td>
+      <td>0.417029</td>
       <td>1.000000</td>
-      <td>0.505005</td>
-      <td>0.537076</td>
-      <td>0.423547</td>
-      <td>0.479632</td>
-      <td>0.599225</td>
-      <td>0.652841</td>
-      <td>0.681446</td>
-      <td>0.672842</td>
+      <td>0.361659</td>
+      <td>0.220707</td>
+      <td>0.778464</td>
+      <td>0.447785</td>
+      <td>0.628759</td>
+      <td>0.408603</td>
+      <td>0.680069</td>
+      <td>0.506026</td>
       <td>...</td>
-      <td>0.733730</td>
-      <td>0.426305</td>
-      <td>0.745977</td>
-      <td>0.629386</td>
-      <td>0.479632</td>
-      <td>0.619544</td>
-      <td>0.367902</td>
-      <td>0.678246</td>
-      <td>0.779502</td>
-      <td>0.785965</td>
+      <td>0.429377</td>
+      <td>0.362659</td>
+      <td>0.165267</td>
+      <td>0.553260</td>
+      <td>0.607581</td>
+      <td>0.491473</td>
+      <td>0.648767</td>
+      <td>0.536153</td>
+      <td>0.469332</td>
+      <td>0.568878</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.425532</td>
-      <td>0.505005</td>
+      <td>0.524901</td>
+      <td>0.361659</td>
       <td>1.000000</td>
-      <td>0.493771</td>
-      <td>0.318597</td>
-      <td>0.587945</td>
-      <td>0.467074</td>
-      <td>0.485269</td>
-      <td>0.293255</td>
-      <td>0.494872</td>
+      <td>0.263523</td>
+      <td>0.235945</td>
+      <td>0.588118</td>
+      <td>0.602971</td>
+      <td>0.491935</td>
+      <td>0.067666</td>
+      <td>0.417755</td>
       <td>...</td>
-      <td>0.568057</td>
-      <td>0.587896</td>
-      <td>0.342914</td>
-      <td>0.745800</td>
-      <td>0.545949</td>
-      <td>0.756000</td>
-      <td>0.643743</td>
-      <td>0.498847</td>
-      <td>0.728025</td>
-      <td>0.693688</td>
+      <td>0.214834</td>
+      <td>0.967062</td>
+      <td>0.392777</td>
+      <td>0.401386</td>
+      <td>0.638394</td>
+      <td>0.401643</td>
+      <td>0.366870</td>
+      <td>0.762860</td>
+      <td>0.807719</td>
+      <td>0.367026</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.259554</td>
-      <td>0.537076</td>
-      <td>0.493771</td>
+      <td>0.601407</td>
+      <td>0.220707</td>
+      <td>0.263523</td>
       <td>1.000000</td>
-      <td>0.114708</td>
-      <td>0.353815</td>
-      <td>0.574351</td>
-      <td>0.248282</td>
-      <td>0.103664</td>
-      <td>0.000000</td>
+      <td>0.649404</td>
+      <td>0.752773</td>
+      <td>0.580319</td>
+      <td>0.471405</td>
+      <td>0.584879</td>
+      <td>0.653857</td>
       <td>...</td>
-      <td>0.797644</td>
-      <td>0.457200</td>
-      <td>0.525279</td>
-      <td>0.683333</td>
-      <td>0.843713</td>
-      <td>0.268462</td>
-      <td>0.353553</td>
-      <td>0.502895</td>
-      <td>0.457070</td>
-      <td>0.299707</td>
+      <td>0.830336</td>
+      <td>0.258647</td>
+      <td>0.108953</td>
+      <td>0.583584</td>
+      <td>0.299078</td>
+      <td>0.740895</td>
+      <td>0.611260</td>
+      <td>0.445362</td>
+      <td>0.209118</td>
+      <td>0.580319</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.707107</td>
-      <td>0.423547</td>
-      <td>0.318597</td>
-      <td>0.114708</td>
+      <td>0.592315</td>
+      <td>0.778464</td>
+      <td>0.235945</td>
+      <td>0.649404</td>
       <td>1.000000</td>
-      <td>0.499512</td>
-      <td>0.213673</td>
-      <td>0.398718</td>
-      <td>0.693648</td>
-      <td>0.122628</td>
+      <td>0.704830</td>
+      <td>0.690722</td>
+      <td>0.492417</td>
+      <td>0.702486</td>
+      <td>0.706896</td>
       <td>...</td>
-      <td>0.316717</td>
-      <td>0.786667</td>
-      <td>0.440315</td>
-      <td>0.401478</td>
-      <td>0.249756</td>
-      <td>0.615895</td>
-      <td>0.486664</td>
-      <td>0.247226</td>
-      <td>0.473557</td>
-      <td>0.472709</td>
+      <td>0.746257</td>
+      <td>0.261094</td>
+      <td>0.325171</td>
+      <td>0.696682</td>
+      <td>0.516034</td>
+      <td>0.733306</td>
+      <td>0.912151</td>
+      <td>0.572286</td>
+      <td>0.378926</td>
+      <td>0.721649</td>
     </tr>
     <tr>
       <th>...</th>
@@ -854,122 +1085,122 @@ L: 1.0</code></pre>
     </tr>
     <tr>
       <th>95</th>
-      <td>0.479054</td>
-      <td>0.619544</td>
-      <td>0.756000</td>
-      <td>0.268462</td>
-      <td>0.615895</td>
-      <td>0.602796</td>
-      <td>0.250041</td>
-      <td>0.733198</td>
-      <td>0.510216</td>
-      <td>0.573997</td>
+      <td>0.824958</td>
+      <td>0.491473</td>
+      <td>0.401643</td>
+      <td>0.740895</td>
+      <td>0.733306</td>
+      <td>0.566430</td>
+      <td>0.891248</td>
+      <td>0.372070</td>
+      <td>0.768742</td>
+      <td>0.882523</td>
       <td>...</td>
-      <td>0.370622</td>
-      <td>0.664848</td>
-      <td>0.461020</td>
-      <td>0.637598</td>
-      <td>0.383598</td>
+      <td>0.939909</td>
+      <td>0.322988</td>
+      <td>0.338048</td>
+      <td>0.547969</td>
+      <td>0.641016</td>
       <td>1.000000</td>
-      <td>0.550512</td>
-      <td>0.590662</td>
-      <td>0.613531</td>
-      <td>0.804602</td>
+      <td>0.631503</td>
+      <td>0.454545</td>
+      <td>0.561017</td>
+      <td>0.462547</td>
     </tr>
     <tr>
       <th>96</th>
-      <td>0.458831</td>
-      <td>0.367902</td>
-      <td>0.643743</td>
-      <td>0.353553</td>
-      <td>0.486664</td>
-      <td>0.712065</td>
-      <td>0.768350</td>
-      <td>0.339419</td>
-      <td>0.561979</td>
-      <td>0.491354</td>
+      <td>0.567178</td>
+      <td>0.648767</td>
+      <td>0.366870</td>
+      <td>0.611260</td>
+      <td>0.912151</td>
+      <td>0.745724</td>
+      <td>0.577075</td>
+      <td>0.539841</td>
+      <td>0.490090</td>
+      <td>0.674173</td>
       <td>...</td>
-      <td>0.650791</td>
-      <td>0.520855</td>
-      <td>0.685714</td>
-      <td>0.329983</td>
-      <td>0.404145</td>
-      <td>0.550512</td>
+      <td>0.610191</td>
+      <td>0.399711</td>
+      <td>0.557799</td>
+      <td>0.855039</td>
+      <td>0.554040</td>
+      <td>0.631503</td>
       <td>1.000000</td>
-      <td>0.495300</td>
-      <td>0.708949</td>
-      <td>0.569549</td>
+      <td>0.650023</td>
+      <td>0.553414</td>
+      <td>0.763228</td>
     </tr>
     <tr>
       <th>97</th>
-      <td>0.495309</td>
-      <td>0.678246</td>
-      <td>0.498847</td>
-      <td>0.502895</td>
-      <td>0.247226</td>
-      <td>0.488824</td>
-      <td>0.627303</td>
-      <td>0.639162</td>
-      <td>0.279280</td>
-      <td>0.576018</td>
+      <td>0.417836</td>
+      <td>0.536153</td>
+      <td>0.762860</td>
+      <td>0.445362</td>
+      <td>0.572286</td>
+      <td>0.848001</td>
+      <td>0.590747</td>
+      <td>0.451383</td>
+      <td>0.238247</td>
+      <td>0.436804</td>
       <td>...</td>
-      <td>0.633655</td>
-      <td>0.570247</td>
-      <td>0.689429</td>
-      <td>0.538816</td>
-      <td>0.537706</td>
-      <td>0.590662</td>
-      <td>0.495300</td>
+      <td>0.365598</td>
+      <td>0.833444</td>
+      <td>0.363928</td>
+      <td>0.594535</td>
+      <td>0.449544</td>
+      <td>0.454545</td>
+      <td>0.650023</td>
       <td>1.000000</td>
-      <td>0.701756</td>
-      <td>0.740149</td>
+      <td>0.678543</td>
+      <td>0.507673</td>
     </tr>
     <tr>
       <th>98</th>
-      <td>0.550120</td>
-      <td>0.779502</td>
-      <td>0.728025</td>
-      <td>0.457070</td>
-      <td>0.473557</td>
-      <td>0.481543</td>
-      <td>0.743841</td>
-      <td>0.427083</td>
-      <td>0.598641</td>
-      <td>0.669894</td>
+      <td>0.543305</td>
+      <td>0.469332</td>
+      <td>0.807719</td>
+      <td>0.209118</td>
+      <td>0.378926</td>
+      <td>0.464319</td>
+      <td>0.612968</td>
+      <td>0.329537</td>
+      <td>0.264648</td>
+      <td>0.548927</td>
       <td>...</td>
-      <td>0.791580</td>
-      <td>0.580480</td>
-      <td>0.700013</td>
-      <td>0.663489</td>
-      <td>0.401286</td>
-      <td>0.613531</td>
-      <td>0.708949</td>
-      <td>0.701756</td>
+      <td>0.365318</td>
+      <td>0.736321</td>
+      <td>0.615172</td>
+      <td>0.611934</td>
+      <td>0.738787</td>
+      <td>0.561017</td>
+      <td>0.553414</td>
+      <td>0.678543</td>
       <td>1.000000</td>
-      <td>0.759506</td>
+      <td>0.323201</td>
     </tr>
     <tr>
       <th>99</th>
-      <td>0.577350</td>
-      <td>0.785965</td>
-      <td>0.693688</td>
-      <td>0.299707</td>
-      <td>0.472709</td>
-      <td>0.739228</td>
-      <td>0.596084</td>
-      <td>0.899144</td>
-      <td>0.695815</td>
-      <td>0.801002</td>
+      <td>0.466673</td>
+      <td>0.568878</td>
+      <td>0.367026</td>
+      <td>0.580319</td>
+      <td>0.721649</td>
+      <td>0.682804</td>
+      <td>0.567010</td>
+      <td>0.914488</td>
+      <td>0.521542</td>
+      <td>0.547596</td>
       <td>...</td>
-      <td>0.632129</td>
-      <td>0.523365</td>
-      <td>0.548735</td>
-      <td>0.515122</td>
-      <td>0.535303</td>
-      <td>0.804602</td>
-      <td>0.569549</td>
-      <td>0.740149</td>
-      <td>0.759506</td>
+      <td>0.450570</td>
+      <td>0.363261</td>
+      <td>0.569049</td>
+      <td>0.740224</td>
+      <td>0.641555</td>
+      <td>0.462547</td>
+      <td>0.763228</td>
+      <td>0.507673</td>
+      <td>0.323201</td>
       <td>1.000000</td>
     </tr>
   </tbody>
@@ -978,18 +1209,18 @@ L: 1.0</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="14">
+<div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="im" style="color: #00769E;">import</span> seaborn <span class="im" style="color: #00769E;">as</span> sns</span>
 <span id="cb9-2"></span>
 <span id="cb9-3">sns.heatmap(sim_matrix, cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Greys'</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>&lt;AxesSubplot:&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="15">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="co" style="color: #5E5E5E;"># Find the most similar users to user u </span></span>
 <span id="cb11-2"></span>
 <span id="cb11-3"><span class="kw" style="color: #003B4F;">def</span> k_nearest_neighbors(A, u, k):</span>
@@ -1006,13 +1237,13 @@ L: 1.0</code></pre>
 <span id="cb11-14">    <span class="co" style="color: #5E5E5E;"># Return the user ids</span></span>
 <span id="cb11-15">    <span class="cf" style="color: #003B4F;">return</span> A.index[k_nearest]</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="16">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">k_nearest_neighbors(A, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<pre><code>Int64Index([62, 91, 86, 60, 23], dtype='int64', name='user_id')</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>Int64Index([6, 45, 9, 14, 95], dtype='int64', name='user_id')</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="17">
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="co" style="color: #5E5E5E;"># Show matrix of movie ratings for u and k nearest neighbors</span></span>
 <span id="cb14-2"></span>
 <span id="cb14-3"><span class="kw" style="color: #003B4F;">def</span> show_neighbors(A, u, k):</span>
@@ -1026,9 +1257,9 @@ L: 1.0</code></pre>
 <span id="cb14-11">    <span class="co" style="color: #5E5E5E;"># Return the dataframe</span></span>
 <span id="cb14-12">    <span class="cf" style="color: #003B4F;">return</span> df</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="18">
+<div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">show_neighbors(A, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="12">
 
 <div>
 
@@ -1064,80 +1295,80 @@ L: 1.0</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
       <td>2.0</td>
       <td>0.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.0</td>
+      <td>1.0</td>
       <td>3.0</td>
-    </tr>
-    <tr>
-      <th>62</th>
-      <td>1.0</td>
-      <td>5.0</td>
-      <td>4.0</td>
-      <td>5.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
       <td>4.0</td>
     </tr>
     <tr>
-      <th>91</th>
+      <th>6</th>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
       <td>1.0</td>
       <td>2.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>2.0</td>
       <td>2.0</td>
       <td>0.0</td>
       <td>3.0</td>
-    </tr>
-    <tr>
-      <th>86</th>
-      <td>0.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
       <td>5.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>4.0</td>
       <td>5.0</td>
     </tr>
     <tr>
-      <th>60</th>
-      <td>3.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
+      <th>45</th>
+      <td>2.0</td>
+      <td>2.0</td>
       <td>0.0</td>
-      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
       <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>5.0</td>
       <td>1.0</td>
-      <td>3.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
       <td>5.0</td>
     </tr>
     <tr>
-      <th>23</th>
-      <td>2.0</td>
+      <th>14</th>
+      <td>1.0</td>
+      <td>1.0</td>
       <td>3.0</td>
-      <td>5.0</td>
-      <td>3.0</td>
-      <td>5.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
       <td>0.0</td>
       <td>0.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>5.0</td>
       <td>0.0</td>
       <td>1.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
       <td>5.0</td>
     </tr>
   </tbody>
@@ -1145,7 +1376,7 @@ L: 1.0</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="co" style="color: #5E5E5E;"># Rating for user u for movie 0 is: (4.0 + 3.0) / 2 = 3.5 (Discard 0s)</span></span>
 <span id="cb16-2"></span>
 <span id="cb16-3"><span class="kw" style="color: #003B4F;">def</span> predict_rating(A, u, m, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>):</span>
@@ -1165,20 +1396,20 @@ L: 1.0</code></pre>
 <span id="cb16-17">    <span class="co" style="color: #5E5E5E;"># Return the mean</span></span>
 <span id="cb16-18">    <span class="cf" style="color: #003B4F;">return</span> mean</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="22">
+<div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">predict_rating(A, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
-<pre><code>1.75</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>3.6</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="24">
+<div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="co" style="color: #5E5E5E;"># Now working with real data</span></span>
 <span id="cb19-2"></span>
 <span id="cb19-3"><span class="co" style="color: #5E5E5E;"># Load the data</span></span>
 <span id="cb19-4"></span>
 <span id="cb19-5">df <span class="op" style="color: #5E5E5E;">=</span> pd.read_excel(<span class="st" style="color: #20794D;">"mov-rec.xlsx"</span>)</span>
 <span id="cb19-6">df.head()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
+<div class="cell-output cell-output-display" data-execution_count="15">
 
 <div>
 
@@ -1281,7 +1512,7 @@ L: 1.0</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><span class="co" style="color: #5E5E5E;"># Discard the timestamp column</span></span>
 <span id="cb20-2"></span>
 <span id="cb20-3">df <span class="op" style="color: #5E5E5E;">=</span> df.drop(<span class="st" style="color: #20794D;">'Timestamp'</span>, axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
@@ -1290,7 +1521,7 @@ L: 1.0</code></pre>
 <span id="cb20-6"></span>
 <span id="cb20-7">df <span class="op" style="color: #5E5E5E;">=</span> df.set_index(<span class="st" style="color: #20794D;">'Your name'</span>)</span>
 <span id="cb20-8">df</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
+<div class="cell-output cell-output-display" data-execution_count="16">
 
 <div>
 
@@ -1519,36 +1750,435 @@ L: 1.0</code></pre>
       <td>2.0</td>
       <td>5.0</td>
     </tr>
+    <tr>
+      <th>Aaryan Darad</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Hetvi Patel</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Kalash Kankaria</th>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Rachit Verma</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>shriraj</th>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Bhavini Korthi</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Hitarth Gandhi</th>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Radhika Joglekar</th>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Medhansh Singh</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Arun Mani</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Satyam</th>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Karan Kumar</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>R Yeeshu Dhurandhar</th>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>Satyam Gupta</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>rushali</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>shridhar</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Tanvi Jain</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Manish Prabhubhai Salvi</th>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Varun Barala</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Kevin Shah</th>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Inderjeet</th>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Gangaram Siddam</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Aditi</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Madhuri Awachar</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Anupam</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Jinay</th>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Shrutimoy</th>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Aadesh Desai</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Dhairya</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Rahul C</th>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Get index for user and movie</span></span>
-<span id="cb21-2">user <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Dhruv'</span></span>
-<span id="cb21-3"></span>
-<span id="cb21-4"><span class="co" style="color: #5E5E5E;"># Get the movie ratings for user</span></span>
-<span id="cb21-5">user_ratings <span class="op" style="color: #5E5E5E;">=</span> df.loc[user]</span>
-<span id="cb21-6">user_ratings</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
-<pre><code>Sholay                      NaN
-Swades (We The People)      NaN
-The Matrix (I)              5.0
-Interstellar                5.0
-Dangal                      3.0
-Taare Zameen Par            NaN
-Shawshank Redemption        5.0
-The Dark Knight             5.0
-Notting Hill                4.0
-Uri: The Surgical Strike    5.0
-Name: Dhruv, dtype: float64</code></pre>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">df.index</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>Index(['Nipun', 'Gautam Vashishtha', 'Eshan Gujarathi', 'Sai Krishna Avula',
+       'Ankit Yadav ', 'Dhruv', 'Saatvik Rao ', 'Zeel B Patel', 'Neel ',
+       'Sachin Jalan ', 'Ayush Shrivastava', '....', 'Hari Hara Sudhan',
+       'Etikikota Hrushikesh', 'Chirag', 'Aaryan Darad', 'Hetvi Patel',
+       'Kalash Kankaria', 'Rachit Verma', 'shriraj', 'Bhavini Korthi ',
+       'Hitarth Gandhi ', 'Radhika Joglekar ', 'Medhansh Singh', 'Arun Mani',
+       'Satyam ', 'Karan Kumar ', 'R Yeeshu Dhurandhar', 'Satyam Gupta',
+       'rushali', 'shridhar', 'Tanvi Jain ', 'Manish Prabhubhai Salvi ',
+       'Varun Barala', 'Kevin Shah ', 'Inderjeet', 'Gangaram Siddam ', 'Aditi',
+       'Madhuri Awachar', 'Anupam', 'Jinay', 'Shrutimoy', 'Aadesh Desai',
+       'Dhairya', 'Rahul C'],
+      dtype='object', name='Your name')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><span class="co" style="color: #5E5E5E;"># Get index for user and movie</span></span>
+<span id="cb23-2">user <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Dhruv'</span></span>
+<span id="cb23-3"></span>
+<span id="cb23-4"><span class="bu" style="color: null;">print</span>(user <span class="kw" style="color: #003B4F;">in</span> df.index)</span>
+<span id="cb23-5"></span>
+<span id="cb23-6"><span class="co" style="color: #5E5E5E;"># Get the movie ratings for user</span></span>
+<span id="cb23-7"><span class="co" style="color: #5E5E5E;">#user_ratings = df.loc[user]</span></span>
+<span id="cb23-8"><span class="co" style="color: #5E5E5E;">#user_ratings</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>True</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="31">
-<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">df_copy <span class="op" style="color: #5E5E5E;">=</span> df.copy()</span>
-<span id="cb23-2">df_copy.fillna(<span class="dv" style="color: #AD0000;">0</span>, inplace<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb23-3">show_neighbors(df_copy, user, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1">df_copy <span class="op" style="color: #5E5E5E;">=</span> df.copy()</span>
+<span id="cb25-2">df_copy.fillna(<span class="dv" style="color: #AD0000;">0</span>, inplace<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb25-3">show_neighbors(df_copy, user, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="31">
 
 <div>
@@ -1667,15 +2297,15 @@ Name: Dhruv, dtype: float64</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="32">
-<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="co" style="color: #5E5E5E;"># Predict the rating for user u for movie m</span></span>
-<span id="cb24-2"></span>
-<span id="cb24-3">predict_rating(df_copy, user, <span class="st" style="color: #20794D;">'The Dark Knight'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><span class="co" style="color: #5E5E5E;"># Predict the rating for user u for movie m</span></span>
+<span id="cb26-2"></span>
+<span id="cb26-3">predict_rating(df_copy, user, <span class="st" style="color: #20794D;">'The Dark Knight'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="32">
 <pre><code>4.8</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1">predict_rating(df_copy, user, <span class="st" style="color: #20794D;">'Sholay'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">predict_rating(df_copy, user, <span class="st" style="color: #20794D;">'Sholay'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="34">
 <pre><code>4.0</code></pre>
 </div>
@@ -1821,7 +2451,7 @@ Name: Dhruv, dtype: float64</code></pre>
 
 
 
-<div class="cell" data-execution_count="1">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
 <span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
 <span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
@@ -1829,7 +2459,7 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
 <span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Generate some data</span></span>
 <span id="cb2-2"></span>
 <span id="cb2-3">X <span class="op" style="color: #5E5E5E;">=</span> np.random.randn(<span class="dv" style="color: #AD0000;">3000</span>, <span class="dv" style="color: #AD0000;">2</span>)</span>
@@ -1837,14 +2467,14 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb2-5"><span class="co" style="color: #5E5E5E;"># Plot the data</span></span>
 <span id="cb2-6"></span>
 <span id="cb2-7">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f77a2c0e7c0&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f3112741b20&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/knn-lsh_files/figure-html/cell-3-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Naive KNN</span></span>
 <span id="cb4-2"></span>
 <span id="cb4-3"><span class="kw" style="color: #003B4F;">def</span> naive_knn_for_loop(X, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>):</span>
@@ -1858,27 +2488,27 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb4-11">    <span class="cf" style="color: #003B4F;">return</span> np.argpartition(dists, k)[:k] <span class="co" style="color: #5E5E5E;"># Time complexity: O(Nk) or O(N) depending on the implementation</span></span>
 <span id="cb4-12">  </span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>array([1384, 1388, 2929])</code></pre>
-</div>
-</div>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">X[naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
-<pre><code>array([[-0.02403045, -0.00673354],
-       [-0.00243893,  0.02568723],
-       [-0.02888503, -0.03127704]])</code></pre>
+<pre><code>array([2529,  958,  804])</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>12.4 ms ± 60.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</code></pre>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">X[naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>array([[-0.02103967,  0.02703294],
+       [ 0.0092843 ,  0.02548091],
+       [-0.03094897,  0.01750535]])</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_for_loop(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>12.3 ms ± 47.7 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="co" style="color: #5E5E5E;"># Implement using numpy</span></span>
 <span id="cb11-2"></span>
 <span id="cb11-3"><span class="kw" style="color: #003B4F;">def</span> naive_knn_numpy(X, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>):</span>
@@ -1887,19 +2517,19 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb11-6">    sorted_dists <span class="op" style="color: #5E5E5E;">=</span> np.argsort(dists)</span>
 <span id="cb11-7">    <span class="cf" style="color: #003B4F;">return</span> sorted_dists[:k]</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">naive_knn_numpy(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>array([1384, 1388, 2929])</code></pre>
-</div>
-</div>
 <div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_numpy(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>241 µs ± 519 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</code></pre>
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">naive_knn_numpy(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>array([ 958, 2529,  804])</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_numpy(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>240 µs ± 631 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="co" style="color: #5E5E5E;"># Implement using numpy</span></span>
 <span id="cb16-2"></span>
 <span id="cb16-3"><span class="kw" style="color: #003B4F;">def</span> naive_knn_numpy(X, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>):</span>
@@ -1908,13 +2538,13 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb16-6">    <span class="co" style="color: #5E5E5E;">#sorted_dists = np.argsort(dists)</span></span>
 <span id="cb16-7">    <span class="co" style="color: #5E5E5E;">#return sorted_dists[:k]</span></span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="11">
+<div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_numpy(X, np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>85.3 µs ± 110 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
+<pre><code>84.6 µs ± 607 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="15">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="co" style="color: #5E5E5E;"># Show LSH implementation step by step</span></span>
 <span id="cb19-2"></span>
 <span id="cb19-3"><span class="co" style="color: #5E5E5E;"># Creating a random separating hyperplane</span></span>
@@ -1935,14 +2565,14 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb19-18">colors <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">0</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">0</span>] <span class="op" style="color: #5E5E5E;">+</span> X[:, <span class="dv" style="color: #AD0000;">1</span>]<span class="op" style="color: #5E5E5E;">*</span>w[<span class="dv" style="color: #AD0000;">1</span>] <span class="op" style="color: #5E5E5E;">+</span> b <span class="op" style="color: #5E5E5E;">&gt;</span> <span class="dv" style="color: #AD0000;">0</span></span>
 <span id="cb19-19"></span>
 <span id="cb19-20">plt.scatter(X[:, <span class="dv" style="color: #AD0000;">0</span>], X[:, <span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">30</span>, c<span class="op" style="color: #5E5E5E;">=</span>colors)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f77a0a14be0&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f31106b4ac0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/knn-lsh_files/figure-html/cell-13-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="16">
+<div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><span class="co" style="color: #5E5E5E;"># Create three random hyperplanes and color the points based on which side of the hyperplane they are on. </span></span>
 <span id="cb21-2"><span class="co" style="color: #5E5E5E;"># there should be 2^3 = 8 different colors</span></span>
 <span id="cb21-3"><span class="co" style="color: #5E5E5E;"># each separating hyperplane corresponds to a bit in the hash</span></span>
@@ -1980,18 +2610,18 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb21-35">x_test <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">0</span>])</span>
 <span id="cb21-36">plt.scatter(x_test[<span class="dv" style="color: #AD0000;">0</span>], x_test[<span class="dv" style="color: #AD0000;">1</span>], s<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">100</span>, c<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[-0.33410199 -1.27040586] [-0.17918695]
-[-0.42003734  1.39768761] [-0.43795823]
-[0.71691338 0.21293161] [-0.1219637]</code></pre>
+<pre><code>[-1.78798897 -1.3408181 ] [-0.08094113]
+[ 0.9447324  -2.47059549] [0.09350769]
+[0.20531227 0.97521902] [-0.22471283]</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f77a07b5640&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f31105bf280&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/knn-lsh_files/figure-html/cell-14-output-3.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="17">
+<div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(<span class="bu" style="color: null;">hash</span>)</span>
 <span id="cb24-2">df.columns <span class="op" style="color: #5E5E5E;">=</span> [<span class="st" style="color: #20794D;">'h1'</span>, <span class="st" style="color: #20794D;">'h2'</span>, <span class="st" style="color: #20794D;">'h3'</span>]</span>
 <span id="cb24-3">df[<span class="st" style="color: #20794D;">'hash_dec'</span>] <span class="op" style="color: #5E5E5E;">=</span> hash_dec</span>
@@ -1999,7 +2629,7 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb24-5">df[<span class="st" style="color: #20794D;">'y'</span>] <span class="op" style="color: #5E5E5E;">=</span> X[:, <span class="dv" style="color: #AD0000;">1</span>]</span>
 <span id="cb24-6"></span>
 <span id="cb24-7">df.head(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="17">
+<div class="cell-output cell-output-display" data-execution_count="16">
 
 <div>
 
@@ -2018,66 +2648,66 @@ Name: Dhruv, dtype: float64</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>0</td>
+      <td>1</td>
       <td>1</td>
       <td>0</td>
-      <td>2</td>
-      <td>-0.246232</td>
-      <td>1.244987</td>
+      <td>6</td>
+      <td>-1.289013</td>
+      <td>-0.497073</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>1</td>
+      <td>1</td>
       <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.871390</td>
-      <td>0.846192</td>
+      <td>6</td>
+      <td>0.721631</td>
+      <td>-1.923390</td>
     </tr>
     <tr>
       <th>2</th>
       <td>1</td>
+      <td>1</td>
       <td>0</td>
-      <td>0</td>
-      <td>4</td>
-      <td>-0.105102</td>
-      <td>-1.672524</td>
+      <td>6</td>
+      <td>0.042595</td>
+      <td>-0.177549</td>
     </tr>
     <tr>
       <th>3</th>
+      <td>1</td>
+      <td>1</td>
       <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.529090</td>
-      <td>0.588405</td>
+      <td>6</td>
+      <td>0.148706</td>
+      <td>-0.452442</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0</td>
-      <td>0</td>
       <td>1</td>
       <td>1</td>
-      <td>1.423872</td>
-      <td>-0.466313</td>
+      <td>0</td>
+      <td>6</td>
+      <td>-0.047372</td>
+      <td>-0.431685</td>
     </tr>
     <tr>
       <th>5</th>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>6</td>
+      <td>-0.478764</td>
+      <td>-0.304759</td>
+    </tr>
+    <tr>
+      <th>6</th>
       <td>0</td>
       <td>1</td>
       <td>0</td>
       <td>2</td>
-      <td>0.037017</td>
-      <td>0.396019</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>4</td>
-      <td>-0.883974</td>
-      <td>-1.743182</td>
+      <td>0.812057</td>
+      <td>-0.574337</td>
     </tr>
     <tr>
       <th>7</th>
@@ -2085,48 +2715,48 @@ Name: Dhruv, dtype: float64</code></pre>
       <td>0</td>
       <td>1</td>
       <td>5</td>
-      <td>0.337388</td>
-      <td>-0.393713</td>
+      <td>-1.493164</td>
+      <td>1.209339</td>
     </tr>
     <tr>
       <th>8</th>
       <td>0</td>
+      <td>1</td>
       <td>0</td>
-      <td>1</td>
-      <td>1</td>
-      <td>1.708228</td>
-      <td>-0.014551</td>
+      <td>2</td>
+      <td>0.820065</td>
+      <td>-0.575965</td>
     </tr>
     <tr>
       <th>9</th>
+      <td>0</td>
+      <td>0</td>
       <td>1</td>
-      <td>0</td>
-      <td>0</td>
-      <td>4</td>
-      <td>-0.495120</td>
-      <td>-0.765020</td>
+      <td>1</td>
+      <td>1.045276</td>
+      <td>1.143788</td>
     </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="18">
+<div class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"></span>
 <span id="cb25-2">pd.DataFrame(<span class="bu" style="color: null;">hash</span>).value_counts()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>0  1  2
-1  0  0    943
-0  1  0    559
-      1    506
-   0  1    461
-1  0  1    347
-0  0  0    112
-1  1  0     72
+1  1  0    846
+0  0  1    827
+   1  0    491
+1  0  0    346
+      1    243
+0  1  1    210
+   0  0     37
 dtype: int64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="19">
+<div class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><span class="co" style="color: #5E5E5E;"># Predict the K nearest neighbors using LSH</span></span>
 <span id="cb27-2"></span>
 <span id="cb27-3"><span class="co" style="color: #5E5E5E;"># Compute the hash for the test point</span></span>
@@ -2138,37 +2768,37 @@ dtype: int64</code></pre>
 <span id="cb27-9">hash_test_dec <span class="op" style="color: #5E5E5E;">=</span> np.<span class="bu" style="color: null;">sum</span>(hash_test <span class="op" style="color: #5E5E5E;">*</span> <span class="dv" style="color: #AD0000;">2</span><span class="op" style="color: #5E5E5E;">**</span>np.arange(<span class="dv" style="color: #AD0000;">3</span>)[::<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>])</span>
 <span id="cb27-10"></span>
 <span id="cb27-11">hash_test_dec</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>0</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="20">
+<div class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><span class="co" style="color: #5E5E5E;"># Find subset of points with the same hash</span></span>
 <span id="cb29-2"></span>
 <span id="cb29-3">X_subset <span class="op" style="color: #5E5E5E;">=</span> X[hash_dec <span class="op" style="color: #5E5E5E;">==</span> hash_test_dec]</span>
 <span id="cb29-4">X_subset.shape</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
-<pre><code>(112, 2)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>(37, 2)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
+<div class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><span class="co" style="color: #5E5E5E;"># Now, we can use the naive KNN implementation to find the K nearest neighbors</span></span>
 <span id="cb31-2"></span>
 <span id="cb31-3">ix <span class="op" style="color: #5E5E5E;">=</span> naive_knn_numpy(X_subset, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span>
 <span id="cb31-4">X_subset[ix]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-<pre><code>array([[-0.00243893,  0.02568723],
-       [-0.02403045, -0.00673354],
-       [-0.02888503, -0.03127704]])</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<pre><code>array([[-0.04090763,  0.07013394],
+       [-0.00419256,  0.08614131],
+       [-0.05284791,  0.06786371]])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_numpy(X_subset, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>10.5 µs ± 31.4 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="op" style="color: #5E5E5E;">%</span>timeit naive_knn_numpy(X_subset, x_test, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>12.6 µs ± 110 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><span class="co" style="color: #5E5E5E;"># Using FAISS from Facebook</span></span>
 <span id="cb35-2"></span>
 <span id="cb35-3"><span class="im" style="color: #00769E;">import</span> faiss</span>
@@ -2179,63 +2809,60 @@ dtype: int64</code></pre>
 <span id="cb35-8"><span class="co" style="color: #5E5E5E;"># Add the data to the index</span></span>
 <span id="cb35-9">index.add(X.astype(np.float32))                  <span class="co" style="color: #5E5E5E;"># add vectors to the index</span></span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="33">
+<div class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><span class="co" style="color: #5E5E5E;"># Search for the K nearest neighbors</span></span>
 <span id="cb36-2">D, I <span class="op" style="color: #5E5E5E;">=</span> index.search(x_test.astype(np.float32).reshape(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>), k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)     <span class="co" style="color: #5E5E5E;"># actual search</span></span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>51.3 µs ± 256 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
 </div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1">D</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>array([[0.00073547, 0.00117345, 0.00126428]], dtype=float32)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1">I</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>array([[ 958, 2529,  804]])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb41" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1">X[I[<span class="dv" style="color: #AD0000;">0</span>]]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>array([[ 0.0092843 ,  0.02548091],
+       [-0.02103967,  0.02703294],
+       [-0.03094897,  0.01750535]])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb43" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><span class="op" style="color: #5E5E5E;">%</span>timeit index.search(x_test.astype(np.float32).reshape(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>), k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>50.9 µs ± 212 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb45" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><span class="co" style="color: #5E5E5E;"># Now, run on GPU</span></span>
+<span id="cb45-2"></span>
+<span id="cb45-3">res <span class="op" style="color: #5E5E5E;">=</span> faiss.StandardGpuResources()  <span class="co" style="color: #5E5E5E;"># use a single GPU</span></span>
+<span id="cb45-4"></span>
+<span id="cb45-5"><span class="co" style="color: #5E5E5E;"># Create an index</span></span>
+<span id="cb45-6">index <span class="op" style="color: #5E5E5E;">=</span> faiss.IndexFlatL2(<span class="dv" style="color: #AD0000;">2</span>)   <span class="co" style="color: #5E5E5E;"># build the index</span></span>
+<span id="cb45-7"></span>
+<span id="cb45-8">gpu_index_flat <span class="op" style="color: #5E5E5E;">=</span> faiss.index_cpu_to_gpu(res, <span class="dv" style="color: #AD0000;">0</span>, index)</span>
+<span id="cb45-9"></span>
+<span id="cb45-10"><span class="co" style="color: #5E5E5E;"># Add the data to the index</span></span>
+<span id="cb45-11">gpu_index_flat.add(X.astype(np.float32))                  <span class="co" style="color: #5E5E5E;"># add vectors to the index</span></span></code></pre></div>
 </div>
 <div class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1">D</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="29">
-<pre><code>array([[0.0006228 , 0.00066578, 0.0018126 ]], dtype=float32)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="30">
-<div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1">I</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="30">
-<pre><code>array([[1384, 1388, 2929]])</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="31">
-<div class="sourceCode cell-code" id="cb42" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1">X[I[<span class="dv" style="color: #AD0000;">0</span>]]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="31">
-<pre><code>array([[-0.02403045, -0.00673354],
-       [-0.00243893,  0.02568723],
-       [-0.02888503, -0.03127704]])</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb44" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><span class="op" style="color: #5E5E5E;">%</span>timeit index.search(x_test.astype(np.float32).reshape(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>), k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb46" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><span class="op" style="color: #5E5E5E;">%</span>timeit gpu_index_flat.search(x_test.astype(np.float32).reshape(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>), k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>51.4 µs ± 240 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="37">
-<div class="sourceCode cell-code" id="cb46" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><span class="co" style="color: #5E5E5E;"># Now, run on GPU</span></span>
-<span id="cb46-2"></span>
-<span id="cb46-3">res <span class="op" style="color: #5E5E5E;">=</span> faiss.StandardGpuResources()  <span class="co" style="color: #5E5E5E;"># use a single GPU</span></span>
-<span id="cb46-4"></span>
-<span id="cb46-5"><span class="co" style="color: #5E5E5E;"># Create an index</span></span>
-<span id="cb46-6">index <span class="op" style="color: #5E5E5E;">=</span> faiss.IndexFlatL2(<span class="dv" style="color: #AD0000;">2</span>)   <span class="co" style="color: #5E5E5E;"># build the index</span></span>
-<span id="cb46-7"></span>
-<span id="cb46-8">gpu_index_flat <span class="op" style="color: #5E5E5E;">=</span> faiss.index_cpu_to_gpu(res, <span class="dv" style="color: #AD0000;">0</span>, index)</span>
-<span id="cb46-9"></span>
-<span id="cb46-10"><span class="co" style="color: #5E5E5E;"># Add the data to the index</span></span>
-<span id="cb46-11">gpu_index_flat.add(X.astype(np.float32))                  <span class="co" style="color: #5E5E5E;"># add vectors to the index</span></span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="38">
-<div class="sourceCode cell-code" id="cb47" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><span class="op" style="color: #5E5E5E;">%</span>timeit gpu_index_flat.search(x_test.astype(np.float32).reshape(<span class="dv" style="color: #AD0000;">1</span>, <span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>), k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>79.6 µs ± 73.3 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
+<pre><code>79.8 µs ± 674 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><span class="co" style="color: #5E5E5E;"># The above is slow because</span></span>
-<span id="cb49-2"><span class="co" style="color: #5E5E5E;"># 1. We are copying the data to the GPU</span></span>
-<span id="cb49-3"><span class="co" style="color: #5E5E5E;"># 2. We are copying the data back to the CPU</span></span>
-<span id="cb49-4"><span class="co" style="color: #5E5E5E;"># 3. Not enough data and low dimensional data</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb48" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><span class="co" style="color: #5E5E5E;"># The above is slow because</span></span>
+<span id="cb48-2"><span class="co" style="color: #5E5E5E;"># 1. We are copying the data to the GPU</span></span>
+<span id="cb48-3"><span class="co" style="color: #5E5E5E;"># 2. We are copying the data back to the CPU</span></span>
+<span id="cb48-4"><span class="co" style="color: #5E5E5E;"># 3. Not enough data and low dimensional data</span></span></code></pre></div>
 </div>
 
 
@@ -5426,224 +6053,6 @@ Length: 162, dtype: float64</code></pre>
  ]]></description>
   <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/hyperparameter-1.html</guid>
   <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>DT Regression</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</link>
-  <description><![CDATA[ 
-
-
-
-<div class="cell" data-execution_count="19">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">df <span class="op" style="color: #5E5E5E;">=</span> pd.read_csv(<span class="st" style="color: #20794D;">"mins-played.csv"</span>)</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="21">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">df</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Day</th>
-      <th>Outlook</th>
-      <th>Temp</th>
-      <th>Humidity</th>
-      <th>Wind</th>
-      <th>Minutes Played</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>D1</td>
-      <td>Sunny</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>20</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>D2</td>
-      <td>Sunny</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>24</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>D3</td>
-      <td>Overcast</td>
-      <td>Hot</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>40</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>D4</td>
-      <td>Rain</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>50</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>D5</td>
-      <td>Rain</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>60</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>D6</td>
-      <td>Rain</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Strong</td>
-      <td>10</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>D7</td>
-      <td>Overcast</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Strong</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>D8</td>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Weak</td>
-      <td>10</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>D9</td>
-      <td>Sunny</td>
-      <td>Cool</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>60</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>D10</td>
-      <td>Rain</td>
-      <td>Mild</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>40</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>D11</td>
-      <td>Sunny</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>45</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>D12</td>
-      <td>Overcast</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>40</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>D13</td>
-      <td>Overcast</td>
-      <td>Hot</td>
-      <td>Normal</td>
-      <td>Weak</td>
-      <td>35</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>D14</td>
-      <td>Rain</td>
-      <td>Mild</td>
-      <td>High</td>
-      <td>Strong</td>
-      <td>20</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">df[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
-<pre><code>18.3111087402348</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb6-2"><span class="co" style="color: #5E5E5E;"># np.std(df["Minutes Played"].values)</span></span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1">df.query(<span class="st" style="color: #20794D;">"Wind=='Weak'"</span>)[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">len</span>(df.query(<span class="st" style="color: #20794D;">"Wind=='Weak'"</span>))<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(df)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
-<pre><code>10.180585192846463</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="27">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">df.query(<span class="st" style="color: #20794D;">"Wind=='Strong'"</span>)[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">len</span>(df.query(<span class="st" style="color: #20794D;">"Wind=='Strong'"</span>))<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(df)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
-<pre><code>6.933944897151599</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="29">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">out <span class="op" style="color: #5E5E5E;">=</span> {}</span>
-<span id="cb11-2"><span class="cf" style="color: #003B4F;">for</span> temp <span class="kw" style="color: #003B4F;">in</span> df[<span class="st" style="color: #20794D;">"Temp"</span>].unique():</span>
-<span id="cb11-3">    <span class="bu" style="color: null;">print</span>(temp)</span>
-<span id="cb11-4">    out[temp] <span class="op" style="color: #5E5E5E;">=</span> df.query(<span class="st" style="color: #20794D;">"Temp==@temp"</span>)[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std()<span class="op" style="color: #5E5E5E;">*</span><span class="bu" style="color: null;">len</span>(df.query(<span class="st" style="color: #20794D;">"Temp==@temp"</span>))<span class="op" style="color: #5E5E5E;">/</span><span class="bu" style="color: null;">len</span>(df)</span>
-<span id="cb11-5">    <span class="bu" style="color: null;">print</span>(out[temp])</span>
-<span id="cb11-6">    <span class="bu" style="color: null;">print</span>()</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Hot
-2.6636888135137133
-
-Mild
-6.696785704762413
-
-Cool
-8.770699519880226
-</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">df[<span class="st" style="color: #20794D;">"Minutes Played"</span>].std() <span class="op" style="color: #5E5E5E;">-</span> pd.Series(out).<span class="bu" style="color: null;">sum</span>()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
-<pre><code>0.17993470207844808</code></pre>
-</div>
-</div>
-
-
-
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/dt-reg.html</guid>
-  <pubDate>Thu, 12 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

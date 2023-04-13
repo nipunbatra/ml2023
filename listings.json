@@ -4,6 +4,7 @@
     "items": [
       "/notebooks/posts/mle.html",
       "/notebooks/posts/log-sum-exp.html",
+      "/notebooks/posts/parametric-non-parametric.html",
       "/notebooks/posts/autodiff-helper.html",
       "/notebooks/posts/movie-recommendation-knn.html",
       "/notebooks/posts/1d-cnn.html",
