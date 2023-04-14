@@ -4031,11 +4031,11 @@ Name: Rahul C, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="120">
+<div class="cell" data-execution_count="139">
 <div class="sourceCode cell-code" id="cb86" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><span class="co" style="color: #5E5E5E;"># Fit the Matrix Factorization model</span></span>
 <span id="cb86-2">n_users <span class="op" style="color: #5E5E5E;">=</span> D.shape[<span class="dv" style="color: #AD0000;">0</span>]</span>
 <span id="cb86-3">n_movies <span class="op" style="color: #5E5E5E;">=</span> D.shape[<span class="dv" style="color: #AD0000;">1</span>]</span>
-<span id="cb86-4">model <span class="op" style="color: #5E5E5E;">=</span> MatrixFactorization(n_users, n_movies, <span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb86-4">model <span class="op" style="color: #5E5E5E;">=</span> MatrixFactorization(n_users, n_movies, <span class="dv" style="color: #AD0000;">4</span>)</span>
 <span id="cb86-5">optimizer <span class="op" style="color: #5E5E5E;">=</span> optim.Adam(model.parameters(), lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.01</span>)</span>
 <span id="cb86-6"></span>
 <span id="cb86-7"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1000</span>):</span>
@@ -4056,19 +4056,19 @@ Name: Rahul C, dtype: float64</code></pre>
 <span id="cb86-22">    <span class="cf" style="color: #003B4F;">if</span> i <span class="op" style="color: #5E5E5E;">%</span> <span class="dv" style="color: #AD0000;">100</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>:</span>
 <span id="cb86-23">        <span class="bu" style="color: null;">print</span>(loss.item())</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>20.632976531982422
-5.898342132568359
-0.9872512221336365
-0.6203917860984802
-0.5766275525093079
-0.5532926321029663
-0.5254881381988525
-0.4971170723438263
-0.47530585527420044
-0.4588383734226227</code></pre>
+<pre><code>21.0886173248291
+4.061213493347168
+0.7133367657661438
+0.4743851125240326
+0.38834860920906067
+0.3376193344593048
+0.3069866895675659
+0.2862914800643921
+0.27032995223999023
+0.2577725350856781</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="124">
+<div class="cell" data-execution_count="140">
 <div class="sourceCode cell-code" id="cb88" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><span class="co" style="color: #5E5E5E;"># Now, let us predict the ratings for any user and movie from df for which we already have the ratings</span></span>
 <span id="cb88-2"></span>
 <span id="cb88-3">username <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Dhruv'</span></span>
@@ -4081,13 +4081,13 @@ Name: Rahul C, dtype: float64</code></pre>
 <span id="cb88-10"><span class="co" style="color: #5E5E5E;"># Predict the rating</span></span>
 <span id="cb88-11">pred <span class="op" style="color: #5E5E5E;">=</span> model(torch.tensor([user_idx]), torch.tensor([movie_idx]))</span>
 <span id="cb88-12">pred.item(), df.loc[username, movie]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="124">
-<pre><code>(4.905300140380859, 5.0)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="140">
+<pre><code>(5.302472114562988, 5.0)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="126">
+<div class="cell" data-execution_count="141">
 <div class="sourceCode cell-code" id="cb90" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb90-1">df.loc[username]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="126">
+<div class="cell-output cell-output-display" data-execution_count="141">
 <pre><code>Sholay                      NaN
 Swades (We The People)      NaN
 The Matrix (I)              5.0
@@ -4101,7 +4101,7 @@ Uri: The Surgical Strike    5.0
 Name: Dhruv, dtype: float64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="131">
+<div class="cell" data-execution_count="142">
 <div class="sourceCode cell-code" id="cb92" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb92-1"><span class="co" style="color: #5E5E5E;"># Now, let us predict the ratings for any user and movie from df for which we do not have the ratings</span></span>
 <span id="cb92-2"></span>
 <span id="cb92-3">username <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Dhruv'</span></span>
@@ -4114,20 +4114,20 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb92-10"><span class="co" style="color: #5E5E5E;"># Predict the rating</span></span>
 <span id="cb92-11">pred <span class="op" style="color: #5E5E5E;">=</span> model(torch.tensor([user_idx]), torch.tensor([movie_idx]))</span>
 <span id="cb92-12">pred, df.loc[username, movie]</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="131">
-<pre><code>(tensor([4.5043], grad_fn=&lt;SumBackward1&gt;), nan)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="142">
+<pre><code>(tensor([4.1941], grad_fn=&lt;SumBackward1&gt;), nan)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="136">
+<div class="cell" data-execution_count="143">
 <div class="sourceCode cell-code" id="cb94" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb94-1"><span class="co" style="color: #5E5E5E;"># Complete the matrix</span></span>
 <span id="cb94-2"><span class="cf" style="color: #003B4F;">with</span> torch.no_grad():</span>
 <span id="cb94-3">    completed_matrix <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(model.user_factors.weight <span class="op" style="color: #5E5E5E;">@</span> model.movie_factors.weight.t(), index<span class="op" style="color: #5E5E5E;">=</span>df.index, columns<span class="op" style="color: #5E5E5E;">=</span>df.columns)</span>
 <span id="cb94-4">    <span class="co" style="color: #5E5E5E;"># round to nearest integer</span></span>
 <span id="cb94-5">    completed_matrix <span class="op" style="color: #5E5E5E;">=</span> completed_matrix.<span class="bu" style="color: null;">round</span>()</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="137">
+<div class="cell" data-execution_count="144">
 <div class="sourceCode cell-code" id="cb95" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb95-1">completed_matrix.head()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="137">
+<div class="cell-output cell-output-display" data-execution_count="144">
 
 <div>
 
@@ -4163,55 +4163,55 @@ Name: Dhruv, dtype: float64</code></pre>
   <tbody>
     <tr>
       <th>Nipun</th>
-      <td>5.0</td>
       <td>4.0</td>
       <td>4.0</td>
-      <td>5.0</td>
       <td>4.0</td>
       <td>5.0</td>
       <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>5.0</td>
     </tr>
     <tr>
       <th>Gautam Vashishtha</th>
-      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
       <td>4.0</td>
       <td>5.0</td>
-      <td>4.0</td>
       <td>2.0</td>
       <td>2.0</td>
       <td>5.0</td>
       <td>5.0</td>
       <td>4.0</td>
-      <td>2.0</td>
+      <td>3.0</td>
     </tr>
     <tr>
       <th>Eshan Gujarathi</th>
-      <td>5.0</td>
-      <td>4.0</td>
-      <td>5.0</td>
-      <td>5.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>5.0</td>
       <td>5.0</td>
       <td>4.0</td>
       <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
     </tr>
     <tr>
       <th>Sai Krishna Avula</th>
       <td>4.0</td>
-      <td>3.0</td>
+      <td>4.0</td>
       <td>3.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>5.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
       <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
     </tr>
     <tr>
       <th>Ankit Yadav</th>
@@ -4219,21 +4219,21 @@ Name: Dhruv, dtype: float64</code></pre>
       <td>3.0</td>
       <td>3.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
       <td>3.0</td>
       <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
     </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="138">
+<div class="cell" data-execution_count="145">
 <div class="sourceCode cell-code" id="cb96" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb96-1">df.head()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="138">
+<div class="cell-output cell-output-display" data-execution_count="145">
 
 <div>
 

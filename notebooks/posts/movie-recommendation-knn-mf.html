@@ -4009,11 +4009,11 @@ Name: Rahul C, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="120">
+<div class="cell" data-execution_count="139">
 <div class="sourceCode cell-code" id="cb86"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the Matrix Factorization model</span></span>
 <span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>n_users <span class="op">=</span> D.shape[<span class="dv">0</span>]</span>
 <span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>n_movies <span class="op">=</span> D.shape[<span class="dv">1</span>]</span>
-<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> MatrixFactorization(n_users, n_movies, <span class="dv">2</span>)</span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> MatrixFactorization(n_users, n_movies, <span class="dv">4</span>)</span>
 <span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> optim.Adam(model.parameters(), lr<span class="op">=</span><span class="fl">0.01</span>)</span>
 <span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb86-7"><a href="#cb86-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>):</span>
@@ -4034,19 +4034,19 @@ Name: Rahul C, dtype: float64</code></pre>
 <span id="cb86-22"><a href="#cb86-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> i <span class="op">%</span> <span class="dv">100</span> <span class="op">==</span> <span class="dv">0</span>:</span>
 <span id="cb86-23"><a href="#cb86-23" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(loss.item())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>20.632976531982422
-5.898342132568359
-0.9872512221336365
-0.6203917860984802
-0.5766275525093079
-0.5532926321029663
-0.5254881381988525
-0.4971170723438263
-0.47530585527420044
-0.4588383734226227</code></pre>
+<pre><code>21.0886173248291
+4.061213493347168
+0.7133367657661438
+0.4743851125240326
+0.38834860920906067
+0.3376193344593048
+0.3069866895675659
+0.2862914800643921
+0.27032995223999023
+0.2577725350856781</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="124">
+<div class="cell" data-execution_count="140">
 <div class="sourceCode cell-code" id="cb88"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, let us predict the ratings for any user and movie from df for which we already have the ratings</span></span>
 <span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>username <span class="op">=</span> <span class="st">'Dhruv'</span></span>
@@ -4059,13 +4059,13 @@ Name: Rahul C, dtype: float64</code></pre>
 <span id="cb88-10"><a href="#cb88-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict the rating</span></span>
 <span id="cb88-11"><a href="#cb88-11" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> model(torch.tensor([user_idx]), torch.tensor([movie_idx]))</span>
 <span id="cb88-12"><a href="#cb88-12" aria-hidden="true" tabindex="-1"></a>pred.item(), df.loc[username, movie]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="124">
-<pre><code>(4.905300140380859, 5.0)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="140">
+<pre><code>(5.302472114562988, 5.0)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="126">
+<div class="cell" data-execution_count="141">
 <div class="sourceCode cell-code" id="cb90"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>df.loc[username]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="126">
+<div class="cell-output cell-output-display" data-execution_count="141">
 <pre><code>Sholay                      NaN
 Swades (We The People)      NaN
 The Matrix (I)              5.0
@@ -4079,7 +4079,7 @@ Uri: The Surgical Strike    5.0
 Name: Dhruv, dtype: float64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="131">
+<div class="cell" data-execution_count="142">
 <div class="sourceCode cell-code" id="cb92"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, let us predict the ratings for any user and movie from df for which we do not have the ratings</span></span>
 <span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>username <span class="op">=</span> <span class="st">'Dhruv'</span></span>
@@ -4092,20 +4092,20 @@ Name: Dhruv, dtype: float64</code></pre>
 <span id="cb92-10"><a href="#cb92-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict the rating</span></span>
 <span id="cb92-11"><a href="#cb92-11" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> model(torch.tensor([user_idx]), torch.tensor([movie_idx]))</span>
 <span id="cb92-12"><a href="#cb92-12" aria-hidden="true" tabindex="-1"></a>pred, df.loc[username, movie]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="131">
-<pre><code>(tensor([4.5043], grad_fn=&lt;SumBackward1&gt;), nan)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="142">
+<pre><code>(tensor([4.1941], grad_fn=&lt;SumBackward1&gt;), nan)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="136">
+<div class="cell" data-execution_count="143">
 <div class="sourceCode cell-code" id="cb94"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Complete the matrix</span></span>
 <span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
 <span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>    completed_matrix <span class="op">=</span> pd.DataFrame(model.user_factors.weight <span class="op">@</span> model.movie_factors.weight.t(), index<span class="op">=</span>df.index, columns<span class="op">=</span>df.columns)</span>
 <span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># round to nearest integer</span></span>
 <span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>    completed_matrix <span class="op">=</span> completed_matrix.<span class="bu">round</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="137">
+<div class="cell" data-execution_count="144">
 <div class="sourceCode cell-code" id="cb95"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>completed_matrix.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="137">
+<div class="cell-output cell-output-display" data-execution_count="144">
 
 <div>
 
@@ -4141,55 +4141,55 @@ Name: Dhruv, dtype: float64</code></pre>
   <tbody>
     <tr>
       <th>Nipun</th>
-      <td>5.0</td>
       <td>4.0</td>
       <td>4.0</td>
-      <td>5.0</td>
       <td>4.0</td>
       <td>5.0</td>
       <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>5.0</td>
     </tr>
     <tr>
       <th>Gautam Vashishtha</th>
-      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
       <td>4.0</td>
       <td>5.0</td>
-      <td>4.0</td>
       <td>2.0</td>
       <td>2.0</td>
       <td>5.0</td>
       <td>5.0</td>
       <td>4.0</td>
-      <td>2.0</td>
+      <td>3.0</td>
     </tr>
     <tr>
       <th>Eshan Gujarathi</th>
-      <td>5.0</td>
-      <td>4.0</td>
-      <td>5.0</td>
-      <td>5.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>5.0</td>
       <td>5.0</td>
       <td>4.0</td>
       <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
     </tr>
     <tr>
       <th>Sai Krishna Avula</th>
       <td>4.0</td>
-      <td>3.0</td>
+      <td>4.0</td>
       <td>3.0</td>
       <td>4.0</td>
       <td>4.0</td>
       <td>5.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
       <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
     </tr>
     <tr>
       <th>Ankit Yadav</th>
@@ -4197,21 +4197,21 @@ Name: Dhruv, dtype: float64</code></pre>
       <td>3.0</td>
       <td>3.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
       <td>3.0</td>
       <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
     </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="138">
+<div class="cell" data-execution_count="145">
 <div class="sourceCode cell-code" id="cb96"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>df.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="138">
+<div class="cell-output cell-output-display" data-execution_count="145">
 
 <div>
 
