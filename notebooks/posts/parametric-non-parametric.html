@@ -240,24 +240,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Aim:</p>
 <p>Given Dataset (X, y), learn a function <code>f</code> that maps <code>X</code> to <code>y</code>, i.e.&nbsp;<code>y = f(X)</code>.</p>
 <p>We will consider two cases: - Parametric: <code>f</code> is a function of a fixed number of parameters, e.g.&nbsp;<code>f(x) = ax + b</code> - Non-parametric: <code>f</code> is a function of number of parameters that grows with the size of the dataset.</p>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dataset for classification. Trivial dataset with 1 point in each class.</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.array([[<span class="dv">0</span>, <span class="dv">0</span>], [<span class="dv">1</span>, <span class="dv">1</span>]])</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="11">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the dataset</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, s<span class="op">=</span><span class="dv">100</span>, cmap<span class="op">=</span><span class="st">'viridis'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f1587ff8430&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f772d036640&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="parametric-non-parametric_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="12">
+<div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the decision boundary of a logistic regression classifier, KNN classifier, decision tree classifier, and a neural network classifier.</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_decision_boundary(model, X, y):</span>
@@ -274,7 +274,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="13">
+<div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Instantiate the models</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> LogisticRegression()</span>
@@ -305,14 +305,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="decision-tree" class="level3">
 <h3 class="anchored" data-anchor-id="decision-tree">Decision Tree</h3>
-<div class="cell" data-execution_count="18">
+<div class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> export_graphviz</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> graphviz</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>dot_data <span class="op">=</span> export_graphviz(dt, out_file<span class="op">=</span><span class="va">None</span>, feature_names<span class="op">=</span>[<span class="st">'x1'</span>, <span class="st">'x2'</span>], class_names<span class="op">=</span>[<span class="st">'0'</span>, <span class="st">'1'</span>], filled<span class="op">=</span><span class="va">True</span>, rounded<span class="op">=</span><span class="va">True</span>, special_characters<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>graph <span class="op">=</span> graphviz.Source(dot_data)</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>graph</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <p><img src="parametric-non-parametric_files/figure-html/cell-7-output-1.svg" class="img-fluid"></p>
 </div>
 </div>
@@ -329,7 +329,7 @@ y_pred = probs&gt;0.5</code></pre>
     y = 0
 elif X1 &lt; 0.5 and X2 &gt;= 0.5:
     ...</code></pre>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sophisticated dataset with 2 classes</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_blobs</span>
@@ -339,14 +339,14 @@ elif X1 &lt; 0.5 and X2 &gt;= 0.5:
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the dataset</span></span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">'viridis'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f18607e16d0&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f7a011d2d30&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="parametric-non-parametric_files/figure-html/cell-8-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="26">
+<div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> LogisticRegression()</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>knn <span class="op">=</span> KNeighborsClassifier(n_neighbors<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> DecisionTreeClassifier()</span>
@@ -365,27 +365,27 @@ elif X1 &lt; 0.5 and X2 &gt;= 0.5:
 <p><img src="parametric-non-parametric_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="27">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dot_data <span class="op">=</span> export_graphviz(dt, out_file<span class="op">=</span><span class="va">None</span>, feature_names<span class="op">=</span>[<span class="st">'x1'</span>, <span class="st">'x2'</span>], class_names<span class="op">=</span>[<span class="st">'0'</span>, <span class="st">'1'</span>], filled<span class="op">=</span><span class="va">True</span>, rounded<span class="op">=</span><span class="va">True</span>, special_characters<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>graph <span class="op">=</span> graphviz.Source(dot_data)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>graph</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <p><img src="parametric-non-parametric_files/figure-html/cell-10-output-1.svg" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="30">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dt.get_depth(), dt.get_n_leaves()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="30">
-<pre><code>(10, 25)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>(9, 24)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="28">
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>lr.coef_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="28">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>array([[ 0.19758375, -0.7298237 ]])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="31">
+<div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, more noise</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> make_blobs(n_samples<span class="op">=</span><span class="dv">100</span>, centers<span class="op">=</span><span class="dv">2</span>, n_features<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">0</span>, cluster_std<span class="op">=</span><span class="dv">5</span>)</span>
@@ -393,14 +393,14 @@ elif X1 &lt; 0.5 and X2 &gt;= 0.5:
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the dataset</span></span>
 <span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">'viridis'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="31">
-<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f1587e38f10&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>&lt;matplotlib.collections.PathCollection at 0x7f772abcffa0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="parametric-non-parametric_files/figure-html/cell-13-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="32">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> LogisticRegression()</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>knn <span class="op">=</span> KNeighborsClassifier(n_neighbors<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> DecisionTreeClassifier()</span>
@@ -419,18 +419,18 @@ elif X1 &lt; 0.5 and X2 &gt;= 0.5:
 <p><img src="parametric-non-parametric_files/figure-html/cell-14-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="33">
+<div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>dot_data <span class="op">=</span> export_graphviz(dt, out_file<span class="op">=</span><span class="va">None</span>, feature_names<span class="op">=</span>[<span class="st">'x1'</span>, <span class="st">'x2'</span>], class_names<span class="op">=</span>[<span class="st">'0'</span>, <span class="st">'1'</span>], filled<span class="op">=</span><span class="va">True</span>, rounded<span class="op">=</span><span class="va">True</span>, special_characters<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>graph <span class="op">=</span> graphviz.Source(dot_data)</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>graph</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="33">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <p><img src="parametric-non-parametric_files/figure-html/cell-15-output-1.svg" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="36">
+<div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dt.get_depth(), dt.get_n_leaves()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="36">
-<pre><code>(11, 35)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>(11, 36)</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="37">

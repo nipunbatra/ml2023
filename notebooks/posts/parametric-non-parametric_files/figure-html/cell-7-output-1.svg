@@ -13,7 +13,7 @@
 <g id="node1" class="node">
 <title>0</title>
 <path fill="#ffffff" stroke="black" d="M166,-187C166,-187 77,-187 77,-187 71,-187 65,-181 65,-175 65,-175 65,-116 65,-116 65,-110 71,-104 77,-104 77,-104 166,-104 166,-104 172,-104 178,-110 178,-116 178,-116 178,-175 178,-175 178,-181 172,-187 166,-187"/>
-<text text-anchor="start" x="91" y="-171.8" font-family="Helvetica,sans-Serif" font-size="14.00">x1 ≤ 0.5</text>
+<text text-anchor="start" x="91" y="-171.8" font-family="Helvetica,sans-Serif" font-size="14.00">x2 ≤ 0.5</text>
 <text text-anchor="start" x="86.5" y="-156.8" font-family="Helvetica,sans-Serif" font-size="14.00">gini = 0.5</text>
 <text text-anchor="start" x="77.5" y="-141.8" font-family="Helvetica,sans-Serif" font-size="14.00">samples = 2</text>
 <text text-anchor="start" x="73" y="-126.8" font-family="Helvetica,sans-Serif" font-size="14.00">value = [1, 1]</text>
