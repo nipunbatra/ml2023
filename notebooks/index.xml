@@ -243,141 +243,14 @@ elif X1 &lt; 0.5 and X2 &gt;= 0.5:
   <pubDate>Sat, 13 May 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
-  <title>Autodiff</title>
+  <title>Movie Recommendation using KNN and Matrix Factorization</title>
   <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-helper.html</link>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn-mf.html</link>
   <description><![CDATA[ 
 
 
 
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> torch</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> torch.nn.functional <span class="im" style="color: #00769E;">as</span> F</span>
-<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> torch.optim <span class="im" style="color: #00769E;">as</span> optim</span>
-<span id="cb1-5"></span>
-<span id="cb1-6"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb1-7"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
-<span id="cb1-8"></span>
-<span id="cb1-9"><span class="im" style="color: #00769E;">from</span> torch.utils.data <span class="im" style="color: #00769E;">import</span> DataLoader, TensorDataset</span>
-<span id="cb1-10"><span class="im" style="color: #00769E;">import</span> seaborn <span class="im" style="color: #00769E;">as</span> sns</span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
-<span id="cb1-13"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span>
-<span id="cb1-14"></span>
-<span id="cb1-15"><span class="co" style="color: #5E5E5E;"># Set random seed for reproducibility</span></span>
-<span id="cb1-16">torch.manual_seed(<span class="dv" style="color: #AD0000;">0</span>)</span>
-<span id="cb1-17"></span>
-<span id="cb1-18"><span class="co" style="color: #5E5E5E;"># Torch version</span></span>
-<span id="cb1-19">torch.__version__</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>'2.0.0+cu118'</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">theta_0 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">1.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb3-2">theta_1 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">1.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb3-3">theta_2 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">2.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb3-4"></span>
-<span id="cb3-5">x1 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">1.0</span>)</span>
-<span id="cb3-6">x2 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">2.0</span>)</span>
-<span id="cb3-7"></span>
-<span id="cb3-8">f1 <span class="op" style="color: #5E5E5E;">=</span> theta_1<span class="op" style="color: #5E5E5E;">*</span>x1</span>
-<span id="cb3-9">f2 <span class="op" style="color: #5E5E5E;">=</span> theta_2<span class="op" style="color: #5E5E5E;">*</span>x2</span>
-<span id="cb3-10"></span>
-<span id="cb3-11">f3 <span class="op" style="color: #5E5E5E;">=</span> f1 <span class="op" style="color: #5E5E5E;">+</span> f2</span>
-<span id="cb3-12"></span>
-<span id="cb3-13">f4 <span class="op" style="color: #5E5E5E;">=</span> f3 <span class="op" style="color: #5E5E5E;">+</span> theta_0</span>
-<span id="cb3-14"></span>
-<span id="cb3-15">f5 <span class="op" style="color: #5E5E5E;">=</span> f4<span class="op" style="color: #5E5E5E;">*-</span><span class="dv" style="color: #AD0000;">1</span></span>
-<span id="cb3-16"></span>
-<span id="cb3-17">f6 <span class="op" style="color: #5E5E5E;">=</span> torch.exp(f5)</span>
-<span id="cb3-18"></span>
-<span id="cb3-19">f7 <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">+</span> f6</span>
-<span id="cb3-20"></span>
-<span id="cb3-21">f8 <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span>f7</span>
-<span id="cb3-22"></span>
-<span id="cb3-23">f9 <span class="op" style="color: #5E5E5E;">=</span> torch.log(f8)</span>
-<span id="cb3-24"></span>
-<span id="cb3-25">L <span class="op" style="color: #5E5E5E;">=</span> f9<span class="op" style="color: #5E5E5E;">*-</span><span class="dv" style="color: #AD0000;">1</span></span>
-<span id="cb3-26"></span>
-<span id="cb3-27">all_nodes <span class="op" style="color: #5E5E5E;">=</span> {<span class="st" style="color: #20794D;">"theta_0"</span>: theta_0, <span class="st" style="color: #20794D;">"theta_1"</span>: theta_1, <span class="st" style="color: #20794D;">"theta_2"</span>: theta_2,  </span>
-<span id="cb3-28">             <span class="st" style="color: #20794D;">"f1"</span>: f1, <span class="st" style="color: #20794D;">"f2"</span>: f2, <span class="st" style="color: #20794D;">"f3"</span>: f3, <span class="st" style="color: #20794D;">"f4"</span>: f4, <span class="st" style="color: #20794D;">"f5"</span>: f5, <span class="st" style="color: #20794D;">"f6"</span>: f6, <span class="st" style="color: #20794D;">"f7"</span>: f7, <span class="st" style="color: #20794D;">"f8"</span>: f8, <span class="st" style="color: #20794D;">"f9"</span>: f9, <span class="st" style="color: #20794D;">"L"</span>: L}</span>
-<span id="cb3-29"></span>
-<span id="cb3-30"><span class="co" style="color: #5E5E5E;"># Retain grad for all nodes</span></span>
-<span id="cb3-31"><span class="cf" style="color: #003B4F;">for</span> node <span class="kw" style="color: #003B4F;">in</span> all_nodes.values():</span>
-<span id="cb3-32">    node.retain_grad()</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Print out the function evaluation for all nodes along with name of the node</span></span>
-<span id="cb4-2"><span class="cf" style="color: #003B4F;">for</span> name, node <span class="kw" style="color: #003B4F;">in</span> all_nodes.items():</span>
-<span id="cb4-3">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"</span><span class="sc" style="color: #5E5E5E;">{</span>name<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">: </span><span class="sc" style="color: #5E5E5E;">{</span>node<span class="sc" style="color: #5E5E5E;">.</span>item()<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>theta_0: 1.0
-theta_1: 1.0
-theta_2: 2.0
-f1: 1.0
-f2: 4.0
-f3: 5.0
-f4: 6.0
-f5: -6.0
-f6: 0.0024787522852420807
-f7: 1.0024787187576294
-f8: 0.9975274205207825
-f9: -0.0024756414350122213
-L: 0.0024756414350122213</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">L.backward()</span>
-<span id="cb6-2"></span>
-<span id="cb6-3"><span class="co" style="color: #5E5E5E;"># Print out the gradient for all nodes along with name of the node</span></span>
-<span id="cb6-4"><span class="cf" style="color: #003B4F;">for</span> name, node <span class="kw" style="color: #003B4F;">in</span> all_nodes.items():</span>
-<span id="cb6-5">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"</span><span class="sc" style="color: #5E5E5E;">{</span>name<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">: </span><span class="sc" style="color: #5E5E5E;">{</span>node<span class="sc" style="color: #5E5E5E;">.</span>grad<span class="sc" style="color: #5E5E5E;">.</span>item()<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>theta_0: -0.00247262348420918
-theta_1: -0.00247262348420918
-theta_2: -0.00494524696841836
-f1: -0.00247262348420918
-f2: -0.00247262348420918
-f3: -0.00247262348420918
-f4: -0.00247262348420918
-f5: 0.00247262348420918
-f6: 0.9975274801254272
-f7: 0.9975274801254272
-f8: -1.0024787187576294
-f9: -1.0
-L: 1.0</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="22">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span>(f7<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span>))<span class="op" style="color: #5E5E5E;">*-</span><span class="fl" style="color: #AD0000;">1.00247</span></span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
-<pre><code>tensor(0.9975, grad_fn=&lt;MulBackward0&gt;)</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="25">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">torch.exp(f5)<span class="op" style="color: #5E5E5E;">*</span><span class="fl" style="color: #AD0000;">0.9975</span></span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
-<pre><code>tensor(0.0025, grad_fn=&lt;MulBackward0&gt;)</code></pre>
-</div>
-</div>
-
-
-
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-helper.html</guid>
-  <pubDate>Tue, 04 Apr 2023 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>KNN Movie Recommendation</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn.html</link>
-  <description><![CDATA[ 
-
-
-
-<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
 <span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
 <span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
@@ -385,7 +258,7 @@ L: 1.0</code></pre>
 <span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
 <span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="67">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Generate some toy user and movie data</span></span>
 <span id="cb2-2"></span>
 <span id="cb2-3"><span class="co" style="color: #5E5E5E;"># Number of users</span></span>
@@ -413,9 +286,9 @@ L: 1.0</code></pre>
 <span id="cb2-25"><span class="co" style="color: #5E5E5E;"># Drop any rows that have duplicate user_id and movie_id pairs</span></span>
 <span id="cb2-26">df <span class="op" style="color: #5E5E5E;">=</span> df.drop_duplicates([<span class="st" style="color: #20794D;">'user_id'</span>, <span class="st" style="color: #20794D;">'movie_id'</span>])</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="68">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">df</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="68">
 
 <div>
 
@@ -431,82 +304,82 @@ L: 1.0</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>56</td>
+      <td>42</td>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>89</td>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>86</td>
+      <td>1</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>12</td>
+      <td>6</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>80</td>
+      <td>6</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>981</th>
+      <td>27</td>
+      <td>0</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>982</th>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>984</th>
+      <td>81</td>
       <td>4</td>
       <td>5</td>
     </tr>
     <tr>
-      <th>1</th>
-      <td>12</td>
-      <td>6</td>
-      <td>5</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>0</td>
-      <td>2</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>54</td>
+      <th>988</th>
+      <td>11</td>
       <td>7</td>
       <td>5</td>
     </tr>
     <tr>
-      <th>4</th>
-      <td>46</td>
-      <td>3</td>
-      <td>5</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>988</th>
-      <td>8</td>
-      <td>9</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>990</th>
-      <td>38</td>
-      <td>1</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>993</th>
-      <td>40</td>
-      <td>2</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>995</th>
-      <td>61</td>
-      <td>8</td>
-      <td>3</td>
-    </tr>
-    <tr>
       <th>997</th>
-      <td>91</td>
+      <td>56</td>
+      <td>4</td>
       <td>3</td>
-      <td>1</td>
     </tr>
   </tbody>
 </table>
-<p>642 rows × 3 columns</p>
+<p>623 rows × 3 columns</p>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
+<div class="cell" data-execution_count="69">
 <div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Create a user-item matrix</span></span>
 <span id="cb4-2"></span>
 <span id="cb4-3">A <span class="op" style="color: #5E5E5E;">=</span> df.pivot(index<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'user_id'</span>, columns<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'movie_id'</span>, values<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'rating'</span>)</span>
 <span id="cb4-4">A</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="69">
 
 <div>
 
@@ -542,68 +415,68 @@ L: 1.0</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>2.0</td>
-      <td>NaN</td>
-      <td>1.0</td>
       <td>4.0</td>
-      <td>NaN</td>
-      <td>4.0</td>
-      <td>NaN</td>
+      <td>3.0</td>
+      <td>5.0</td>
       <td>5.0</td>
       <td>NaN</td>
-      <td>4.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
       <td>5.0</td>
       <td>NaN</td>
       <td>1.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
       <td>3.0</td>
-      <td>1.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>2</th>
       <td>3.0</td>
       <td>NaN</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>2.0</td>
-      <td>3.0</td>
       <td>5.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>2.0</td>
+      <td>NaN</td>
       <td>4.0</td>
-      <td>NaN</td>
       <td>1.0</td>
-      <td>1.0</td>
-      <td>2.0</td>
+      <td>3.0</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>2.0</td>
       <td>5.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>5.0</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>NaN</td>
-      <td>3.0</td>
       <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+      <td>1.0</td>
     </tr>
     <tr>
       <th>...</th>
@@ -620,68 +493,68 @@ L: 1.0</code></pre>
     </tr>
     <tr>
       <th>95</th>
-      <td>NaN</td>
-      <td>5.0</td>
       <td>3.0</td>
-      <td>5.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>NaN</td>
       <td>1.0</td>
       <td>3.0</td>
-      <td>NaN</td>
-      <td>2.0</td>
       <td>3.0</td>
-      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
     </tr>
     <tr>
       <th>96</th>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>3.0</td>
-      <td>5.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
       <td>NaN</td>
       <td>2.0</td>
       <td>3.0</td>
-      <td>3.0</td>
       <td>NaN</td>
-      <td>5.0</td>
+      <td>2.0</td>
     </tr>
     <tr>
       <th>97</th>
-      <td>5.0</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>5.0</td>
-      <td>4.0</td>
+      <td>NaN</td>
       <td>3.0</td>
+      <td>NaN</td>
       <td>3.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
       <td>3.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>98</th>
-      <td>1.0</td>
       <td>NaN</td>
       <td>4.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>NaN</td>
       <td>5.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>1.0</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>3.0</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>99</th>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
       <td>NaN</td>
+      <td>2.0</td>
       <td>NaN</td>
       <td>1.0</td>
       <td>4.0</td>
-      <td>NaN</td>
-      <td>4.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
     </tr>
   </tbody>
 </table>
@@ -689,12 +562,12 @@ L: 1.0</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="6">
+<div class="cell" data-execution_count="70">
 <div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;"># Fill in the missing values with zeros</span></span>
 <span id="cb5-2">A <span class="op" style="color: #5E5E5E;">=</span> A.fillna(<span class="dv" style="color: #AD0000;">0</span>)</span>
 <span id="cb5-3"></span>
 <span id="cb5-4">A</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<div class="cell-output cell-output-display" data-execution_count="70">
 
 <div>
 
@@ -730,68 +603,68 @@ L: 1.0</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
       <td>4.0</td>
-      <td>0.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
       <td>5.0</td>
       <td>0.0</td>
-      <td>4.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
       <td>5.0</td>
       <td>0.0</td>
       <td>1.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
       <td>3.0</td>
-      <td>1.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>2</th>
       <td>3.0</td>
       <td>0.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>2.0</td>
-      <td>3.0</td>
       <td>5.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>2.0</td>
+      <td>0.0</td>
       <td>4.0</td>
-      <td>0.0</td>
       <td>1.0</td>
-      <td>1.0</td>
-      <td>2.0</td>
+      <td>3.0</td>
       <td>0.0</td>
-      <td>0.0</td>
-      <td>2.0</td>
       <td>5.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>5.0</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
       <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
     </tr>
     <tr>
       <th>...</th>
@@ -808,68 +681,68 @@ L: 1.0</code></pre>
     </tr>
     <tr>
       <th>95</th>
-      <td>0.0</td>
-      <td>5.0</td>
       <td>3.0</td>
-      <td>5.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
       <td>1.0</td>
       <td>3.0</td>
-      <td>0.0</td>
-      <td>2.0</td>
       <td>3.0</td>
-      <td>5.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
     </tr>
     <tr>
       <th>96</th>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
       <td>3.0</td>
-      <td>5.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
       <td>0.0</td>
       <td>2.0</td>
       <td>3.0</td>
-      <td>3.0</td>
       <td>0.0</td>
-      <td>5.0</td>
+      <td>2.0</td>
     </tr>
     <tr>
       <th>97</th>
-      <td>5.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>5.0</td>
-      <td>4.0</td>
+      <td>0.0</td>
       <td>3.0</td>
+      <td>0.0</td>
       <td>3.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
       <td>3.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>98</th>
-      <td>1.0</td>
       <td>0.0</td>
       <td>4.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
       <td>5.0</td>
-      <td>3.0</td>
-      <td>4.0</td>
-      <td>1.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>3.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>99</th>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
       <td>0.0</td>
+      <td>2.0</td>
       <td>0.0</td>
       <td>1.0</td>
       <td>4.0</td>
-      <td>0.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
     </tr>
   </tbody>
 </table>
@@ -877,7 +750,7 @@ L: 1.0</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="71">
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;"># Cosine similarity between U1 and U2</span></span>
 <span id="cb6-2"></span>
 <span id="cb6-3"><span class="co" style="color: #5E5E5E;"># User 1</span></span>
@@ -896,18 +769,18 @@ L: 1.0</code></pre>
 <span id="cb6-16"><span class="co" style="color: #5E5E5E;"># Compute the cosine similarity</span></span>
 <span id="cb6-17">cos_sim <span class="op" style="color: #5E5E5E;">=</span> dot <span class="op" style="color: #5E5E5E;">/</span> (norm_u1 <span class="op" style="color: #5E5E5E;">*</span> norm_u2)</span>
 <span id="cb6-18">cos_sim</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
-<pre><code>0.51963422122285</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="71">
+<pre><code>0.6602414870635759</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="8">
+<div class="cell" data-execution_count="72">
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;"># Calculate the cosine similarity between users</span></span>
 <span id="cb8-2"><span class="im" style="color: #00769E;">from</span> sklearn.metrics.pairwise <span class="im" style="color: #00769E;">import</span> cosine_similarity</span>
 <span id="cb8-3"></span>
 <span id="cb8-4">sim_matrix <span class="op" style="color: #5E5E5E;">=</span> cosine_similarity(A)</span>
 <span id="cb8-5"></span>
 <span id="cb8-6">pd.DataFrame(sim_matrix)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="72">
 
 <div>
 
@@ -942,122 +815,122 @@ L: 1.0</code></pre>
     <tr>
       <th>0</th>
       <td>1.000000</td>
-      <td>0.519634</td>
-      <td>0.675926</td>
-      <td>0.549634</td>
-      <td>0.622693</td>
-      <td>0.683906</td>
-      <td>0.278747</td>
-      <td>0.615576</td>
-      <td>0.702012</td>
-      <td>0.194184</td>
+      <td>0.660241</td>
+      <td>0.777679</td>
+      <td>0.469409</td>
+      <td>0.699862</td>
+      <td>0.479770</td>
+      <td>0.755574</td>
+      <td>0.416966</td>
+      <td>0.545591</td>
+      <td>0.554525</td>
       <td>...</td>
-      <td>0.394676</td>
-      <td>0.233882</td>
-      <td>0.566558</td>
-      <td>0.702012</td>
-      <td>0.301941</td>
-      <td>0.711499</td>
-      <td>0.747840</td>
-      <td>0.789339</td>
-      <td>0.696789</td>
-      <td>0.718480</td>
+      <td>0.583891</td>
+      <td>0.888070</td>
+      <td>0.424048</td>
+      <td>0.299175</td>
+      <td>0.603374</td>
+      <td>0.503721</td>
+      <td>0.430077</td>
+      <td>0.434429</td>
+      <td>0.461384</td>
+      <td>0.666361</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.519634</td>
+      <td>0.660241</td>
       <td>1.000000</td>
-      <td>0.674330</td>
-      <td>0.451571</td>
-      <td>0.802501</td>
-      <td>0.684035</td>
-      <td>0.610705</td>
-      <td>0.489219</td>
-      <td>0.731805</td>
-      <td>0.680697</td>
+      <td>0.792212</td>
+      <td>0.766282</td>
+      <td>0.507726</td>
+      <td>0.526331</td>
+      <td>0.537985</td>
+      <td>0.504328</td>
+      <td>0.414964</td>
+      <td>0.461888</td>
       <td>...</td>
-      <td>0.800641</td>
-      <td>0.288231</td>
-      <td>0.429669</td>
-      <td>0.744208</td>
-      <td>0.351432</td>
-      <td>0.431672</td>
-      <td>0.614413</td>
-      <td>0.842218</td>
-      <td>0.508863</td>
-      <td>0.297805</td>
+      <td>0.250122</td>
+      <td>0.782586</td>
+      <td>0.194625</td>
+      <td>0.269131</td>
+      <td>0.480750</td>
+      <td>0.514929</td>
+      <td>0.132647</td>
+      <td>0.907222</td>
+      <td>0.272428</td>
+      <td>0.350325</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.675926</td>
-      <td>0.674330</td>
+      <td>0.777679</td>
+      <td>0.792212</td>
       <td>1.000000</td>
-      <td>0.632456</td>
-      <td>0.758671</td>
-      <td>0.321938</td>
-      <td>0.734809</td>
-      <td>0.340909</td>
-      <td>0.607622</td>
-      <td>0.712991</td>
+      <td>0.550823</td>
+      <td>0.816830</td>
+      <td>0.520153</td>
+      <td>0.812736</td>
+      <td>0.786007</td>
+      <td>0.598532</td>
+      <td>0.679392</td>
       <td>...</td>
-      <td>0.233955</td>
-      <td>0.412861</td>
-      <td>0.759064</td>
-      <td>0.628942</td>
-      <td>0.408635</td>
-      <td>0.752298</td>
-      <td>0.704068</td>
-      <td>0.810696</td>
-      <td>0.765339</td>
-      <td>0.457045</td>
+      <td>0.540720</td>
+      <td>0.721315</td>
+      <td>0.156556</td>
+      <td>0.510296</td>
+      <td>0.723532</td>
+      <td>0.792913</td>
+      <td>0.391239</td>
+      <td>0.729769</td>
+      <td>0.515625</td>
+      <td>0.626224</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.549634</td>
-      <td>0.451571</td>
-      <td>0.632456</td>
+      <td>0.469409</td>
+      <td>0.766282</td>
+      <td>0.550823</td>
       <td>1.000000</td>
-      <td>0.857870</td>
-      <td>0.354107</td>
-      <td>0.331953</td>
-      <td>0.416846</td>
-      <td>0.337100</td>
-      <td>0.369998</td>
+      <td>0.468293</td>
+      <td>0.663451</td>
+      <td>0.395348</td>
+      <td>0.525726</td>
+      <td>0.338742</td>
+      <td>0.639021</td>
       <td>...</td>
-      <td>0.278524</td>
-      <td>0.522233</td>
-      <td>0.311400</td>
-      <td>0.701168</td>
-      <td>0.404520</td>
-      <td>0.821235</td>
-      <td>0.772712</td>
-      <td>0.659223</td>
-      <td>0.507093</td>
-      <td>0.393123</td>
+      <td>0.420539</td>
+      <td>0.754386</td>
+      <td>0.544510</td>
+      <td>0.413714</td>
+      <td>0.350438</td>
+      <td>0.459105</td>
+      <td>0.404418</td>
+      <td>0.650814</td>
+      <td>0.569050</td>
+      <td>0.356026</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.622693</td>
-      <td>0.802501</td>
-      <td>0.758671</td>
-      <td>0.857870</td>
+      <td>0.699862</td>
+      <td>0.507726</td>
+      <td>0.816830</td>
+      <td>0.468293</td>
       <td>1.000000</td>
-      <td>0.566365</td>
-      <td>0.557478</td>
-      <td>0.494286</td>
-      <td>0.603864</td>
-      <td>0.610275</td>
+      <td>0.489525</td>
+      <td>0.967349</td>
+      <td>0.709197</td>
+      <td>0.438397</td>
+      <td>0.606478</td>
       <td>...</td>
-      <td>0.612531</td>
-      <td>0.529004</td>
-      <td>0.394296</td>
-      <td>0.884229</td>
-      <td>0.467275</td>
-      <td>0.760995</td>
-      <td>0.806471</td>
-      <td>0.868882</td>
-      <td>0.688166</td>
-      <td>0.536302</td>
+      <td>0.733388</td>
+      <td>0.561951</td>
+      <td>0.447214</td>
+      <td>0.588968</td>
+      <td>0.742392</td>
+      <td>0.676123</td>
+      <td>0.486834</td>
+      <td>0.489979</td>
+      <td>0.721117</td>
+      <td>0.614919</td>
     </tr>
     <tr>
       <th>...</th>
@@ -1085,122 +958,122 @@ L: 1.0</code></pre>
     </tr>
     <tr>
       <th>95</th>
-      <td>0.711499</td>
-      <td>0.431672</td>
-      <td>0.752298</td>
-      <td>0.821235</td>
-      <td>0.760995</td>
-      <td>0.368122</td>
-      <td>0.452189</td>
-      <td>0.669854</td>
-      <td>0.638046</td>
-      <td>0.431064</td>
+      <td>0.503721</td>
+      <td>0.514929</td>
+      <td>0.792913</td>
+      <td>0.459105</td>
+      <td>0.676123</td>
+      <td>0.335847</td>
+      <td>0.611577</td>
+      <td>0.826380</td>
+      <td>0.819761</td>
+      <td>0.589453</td>
       <td>...</td>
-      <td>0.137286</td>
-      <td>0.648987</td>
-      <td>0.595355</td>
-      <td>0.609044</td>
-      <td>0.354470</td>
+      <td>0.500921</td>
+      <td>0.538260</td>
+      <td>0.037796</td>
+      <td>0.690654</td>
+      <td>0.722806</td>
       <td>1.000000</td>
-      <td>0.854470</td>
-      <td>0.656432</td>
-      <td>0.738138</td>
-      <td>0.663176</td>
+      <td>0.622541</td>
+      <td>0.542105</td>
+      <td>0.311211</td>
+      <td>0.774827</td>
     </tr>
     <tr>
       <th>96</th>
-      <td>0.747840</td>
-      <td>0.614413</td>
-      <td>0.704068</td>
-      <td>0.772712</td>
-      <td>0.806471</td>
-      <td>0.471884</td>
-      <td>0.430405</td>
-      <td>0.786900</td>
-      <td>0.689613</td>
-      <td>0.266519</td>
+      <td>0.430077</td>
+      <td>0.132647</td>
+      <td>0.391239</td>
+      <td>0.404418</td>
+      <td>0.486834</td>
+      <td>0.394961</td>
+      <td>0.325482</td>
+      <td>0.459922</td>
+      <td>0.709876</td>
+      <td>0.731717</td>
       <td>...</td>
-      <td>0.489031</td>
-      <td>0.702198</td>
-      <td>0.654234</td>
-      <td>0.786742</td>
-      <td>0.178069</td>
-      <td>0.854470</td>
+      <td>0.593057</td>
+      <td>0.475786</td>
+      <td>0.340777</td>
+      <td>0.729291</td>
+      <td>0.452563</td>
+      <td>0.622541</td>
       <td>1.000000</td>
-      <td>0.738663</td>
-      <td>0.675199</td>
-      <td>0.533037</td>
+      <td>0.067884</td>
+      <td>0.491035</td>
+      <td>0.823545</td>
     </tr>
     <tr>
       <th>97</th>
-      <td>0.789339</td>
-      <td>0.842218</td>
-      <td>0.810696</td>
-      <td>0.659223</td>
-      <td>0.868882</td>
-      <td>0.618172</td>
-      <td>0.523776</td>
-      <td>0.492208</td>
-      <td>0.679018</td>
-      <td>0.543436</td>
+      <td>0.434429</td>
+      <td>0.907222</td>
+      <td>0.729769</td>
+      <td>0.650814</td>
+      <td>0.489979</td>
+      <td>0.277054</td>
+      <td>0.483494</td>
+      <td>0.532327</td>
+      <td>0.395437</td>
+      <td>0.303915</td>
       <td>...</td>
-      <td>0.607782</td>
-      <td>0.233762</td>
-      <td>0.487861</td>
-      <td>0.887250</td>
-      <td>0.543214</td>
-      <td>0.656432</td>
-      <td>0.738663</td>
+      <td>0.024001</td>
+      <td>0.525657</td>
+      <td>0.000000</td>
+      <td>0.236113</td>
+      <td>0.428571</td>
+      <td>0.542105</td>
+      <td>0.067884</td>
       <td>1.000000</td>
-      <td>0.742860</td>
-      <td>0.574490</td>
+      <td>0.196827</td>
+      <td>0.298807</td>
     </tr>
     <tr>
       <th>98</th>
-      <td>0.696789</td>
-      <td>0.508863</td>
-      <td>0.765339</td>
-      <td>0.507093</td>
-      <td>0.688166</td>
-      <td>0.374094</td>
-      <td>0.603186</td>
-      <td>0.473781</td>
-      <td>0.695160</td>
-      <td>0.469058</td>
+      <td>0.461384</td>
+      <td>0.272428</td>
+      <td>0.515625</td>
+      <td>0.569050</td>
+      <td>0.721117</td>
+      <td>0.620299</td>
+      <td>0.624518</td>
+      <td>0.500069</td>
+      <td>0.105939</td>
+      <td>0.739759</td>
       <td>...</td>
-      <td>0.323669</td>
-      <td>0.411943</td>
-      <td>0.679883</td>
-      <td>0.717952</td>
-      <td>0.569803</td>
-      <td>0.738138</td>
-      <td>0.675199</td>
-      <td>0.742860</td>
+      <td>0.644826</td>
+      <td>0.465586</td>
+      <td>0.658710</td>
+      <td>0.365978</td>
+      <td>0.311643</td>
+      <td>0.311211</td>
+      <td>0.491035</td>
+      <td>0.196827</td>
       <td>1.000000</td>
-      <td>0.840395</td>
+      <td>0.391109</td>
     </tr>
     <tr>
       <th>99</th>
-      <td>0.718480</td>
-      <td>0.297805</td>
-      <td>0.457045</td>
-      <td>0.393123</td>
-      <td>0.536302</td>
-      <td>0.450377</td>
-      <td>0.189990</td>
-      <td>0.475327</td>
-      <td>0.634545</td>
-      <td>0.176471</td>
+      <td>0.666361</td>
+      <td>0.350325</td>
+      <td>0.626224</td>
+      <td>0.356026</td>
+      <td>0.614919</td>
+      <td>0.386334</td>
+      <td>0.556215</td>
+      <td>0.485866</td>
+      <td>0.900638</td>
+      <td>0.644160</td>
       <td>...</td>
-      <td>0.265684</td>
-      <td>0.265684</td>
-      <td>0.330049</td>
-      <td>0.634545</td>
-      <td>0.371580</td>
-      <td>0.663176</td>
-      <td>0.533037</td>
-      <td>0.574490</td>
-      <td>0.840395</td>
+      <td>0.542173</td>
+      <td>0.628281</td>
+      <td>0.350000</td>
+      <td>0.518558</td>
+      <td>0.657376</td>
+      <td>0.774827</td>
+      <td>0.823545</td>
+      <td>0.298807</td>
+      <td>0.391109</td>
       <td>1.000000</td>
     </tr>
   </tbody>
@@ -1209,18 +1082,18 @@ L: 1.0</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="73">
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="im" style="color: #00769E;">import</span> seaborn <span class="im" style="color: #00769E;">as</span> sns</span>
 <span id="cb9-2"></span>
 <span id="cb9-3">sns.heatmap(sim_matrix, cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Greys'</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
+<div class="cell-output cell-output-display" data-execution_count="73">
 <pre><code>&lt;AxesSubplot:&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn-mf_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="10">
+<div class="cell" data-execution_count="74">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="co" style="color: #5E5E5E;"># Find the most similar users to user u </span></span>
 <span id="cb11-2"></span>
 <span id="cb11-3"><span class="kw" style="color: #003B4F;">def</span> k_nearest_neighbors(A, u, k):</span>
@@ -1237,13 +1110,13 @@ L: 1.0</code></pre>
 <span id="cb11-14">    <span class="co" style="color: #5E5E5E;"># Return the user ids</span></span>
 <span id="cb11-15">    <span class="cf" style="color: #003B4F;">return</span> A.index[k_nearest]</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="11">
+<div class="cell" data-execution_count="75">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">k_nearest_neighbors(A, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<pre><code>Int64Index([17, 70, 63, 65, 28], dtype='int64', name='user_id')</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="75">
+<pre><code>Int64Index([20, 91, 65, 12, 2], dtype='int64', name='user_id')</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="12">
+<div class="cell" data-execution_count="76">
 <div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="co" style="color: #5E5E5E;"># Show matrix of movie ratings for u and k nearest neighbors</span></span>
 <span id="cb14-2"></span>
 <span id="cb14-3"><span class="kw" style="color: #003B4F;">def</span> show_neighbors(A, u, k):</span>
@@ -1257,9 +1130,9 @@ L: 1.0</code></pre>
 <span id="cb14-11">    <span class="co" style="color: #5E5E5E;"># Return the dataframe</span></span>
 <span id="cb14-12">    <span class="cf" style="color: #003B4F;">return</span> df</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="13">
+<div class="cell" data-execution_count="77">
 <div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">show_neighbors(A, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div class="cell-output cell-output-display" data-execution_count="77">
 
 <div>
 
@@ -1295,88 +1168,88 @@ L: 1.0</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
       <td>4.0</td>
-      <td>0.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
       <td>5.0</td>
       <td>0.0</td>
-      <td>4.0</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>1.0</td>
       <td>0.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
-      <td>4.0</td>
-    </tr>
-    <tr>
-      <th>70</th>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>3.0</td>
-      <td>0.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>3.0</td>
-    </tr>
-    <tr>
-      <th>63</th>
-      <td>4.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
       <td>0.0</td>
       <td>5.0</td>
+      <td>3.0</td>
       <td>0.0</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>2.0</td>
       <td>5.0</td>
+      <td>4.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>91</th>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>3.0</td>
       <td>0.0</td>
       <td>4.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
       <th>65</th>
       <td>2.0</td>
       <td>0.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
       <td>2.0</td>
       <td>2.0</td>
       <td>0.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>3.0</td>
       <td>4.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
     </tr>
     <tr>
-      <th>28</th>
+      <th>12</th>
       <td>1.0</td>
       <td>1.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>0.0</td>
       <td>1.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
       <td>5.0</td>
       <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
       <td>3.0</td>
       <td>2.0</td>
       <td>5.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
+      <td>2.0</td>
     </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="14">
+<div class="cell" data-execution_count="78">
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="co" style="color: #5E5E5E;"># Rating for user u for movie 0 is: (4.0 + 3.0) / 2 = 3.5 (Discard 0s)</span></span>
 <span id="cb16-2"></span>
 <span id="cb16-3"><span class="kw" style="color: #003B4F;">def</span> predict_rating(A, u, m, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>):</span>
@@ -1396,20 +1269,20 @@ L: 1.0</code></pre>
 <span id="cb16-17">    <span class="co" style="color: #5E5E5E;"># Return the mean</span></span>
 <span id="cb16-18">    <span class="cf" style="color: #003B4F;">return</span> mean</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="17">
+<div class="cell" data-execution_count="79">
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">predict_rating(A, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="17">
-<pre><code>3.8</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="79">
+<pre><code>2.25</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="18">
+<div class="cell" data-execution_count="80">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="co" style="color: #5E5E5E;"># Now working with real data</span></span>
 <span id="cb19-2"></span>
 <span id="cb19-3"><span class="co" style="color: #5E5E5E;"># Load the data</span></span>
 <span id="cb19-4"></span>
 <span id="cb19-5">df <span class="op" style="color: #5E5E5E;">=</span> pd.read_excel(<span class="st" style="color: #20794D;">"mov-rec.xlsx"</span>)</span>
 <span id="cb19-6">df.head()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="80">
 
 <div>
 
@@ -1512,7 +1385,7 @@ L: 1.0</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="19">
+<div class="cell" data-execution_count="81">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><span class="co" style="color: #5E5E5E;"># Discard the timestamp column</span></span>
 <span id="cb20-2"></span>
 <span id="cb20-3">df <span class="op" style="color: #5E5E5E;">=</span> df.drop(<span class="st" style="color: #20794D;">'Timestamp'</span>, axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
@@ -1521,7 +1394,7 @@ L: 1.0</code></pre>
 <span id="cb20-6"></span>
 <span id="cb20-7">df <span class="op" style="color: #5E5E5E;">=</span> df.set_index(<span class="st" style="color: #20794D;">'Your name'</span>)</span>
 <span id="cb20-8">df</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="81">
 
 <div>
 
@@ -2145,9 +2018,9 @@ L: 1.0</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="20">
+<div class="cell" data-execution_count="82">
 <div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">df.index</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
+<div class="cell-output cell-output-display" data-execution_count="82">
 <pre><code>Index(['Nipun', 'Gautam Vashishtha', 'Eshan Gujarathi', 'Sai Krishna Avula',
        'Ankit Yadav ', 'Dhruv', 'Saatvik Rao ', 'Zeel B Patel', 'Neel ',
        'Sachin Jalan ', 'Ayush Shrivastava', '....', 'Hari Hara Sudhan',
@@ -2162,7 +2035,7 @@ L: 1.0</code></pre>
       dtype='object', name='Your name')</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="24">
+<div class="cell" data-execution_count="83">
 <div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><span class="co" style="color: #5E5E5E;"># Get index for user and movie</span></span>
 <span id="cb23-2">user <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Rahul C'</span></span>
 <span id="cb23-3"></span>
@@ -2174,7 +2047,7 @@ L: 1.0</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>True</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="24">
+<div class="cell-output cell-output-display" data-execution_count="83">
 <pre><code>Sholay                      3.0
 Swades (We The People)      3.0
 The Matrix (I)              4.0
@@ -2188,11 +2061,11 @@ Uri: The Surgical Strike    NaN
 Name: Rahul C, dtype: float64</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="84">
 <div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1">df_copy <span class="op" style="color: #5E5E5E;">=</span> df.copy()</span>
 <span id="cb26-2">df_copy.fillna(<span class="dv" style="color: #AD0000;">0</span>, inplace<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
 <span id="cb26-3">show_neighbors(df_copy, user, <span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="25">
+<div class="cell-output cell-output-display" data-execution_count="84">
 
 <div>
 
@@ -2309,9 +2182,9 @@ Name: Rahul C, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="26">
+<div class="cell" data-execution_count="85">
 <div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">df.describe()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
+<div class="cell-output cell-output-display" data-execution_count="85">
 
 <div>
 
@@ -2441,21 +2314,21 @@ Name: Rahul C, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="23">
+<div class="cell" data-execution_count="86">
 <div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><span class="co" style="color: #5E5E5E;"># Predict the rating for user u for movie m</span></span>
 <span id="cb28-2"></span>
 <span id="cb28-3">predict_rating(df_copy, user, <span class="st" style="color: #20794D;">'The Dark Knight'</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="23">
-<pre><code>5.0</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="86">
+<pre><code>4.8</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="21">
+<div class="cell" data-execution_count="87">
 <div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">predict_rating(df_copy, user, <span class="st" style="color: #20794D;">'Sholay'</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="21">
-<pre><code>3.4</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="87">
+<pre><code>4.4</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="27">
+<div class="cell" data-execution_count="88">
 <div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><span class="co" style="color: #5E5E5E;"># Generic Matrix Factorization (without missing values)</span></span>
 <span id="cb32-2"></span>
 <span id="cb32-3"><span class="im" style="color: #00769E;">import</span> torch</span>
@@ -2467,117 +2340,117 @@ Name: Rahul C, dtype: float64</code></pre>
 <span id="cb32-9"><span class="co" style="color: #5E5E5E;"># D is a matrix of size (n_users, n_movies) randomly generated values between 1 and 5</span></span>
 <span id="cb32-10">D <span class="op" style="color: #5E5E5E;">=</span> torch.randint(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">6</span>, (n_users, n_movies), dtype<span class="op" style="color: #5E5E5E;">=</span>torch.<span class="bu" style="color: null;">float</span>)</span>
 <span id="cb32-11">D</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="27">
-<pre><code>tensor([[4., 3., 2., 5., 2., 4., 4., 3., 5., 4.],
-        [1., 2., 3., 4., 5., 2., 2., 1., 4., 1.],
-        [1., 4., 5., 4., 3., 2., 4., 2., 5., 2.],
-        [1., 2., 3., 2., 5., 4., 2., 4., 3., 1.],
-        [2., 3., 1., 5., 5., 1., 4., 4., 5., 3.],
-        [2., 4., 5., 1., 1., 5., 2., 3., 1., 1.],
-        [2., 5., 1., 2., 2., 5., 4., 5., 3., 5.],
-        [3., 1., 4., 2., 2., 5., 2., 3., 3., 4.],
-        [1., 1., 2., 5., 5., 2., 2., 1., 2., 5.],
-        [5., 4., 1., 1., 4., 4., 2., 5., 1., 2.],
-        [4., 2., 1., 2., 1., 5., 1., 3., 1., 4.],
-        [3., 2., 4., 4., 1., 4., 4., 2., 3., 2.],
-        [2., 2., 2., 4., 5., 4., 3., 1., 2., 4.],
-        [4., 5., 4., 3., 4., 1., 4., 3., 1., 5.],
-        [5., 2., 4., 4., 3., 1., 3., 3., 3., 1.],
-        [1., 5., 5., 3., 1., 5., 4., 1., 4., 1.],
-        [3., 2., 5., 2., 5., 3., 1., 2., 4., 5.],
-        [2., 1., 5., 4., 3., 1., 4., 1., 1., 1.],
-        [3., 1., 1., 2., 3., 4., 5., 4., 3., 3.],
-        [3., 1., 1., 5., 2., 5., 1., 5., 5., 3.],
-        [2., 2., 2., 5., 4., 1., 3., 4., 4., 4.],
-        [3., 3., 3., 3., 5., 5., 3., 5., 5., 1.],
-        [3., 5., 1., 1., 3., 2., 3., 1., 5., 1.],
-        [3., 3., 2., 5., 4., 3., 1., 5., 3., 3.],
-        [5., 3., 3., 1., 1., 5., 1., 5., 3., 5.],
-        [3., 1., 5., 4., 1., 3., 3., 1., 3., 4.],
-        [5., 4., 1., 3., 5., 4., 3., 1., 1., 5.],
-        [1., 3., 1., 1., 4., 3., 2., 2., 3., 5.],
-        [4., 5., 1., 5., 4., 2., 2., 4., 4., 5.],
-        [1., 1., 2., 2., 1., 1., 4., 1., 2., 2.],
-        [1., 2., 4., 5., 1., 1., 5., 1., 2., 3.],
-        [3., 1., 1., 2., 2., 3., 2., 3., 2., 3.],
-        [1., 4., 4., 1., 5., 3., 2., 5., 5., 3.],
-        [1., 5., 4., 4., 3., 2., 1., 4., 3., 1.],
-        [3., 1., 2., 2., 4., 4., 5., 5., 1., 4.],
-        [4., 5., 2., 5., 4., 4., 1., 1., 4., 4.],
-        [5., 1., 2., 3., 5., 2., 5., 3., 1., 5.],
-        [4., 2., 5., 1., 4., 5., 3., 5., 4., 1.],
-        [3., 2., 1., 5., 4., 3., 1., 5., 4., 3.],
-        [1., 5., 3., 2., 1., 4., 5., 1., 4., 2.],
-        [5., 2., 3., 1., 5., 2., 5., 1., 2., 5.],
-        [3., 3., 1., 1., 5., 1., 5., 4., 1., 4.],
-        [5., 3., 5., 1., 1., 2., 4., 2., 5., 2.],
-        [2., 5., 1., 4., 3., 4., 1., 1., 2., 2.],
-        [5., 4., 1., 1., 5., 2., 2., 3., 3., 1.],
-        [1., 3., 5., 1., 2., 3., 1., 5., 2., 3.],
-        [2., 1., 3., 4., 5., 1., 5., 2., 5., 3.],
-        [5., 2., 4., 1., 1., 2., 1., 2., 5., 4.],
-        [1., 3., 4., 2., 4., 3., 1., 4., 2., 5.],
-        [5., 4., 3., 3., 4., 2., 2., 5., 2., 3.],
-        [4., 3., 1., 2., 1., 2., 2., 1., 5., 1.],
-        [1., 3., 3., 5., 5., 2., 1., 3., 4., 4.],
-        [1., 1., 5., 5., 4., 2., 5., 3., 2., 2.],
-        [5., 2., 1., 1., 1., 5., 3., 1., 5., 5.],
-        [1., 3., 2., 4., 2., 2., 2., 3., 2., 5.],
-        [1., 2., 1., 1., 2., 1., 4., 2., 1., 2.],
-        [3., 2., 5., 1., 4., 1., 2., 5., 3., 4.],
-        [4., 2., 4., 1., 4., 2., 2., 1., 1., 4.],
-        [3., 3., 1., 2., 4., 4., 5., 3., 2., 4.],
-        [3., 4., 4., 2., 3., 1., 4., 4., 5., 4.],
-        [1., 4., 2., 3., 2., 1., 4., 3., 3., 1.],
-        [2., 1., 1., 5., 1., 5., 3., 2., 3., 1.],
-        [3., 3., 1., 5., 4., 1., 3., 2., 2., 4.],
-        [5., 5., 1., 1., 5., 3., 2., 4., 4., 1.],
-        [5., 3., 5., 2., 3., 5., 1., 4., 1., 5.],
-        [1., 3., 4., 4., 1., 1., 2., 2., 4., 5.],
-        [3., 4., 2., 1., 2., 5., 4., 1., 3., 3.],
-        [2., 4., 3., 3., 2., 3., 2., 3., 1., 1.],
-        [2., 3., 1., 3., 1., 1., 4., 1., 2., 1.],
-        [5., 1., 3., 4., 1., 4., 2., 5., 4., 4.],
-        [1., 1., 4., 4., 5., 3., 1., 2., 3., 5.],
-        [1., 1., 4., 5., 3., 5., 4., 2., 3., 4.],
-        [3., 3., 1., 4., 1., 1., 1., 2., 1., 5.],
-        [1., 4., 5., 5., 5., 3., 2., 1., 3., 5.],
-        [3., 4., 3., 2., 2., 1., 4., 5., 1., 2.],
-        [5., 2., 3., 1., 2., 4., 1., 5., 5., 4.],
-        [2., 4., 2., 4., 2., 3., 5., 3., 4., 2.],
-        [4., 3., 5., 5., 1., 3., 1., 3., 2., 5.],
-        [5., 5., 2., 1., 3., 3., 5., 4., 2., 3.],
-        [2., 4., 1., 2., 4., 3., 1., 4., 1., 3.],
-        [4., 1., 2., 2., 5., 1., 3., 4., 5., 3.],
-        [2., 3., 2., 1., 3., 5., 5., 1., 1., 3.],
-        [2., 2., 1., 5., 1., 5., 1., 4., 1., 3.],
-        [4., 1., 1., 3., 2., 3., 2., 3., 2., 4.],
-        [2., 3., 2., 2., 4., 2., 1., 1., 5., 2.],
-        [5., 3., 5., 2., 4., 5., 5., 4., 3., 2.],
-        [2., 2., 4., 3., 1., 5., 2., 5., 3., 4.],
-        [3., 3., 1., 5., 5., 5., 5., 1., 4., 3.],
-        [3., 4., 4., 4., 2., 5., 2., 5., 2., 1.],
-        [3., 1., 1., 3., 2., 5., 2., 4., 2., 4.],
-        [5., 4., 3., 2., 1., 4., 1., 3., 3., 5.],
-        [5., 3., 3., 2., 3., 3., 2., 4., 3., 3.],
-        [4., 4., 4., 4., 4., 4., 4., 5., 1., 4.],
-        [2., 5., 5., 2., 2., 2., 5., 4., 5., 3.],
-        [1., 4., 2., 3., 1., 4., 4., 4., 4., 1.],
-        [1., 4., 3., 5., 2., 5., 3., 1., 2., 3.],
-        [2., 2., 2., 5., 4., 4., 3., 3., 5., 1.],
-        [4., 2., 2., 2., 5., 1., 4., 4., 2., 1.],
-        [1., 1., 3., 2., 5., 2., 4., 5., 3., 3.],
-        [2., 2., 4., 1., 1., 2., 1., 2., 5., 5.]])</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="88">
+<pre><code>tensor([[4., 4., 2., 5., 2., 3., 5., 5., 3., 2.],
+        [5., 3., 5., 1., 2., 3., 5., 5., 2., 3.],
+        [1., 3., 4., 3., 1., 2., 5., 1., 4., 3.],
+        [3., 5., 1., 2., 2., 2., 4., 2., 1., 1.],
+        [2., 5., 3., 1., 2., 5., 4., 2., 4., 5.],
+        [3., 5., 1., 1., 3., 1., 5., 3., 3., 3.],
+        [1., 2., 5., 1., 1., 4., 3., 4., 4., 5.],
+        [2., 5., 1., 4., 3., 1., 5., 3., 3., 1.],
+        [4., 3., 2., 2., 4., 5., 5., 5., 3., 3.],
+        [1., 2., 5., 1., 2., 1., 3., 5., 3., 3.],
+        [3., 2., 3., 3., 2., 1., 5., 3., 1., 5.],
+        [5., 5., 5., 3., 5., 4., 4., 2., 4., 5.],
+        [5., 2., 2., 1., 4., 3., 3., 5., 3., 3.],
+        [4., 4., 5., 4., 1., 1., 1., 1., 3., 1.],
+        [2., 5., 5., 2., 4., 5., 1., 1., 4., 4.],
+        [3., 2., 1., 2., 1., 1., 2., 1., 2., 2.],
+        [5., 5., 3., 3., 3., 3., 4., 1., 4., 3.],
+        [5., 2., 4., 4., 2., 1., 4., 4., 5., 5.],
+        [3., 3., 4., 2., 2., 3., 4., 1., 3., 4.],
+        [3., 5., 3., 5., 5., 4., 1., 3., 1., 4.],
+        [2., 1., 2., 4., 5., 2., 2., 1., 1., 1.],
+        [2., 4., 3., 1., 4., 4., 2., 4., 1., 4.],
+        [5., 3., 2., 5., 1., 4., 3., 5., 3., 3.],
+        [5., 3., 3., 5., 5., 4., 3., 1., 1., 4.],
+        [4., 4., 1., 5., 2., 5., 5., 4., 5., 5.],
+        [3., 1., 2., 3., 3., 5., 4., 4., 4., 3.],
+        [4., 1., 2., 2., 4., 5., 4., 3., 4., 4.],
+        [5., 2., 4., 2., 3., 1., 2., 4., 2., 1.],
+        [5., 3., 1., 3., 2., 4., 1., 2., 1., 5.],
+        [1., 2., 1., 3., 3., 2., 2., 5., 2., 4.],
+        [3., 2., 4., 5., 4., 2., 2., 3., 5., 1.],
+        [5., 5., 3., 3., 1., 3., 3., 4., 5., 4.],
+        [5., 1., 3., 5., 4., 2., 3., 4., 3., 2.],
+        [3., 2., 2., 3., 5., 5., 1., 1., 4., 1.],
+        [3., 4., 4., 3., 5., 1., 5., 5., 4., 1.],
+        [2., 5., 1., 5., 4., 2., 4., 1., 4., 5.],
+        [5., 5., 2., 4., 2., 4., 4., 1., 2., 1.],
+        [2., 5., 5., 1., 1., 4., 2., 4., 4., 5.],
+        [4., 2., 2., 3., 3., 3., 3., 2., 2., 2.],
+        [5., 2., 1., 4., 3., 1., 3., 1., 4., 5.],
+        [4., 1., 3., 3., 5., 1., 1., 2., 4., 1.],
+        [4., 4., 1., 1., 4., 2., 2., 3., 1., 3.],
+        [3., 5., 4., 3., 1., 1., 4., 1., 3., 1.],
+        [1., 2., 4., 1., 4., 2., 4., 1., 2., 5.],
+        [4., 4., 1., 1., 5., 5., 3., 3., 3., 3.],
+        [1., 1., 1., 5., 5., 2., 5., 2., 1., 4.],
+        [3., 4., 4., 5., 2., 2., 3., 2., 5., 5.],
+        [1., 2., 5., 3., 2., 1., 3., 1., 2., 5.],
+        [5., 4., 4., 2., 4., 5., 4., 2., 3., 2.],
+        [4., 2., 4., 5., 3., 2., 1., 4., 3., 3.],
+        [4., 2., 3., 2., 1., 4., 5., 2., 1., 1.],
+        [2., 3., 3., 5., 3., 4., 1., 5., 3., 2.],
+        [3., 5., 5., 3., 2., 5., 4., 4., 4., 5.],
+        [5., 3., 5., 5., 2., 5., 3., 3., 4., 3.],
+        [4., 3., 1., 2., 5., 3., 3., 4., 4., 5.],
+        [2., 2., 1., 1., 3., 5., 1., 2., 3., 5.],
+        [1., 3., 5., 1., 3., 5., 3., 4., 4., 2.],
+        [4., 5., 5., 3., 4., 1., 3., 3., 2., 5.],
+        [1., 4., 4., 5., 2., 1., 3., 1., 1., 5.],
+        [1., 2., 3., 3., 5., 4., 3., 5., 1., 4.],
+        [1., 1., 5., 2., 1., 3., 5., 5., 4., 5.],
+        [5., 1., 4., 4., 2., 3., 5., 4., 3., 4.],
+        [4., 3., 2., 4., 3., 3., 4., 4., 5., 2.],
+        [2., 5., 1., 2., 1., 1., 3., 2., 1., 4.],
+        [5., 3., 3., 3., 2., 3., 1., 2., 2., 5.],
+        [2., 2., 3., 5., 4., 4., 1., 2., 1., 2.],
+        [5., 5., 4., 4., 4., 3., 2., 4., 2., 2.],
+        [2., 5., 3., 5., 5., 2., 3., 4., 1., 3.],
+        [4., 1., 4., 2., 4., 1., 4., 3., 4., 2.],
+        [3., 3., 2., 1., 5., 2., 2., 2., 2., 5.],
+        [2., 5., 2., 5., 4., 5., 4., 3., 4., 3.],
+        [3., 1., 5., 4., 3., 2., 5., 3., 4., 1.],
+        [5., 3., 1., 3., 2., 3., 1., 1., 1., 1.],
+        [1., 4., 5., 2., 4., 5., 3., 2., 4., 5.],
+        [4., 1., 4., 5., 3., 2., 3., 5., 5., 4.],
+        [4., 2., 4., 3., 4., 5., 5., 5., 1., 5.],
+        [3., 2., 1., 3., 2., 2., 4., 5., 5., 4.],
+        [5., 5., 5., 1., 4., 1., 4., 4., 1., 3.],
+        [5., 5., 5., 2., 2., 3., 2., 5., 3., 4.],
+        [2., 4., 4., 4., 4., 5., 3., 1., 3., 2.],
+        [5., 1., 2., 2., 1., 5., 4., 3., 2., 3.],
+        [5., 1., 2., 5., 3., 5., 2., 4., 5., 4.],
+        [2., 5., 5., 1., 4., 2., 2., 5., 4., 3.],
+        [1., 3., 1., 2., 4., 3., 2., 3., 4., 4.],
+        [2., 3., 5., 3., 3., 4., 4., 1., 5., 5.],
+        [1., 5., 2., 4., 1., 5., 2., 1., 1., 1.],
+        [4., 3., 5., 5., 3., 3., 3., 1., 1., 5.],
+        [2., 2., 4., 3., 5., 2., 5., 2., 4., 1.],
+        [2., 1., 1., 5., 1., 3., 2., 2., 3., 5.],
+        [2., 2., 1., 5., 5., 4., 4., 1., 3., 2.],
+        [5., 3., 3., 3., 3., 2., 1., 3., 4., 2.],
+        [1., 1., 5., 4., 5., 1., 2., 1., 5., 5.],
+        [3., 4., 4., 4., 5., 1., 5., 3., 2., 1.],
+        [5., 5., 3., 1., 5., 1., 1., 1., 1., 3.],
+        [3., 2., 4., 3., 2., 4., 2., 2., 3., 5.],
+        [4., 2., 4., 5., 4., 3., 1., 2., 4., 3.],
+        [1., 1., 2., 2., 4., 3., 5., 2., 4., 4.],
+        [5., 1., 3., 1., 1., 5., 2., 1., 4., 1.],
+        [1., 4., 1., 2., 5., 2., 2., 4., 1., 5.],
+        [5., 3., 4., 5., 5., 4., 5., 1., 4., 1.]])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="23">
+<div class="cell" data-execution_count="89">
 <div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1">D.shape</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="23">
+<div class="cell-output cell-output-display" data-execution_count="89">
 <pre><code>torch.Size([100, 10])</code></pre>
 </div>
 </div>
 <p>Let us decompose D as AB. A is of shape (n, k) and B is of shape (k, n). We can write the above equation as: D = AB</p>
-<div class="cell" data-execution_count="28">
+<div class="cell" data-execution_count="90">
 <div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><span class="co" style="color: #5E5E5E;"># Randomly initialize A and B</span></span>
 <span id="cb36-2"></span>
 <span id="cb36-3">A <span class="op" style="color: #5E5E5E;">=</span> torch.randn(n_users, <span class="dv" style="color: #AD0000;">2</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
@@ -2587,13 +2460,13 @@ Name: Rahul C, dtype: float64</code></pre>
 <span id="cb36-7"></span>
 <span id="cb36-8">loss <span class="op" style="color: #5E5E5E;">=</span> torch.norm(torch.mm(A, B.t()) <span class="op" style="color: #5E5E5E;">-</span> D)</span>
 <span id="cb36-9">loss</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="28">
-<pre><code>tensor(112.6271, grad_fn=&lt;LinalgVectorNormBackward0&gt;)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="90">
+<pre><code>tensor(120.8659, grad_fn=&lt;LinalgVectorNormBackward0&gt;)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="30">
+<div class="cell" data-execution_count="91">
 <div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1">pd.DataFrame(torch.mm(A, B.t()).detach().numpy())</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="30">
+<div class="cell-output cell-output-display" data-execution_count="91">
 
 <div>
 
@@ -2616,68 +2489,68 @@ Name: Rahul C, dtype: float64</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>0.524264</td>
-      <td>0.363830</td>
-      <td>-0.686333</td>
-      <td>0.569968</td>
-      <td>-1.230030</td>
-      <td>-0.410660</td>
-      <td>-0.836353</td>
-      <td>0.361109</td>
-      <td>-0.204832</td>
-      <td>-1.753140</td>
+      <td>-1.264860</td>
+      <td>-1.512566</td>
+      <td>-2.037402</td>
+      <td>-1.262417</td>
+      <td>-0.132023</td>
+      <td>-1.027238</td>
+      <td>3.666524</td>
+      <td>2.496095</td>
+      <td>-0.179421</td>
+      <td>-0.089113</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>2.064197</td>
-      <td>-0.782522</td>
-      <td>2.640134</td>
-      <td>2.749459</td>
-      <td>-0.938775</td>
-      <td>-0.972266</td>
-      <td>0.562981</td>
-      <td>0.459940</td>
-      <td>-1.425668</td>
-      <td>-1.993173</td>
+      <td>-1.775146</td>
+      <td>-1.131623</td>
+      <td>-0.252141</td>
+      <td>-1.085573</td>
+      <td>-0.387802</td>
+      <td>0.962701</td>
+      <td>0.262229</td>
+      <td>0.092588</td>
+      <td>1.281358</td>
+      <td>0.974351</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>-1.156803</td>
-      <td>-0.030377</td>
-      <td>-0.348597</td>
-      <td>-1.433861</td>
-      <td>1.352612</td>
-      <td>0.681336</td>
-      <td>0.500788</td>
-      <td>-0.461378</td>
-      <td>0.667887</td>
-      <td>2.156318</td>
+      <td>1.072980</td>
+      <td>0.693813</td>
+      <td>0.178206</td>
+      <td>0.662960</td>
+      <td>0.232401</td>
+      <td>-0.558108</td>
+      <td>-0.206829</td>
+      <td>-0.089713</td>
+      <td>-0.759340</td>
+      <td>-0.578063</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>2.110378</td>
-      <td>-1.263404</td>
-      <td>3.816814</td>
-      <td>2.916680</td>
-      <td>-0.143026</td>
-      <td>-0.859163</td>
-      <td>1.382228</td>
-      <td>0.269013</td>
-      <td>-1.587093</td>
-      <td>-1.010718</td>
+      <td>-2.261358</td>
+      <td>-1.489118</td>
+      <td>-0.446266</td>
+      <td>-1.415824</td>
+      <td>-0.484307</td>
+      <td>1.111051</td>
+      <td>0.568306</td>
+      <td>0.281543</td>
+      <td>1.558778</td>
+      <td>1.188488</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>2.274173</td>
-      <td>-1.221377</td>
-      <td>3.775182</td>
-      <td>3.111098</td>
-      <td>-0.401042</td>
-      <td>-0.966615</td>
-      <td>1.245646</td>
-      <td>0.350723</td>
-      <td>-1.671115</td>
-      <td>-1.399655</td>
+      <td>-2.327101</td>
+      <td>-1.577842</td>
+      <td>-0.578746</td>
+      <td>-1.488436</td>
+      <td>-0.489104</td>
+      <td>1.033144</td>
+      <td>0.808672</td>
+      <td>0.446056</td>
+      <td>1.533820</td>
+      <td>1.172646</td>
     </tr>
     <tr>
       <th>...</th>
@@ -2694,68 +2567,68 @@ Name: Rahul C, dtype: float64</code></pre>
     </tr>
     <tr>
       <th>95</th>
-      <td>-0.271094</td>
-      <td>-0.094235</td>
-      <td>0.128423</td>
-      <td>-0.316148</td>
-      <td>0.470534</td>
-      <td>0.185023</td>
-      <td>0.269012</td>
-      <td>-0.145952</td>
-      <td>0.132166</td>
-      <td>0.698416</td>
+      <td>0.050433</td>
+      <td>-0.142864</td>
+      <td>-0.453207</td>
+      <td>-0.090314</td>
+      <td>0.046777</td>
+      <td>-0.451902</td>
+      <td>0.854854</td>
+      <td>0.599582</td>
+      <td>-0.307123</td>
+      <td>-0.221812</td>
     </tr>
     <tr>
       <th>96</th>
-      <td>-0.553128</td>
-      <td>-0.254772</td>
-      <td>0.412769</td>
-      <td>-0.630798</td>
-      <td>1.070217</td>
-      <td>0.395701</td>
-      <td>0.657679</td>
-      <td>-0.324934</td>
-      <td>0.252195</td>
-      <td>1.563543</td>
+      <td>3.034490</td>
+      <td>1.814688</td>
+      <td>0.116038</td>
+      <td>1.772819</td>
+      <td>0.687387</td>
+      <td>-1.936142</td>
+      <td>0.141715</td>
+      <td>0.253754</td>
+      <td>-2.375615</td>
+      <td>-1.798406</td>
     </tr>
     <tr>
       <th>97</th>
-      <td>1.861921</td>
-      <td>-0.796350</td>
-      <td>2.599720</td>
-      <td>2.500680</td>
-      <td>-0.687248</td>
-      <td>-0.850650</td>
-      <td>0.665373</td>
-      <td>0.375566</td>
-      <td>-1.311264</td>
-      <td>-1.597247</td>
+      <td>5.616947</td>
+      <td>4.195326</td>
+      <td>2.414580</td>
+      <td>3.860471</td>
+      <td>1.101509</td>
+      <td>-1.555234</td>
+      <td>-3.858034</td>
+      <td>-2.407849</td>
+      <td>-3.103768</td>
+      <td>-2.401302</td>
     </tr>
     <tr>
       <th>98</th>
-      <td>3.333354</td>
-      <td>-1.515899</td>
-      <td>4.871802</td>
-      <td>4.497489</td>
-      <td>-1.071355</td>
-      <td>-1.496645</td>
-      <td>1.348246</td>
-      <td>0.633194</td>
-      <td>-2.372742</td>
-      <td>-2.659563</td>
+      <td>-1.941730</td>
+      <td>-1.688903</td>
+      <td>-1.462366</td>
+      <td>-1.499716</td>
+      <td>-0.332028</td>
+      <td>-0.041199</td>
+      <td>2.509351</td>
+      <td>1.653427</td>
+      <td>0.703850</td>
+      <td>0.565434</td>
     </tr>
     <tr>
       <th>99</th>
-      <td>3.380641</td>
-      <td>-2.238584</td>
-      <td>6.632090</td>
-      <td>4.721251</td>
-      <td>0.149355</td>
-      <td>-1.313815</td>
-      <td>2.587998</td>
-      <td>0.337695</td>
-      <td>-2.602406</td>
-      <td>-1.143166</td>
+      <td>1.936188</td>
+      <td>1.340739</td>
+      <td>0.555041</td>
+      <td>1.257751</td>
+      <td>0.401233</td>
+      <td>-0.791799</td>
+      <td>-0.810526</td>
+      <td>-0.467291</td>
+      <td>-1.232934</td>
+      <td>-0.944662</td>
     </tr>
   </tbody>
 </table>
@@ -2763,9 +2636,9 @@ Name: Rahul C, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="31">
+<div class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1">pd.DataFrame(D)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="31">
+<div class="cell-output cell-output-display" data-execution_count="27">
 
 <div>
 
@@ -2788,68 +2661,68 @@ Name: Rahul C, dtype: float64</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
+      <td>1.0</td>
       <td>4.0</td>
       <td>3.0</td>
       <td>5.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
       <td>4.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
       <td>1.0</td>
+      <td>3.0</td>
       <td>2.0</td>
       <td>3.0</td>
       <td>4.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>1.0</td>
+      <td>3.0</td>
     </tr>
     <tr>
       <th>2</th>
       <td>1.0</td>
+      <td>1.0</td>
       <td>4.0</td>
-      <td>5.0</td>
       <td>4.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
       <td>3.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
     </tr>
     <tr>
       <th>3</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
       <td>1.0</td>
-      <td>2.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>4.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
-      <td>3.0</td>
+      <td>1.0</td>
       <td>1.0</td>
     </tr>
     <tr>
       <th>4</th>
+      <td>4.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
       <td>2.0</td>
-      <td>3.0</td>
       <td>1.0</td>
-      <td>5.0</td>
-      <td>5.0</td>
       <td>1.0</td>
       <td>4.0</td>
-      <td>4.0</td>
-      <td>5.0</td>
-      <td>3.0</td>
     </tr>
     <tr>
       <th>...</th>
@@ -2867,67 +2740,67 @@ Name: Rahul C, dtype: float64</code></pre>
     <tr>
       <th>95</th>
       <td>1.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
       <td>4.0</td>
-      <td>3.0</td>
+      <td>4.0</td>
       <td>5.0</td>
+      <td>4.0</td>
       <td>2.0</td>
-      <td>5.0</td>
-      <td>3.0</td>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>3.0</td>
+      <td>4.0</td>
     </tr>
     <tr>
       <th>96</th>
+      <td>3.0</td>
       <td>2.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>4.0</td>
+      <td>3.0</td>
       <td>4.0</td>
       <td>3.0</td>
       <td>3.0</td>
       <td>5.0</td>
-      <td>1.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
     </tr>
     <tr>
       <th>97</th>
-      <td>4.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
       <td>2.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
       <td>5.0</td>
       <td>1.0</td>
-      <td>4.0</td>
-      <td>4.0</td>
       <td>2.0</td>
-      <td>1.0</td>
+      <td>3.0</td>
     </tr>
     <tr>
       <th>98</th>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
       <td>4.0</td>
-      <td>5.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
       <td>3.0</td>
       <td>3.0</td>
+      <td>1.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
     </tr>
     <tr>
       <th>99</th>
-      <td>2.0</td>
+      <td>5.0</td>
       <td>2.0</td>
       <td>4.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
+      <td>5.0</td>
       <td>2.0</td>
       <td>5.0</td>
+      <td>2.0</td>
       <td>5.0</td>
+      <td>2.0</td>
+      <td>3.0</td>
     </tr>
   </tbody>
 </table>
@@ -2935,7 +2808,7 @@ Name: Rahul C, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="32">
+<div class="cell" data-execution_count="28">
 <div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><span class="co" style="color: #5E5E5E;"># Optimizer</span></span>
 <span id="cb40-2"></span>
 <span id="cb40-3">optimizer <span class="op" style="color: #5E5E5E;">=</span> optim.Adam([A, B], lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.01</span>)</span>
@@ -2959,111 +2832,111 @@ Name: Rahul C, dtype: float64</code></pre>
 <span id="cb40-21">    <span class="cf" style="color: #003B4F;">if</span> i <span class="op" style="color: #5E5E5E;">%</span> <span class="dv" style="color: #AD0000;">10</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>:</span>
 <span id="cb40-22">        <span class="bu" style="color: null;">print</span>(loss.item())</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>112.62710571289062
-108.92525482177734
-105.864013671875
-103.14228820800781
-100.3882827758789
-97.25345611572266
-93.47792053222656
-88.91209411621094
-83.56034088134766
-77.6304702758789
-71.4714126586914
-65.45447540283203
-59.91099166870117
-55.11323928833008
-51.2287712097168
-48.287933349609375
-46.19685363769531
-44.790283203125
-43.88166427612305
-43.29935836791992
-42.91199493408203
-42.63471603393555
-42.41824722290039
-42.235260009765625
-42.07093048095703
-41.91758346557617
-41.7717170715332
-41.63225173950195
-41.499305725097656
-41.37335968017578
-41.254825592041016
-41.14387512207031
-41.04042434692383
-40.944252014160156
-40.85504913330078
-40.772457122802734
-40.696102142333984
-40.62557601928711
-40.56047439575195
-40.500396728515625
-40.4449348449707
-40.393699645996094
-40.34634017944336
-40.3025016784668
-40.26188659667969
-40.224212646484375
-40.189208984375
-40.156639099121094
-40.12628173828125
-40.09793472290039
-40.071414947509766
-40.04655456542969
-40.023197174072266
-40.001197814941406
-39.98042297363281
-39.96074295043945
-39.94205856323242
-39.924259185791016
-39.907249450683594
-39.89093780517578
-39.87525177001953
-39.86011505126953
-39.845455169677734
-39.83121109008789
-39.81733322143555
-39.80376434326172
-39.79046630859375
-39.777400970458984
-39.76453399658203
-39.7518196105957
-39.739253997802734
-39.726802825927734
-39.714447021484375
-39.702178955078125
-39.689979553222656
-39.67784881591797
-39.66577911376953
-39.65376281738281
-39.64180374145508
-39.62990951538086
-39.618080139160156
-39.606319427490234
-39.59463882446289
-39.58304977416992
-39.57155990600586
-39.560176849365234
-39.54891586303711
-39.53778839111328
-39.52681350708008
-39.515995025634766
-39.50534439086914
-39.4948844909668
-39.484619140625
-39.47455978393555
-39.4647216796875
-39.45510482788086
-39.44572830200195
-39.43659973144531
-39.42771911621094
-39.41909408569336</code></pre>
+<pre><code>115.35802459716797
+111.52149200439453
+108.49187469482422
+106.08045959472656
+103.93647766113281
+101.58767700195312
+98.55469512939453
+94.49311828613281
+89.3100814819336
+83.21151733398438
+76.62467956542969
+70.03575134277344
+63.89227294921875
+58.51639175415039
+54.00450897216797
+50.31562805175781
+47.390052795410156
+45.16101837158203
+43.53628158569336
+42.39887619018555
+41.624820709228516
+41.10096740722656
+40.736263275146484
+40.46616744995117
+40.25019073486328
+40.065284729003906
+39.89917755126953
+39.74546432495117
+39.60075759887695
+39.463157653808594
+39.331581115722656
+39.20536422729492
+39.08412170410156
+38.96763610839844
+38.855804443359375
+38.748600006103516
+38.64604568481445
+38.548213958740234
+38.45516586303711
+38.36697769165039
+38.28369903564453
+38.20534896850586
+38.131935119628906
+38.06340789794922
+37.99967956542969
+37.940650939941406
+37.88616180419922
+37.8360481262207
+37.790103912353516
+37.748111724853516
+37.70984649658203
+37.6750602722168
+37.64350128173828
+37.61494827270508
+37.589141845703125
+37.56585693359375
+37.54487609863281
+37.5259895324707
+37.50899124145508
+37.49371337890625
+37.479976654052734
+37.467628479003906
+37.45652389526367
+37.44654083251953
+37.437557220458984
+37.42947006225586
+37.422183990478516
+37.415611267089844
+37.40968322753906
+37.404327392578125
+37.39948272705078
+37.39509582519531
+37.391117095947266
+37.387508392333984
+37.38422393798828
+37.3812370300293
+37.37851333618164
+37.37602615356445
+37.37375259399414
+37.37166213989258
+37.369754791259766
+37.36799621582031
+37.36637878417969
+37.364891052246094
+37.36351013183594
+37.362239837646484
+37.361061096191406
+37.35996627807617
+37.35894775390625
+37.35799789428711
+37.357112884521484
+37.356292724609375
+37.35552215576172
+37.354793548583984
+37.354122161865234
+37.353485107421875
+37.35288619995117
+37.352325439453125
+37.3517951965332
+37.351295471191406</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="34">
+<div class="cell" data-execution_count="29">
 <div class="sourceCode cell-code" id="cb42" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1">pd.DataFrame(torch.mm(A, B.t()).detach().numpy()).head(<span class="dv" style="color: #AD0000;">2</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="cell-output cell-output-display" data-execution_count="29">
 
 <div>
 
@@ -3086,38 +2959,38 @@ Name: Rahul C, dtype: float64</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>3.007192</td>
-      <td>3.316140</td>
-      <td>3.483459</td>
-      <td>4.220478</td>
-      <td>3.838510</td>
-      <td>3.575429</td>
-      <td>3.539129</td>
-      <td>3.376292</td>
-      <td>3.733709</td>
-      <td>3.931873</td>
+      <td>2.760296</td>
+      <td>3.178874</td>
+      <td>2.978039</td>
+      <td>3.232967</td>
+      <td>2.928783</td>
+      <td>3.293471</td>
+      <td>3.438638</td>
+      <td>3.024349</td>
+      <td>3.257597</td>
+      <td>3.163118</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.974175</td>
-      <td>1.970394</td>
-      <td>2.661520</td>
-      <td>4.411837</td>
-      <td>2.908245</td>
-      <td>2.106148</td>
-      <td>2.671284</td>
-      <td>1.541281</td>
-      <td>2.793394</td>
-      <td>2.923805</td>
+      <td>4.100434</td>
+      <td>3.274340</td>
+      <td>3.823128</td>
+      <td>3.091235</td>
+      <td>2.616060</td>
+      <td>3.863670</td>
+      <td>1.691365</td>
+      <td>3.049109</td>
+      <td>3.051083</td>
+      <td>2.469662</td>
     </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="35">
+<div class="cell" data-execution_count="30">
 <div class="sourceCode cell-code" id="cb43" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1">pd.DataFrame(D).head(<span class="dv" style="color: #AD0000;">2</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="35">
+<div class="cell-output cell-output-display" data-execution_count="30">
 
 <div>
 
@@ -3140,36 +3013,36 @@ Name: Rahul C, dtype: float64</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
+      <td>1.0</td>
       <td>4.0</td>
       <td>3.0</td>
       <td>5.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
       <td>4.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
       <td>1.0</td>
+      <td>3.0</td>
       <td>2.0</td>
       <td>3.0</td>
       <td>4.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>1.0</td>
+      <td>3.0</td>
     </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="36">
+<div class="cell" data-execution_count="31">
 <div class="sourceCode cell-code" id="cb44" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><span class="kw" style="color: #003B4F;">def</span> factorize(D, k):</span>
 <span id="cb44-2">    <span class="co" style="color: #5E5E5E;">"""Factorize the matrix D into A and B"""</span></span>
 <span id="cb44-3">    <span class="co" style="color: #5E5E5E;"># Randomly initialize A and B</span></span>
@@ -3195,23 +3068,21 @@ Name: Rahul C, dtype: float64</code></pre>
 <span id="cb44-23">        </span>
 <span id="cb44-24">    <span class="cf" style="color: #003B4F;">return</span> A, B, loss</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="38">
+<div class="cell" data-execution_count="32">
 <div class="sourceCode cell-code" id="cb45" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><span class="cf" style="color: #003B4F;">for</span> k <span class="kw" style="color: #003B4F;">in</span> [<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">5</span>, <span class="dv" style="color: #AD0000;">6</span>, <span class="dv" style="color: #AD0000;">9</span>]:</span>
 <span id="cb45-2">    A, B, loss <span class="op" style="color: #5E5E5E;">=</span> factorize(D, k)</span>
 <span id="cb45-3">    <span class="bu" style="color: null;">print</span>(k, loss.item())</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>1 43.15137481689453
-2 39.25961685180664
-3 35.80067825317383
-4 32.64104080200195
-5 28.294830322265625
-6 24.701953887939453
-9 10.68772029876709</code></pre>
+<pre><code>1 41.327362060546875
+2 37.35048294067383</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>KeyboardInterrupt: </code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="39">
-<div class="sourceCode cell-code" id="cb47" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1">pd.DataFrame(torch.mm(A, B.t()).detach().numpy()).head(<span class="dv" style="color: #AD0000;">2</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="39">
+<div class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb48" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1">pd.DataFrame(torch.mm(A, B.t()).detach().numpy()).head(<span class="dv" style="color: #AD0000;">2</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="33">
 
 <div>
 
@@ -3234,38 +3105,38 @@ Name: Rahul C, dtype: float64</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>4.115438</td>
-      <td>2.987677</td>
-      <td>2.055727</td>
-      <td>5.064999</td>
-      <td>2.033504</td>
-      <td>4.004031</td>
-      <td>3.952853</td>
-      <td>2.940185</td>
-      <td>4.953001</td>
-      <td>3.905292</td>
+      <td>2.793340</td>
+      <td>3.182317</td>
+      <td>3.004699</td>
+      <td>3.226319</td>
+      <td>2.927514</td>
+      <td>3.308313</td>
+      <td>3.400554</td>
+      <td>3.022366</td>
+      <td>3.250936</td>
+      <td>3.144955</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.236143</td>
-      <td>2.082658</td>
-      <td>2.630625</td>
-      <td>3.572773</td>
-      <td>4.774615</td>
-      <td>1.970729</td>
-      <td>2.313552</td>
-      <td>1.398327</td>
-      <td>4.311027</td>
-      <td>1.625913</td>
+      <td>4.119824</td>
+      <td>3.272779</td>
+      <td>3.811543</td>
+      <td>3.107022</td>
+      <td>2.594617</td>
+      <td>3.870888</td>
+      <td>1.656050</td>
+      <td>3.066180</td>
+      <td>3.058107</td>
+      <td>2.471609</td>
     </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="40">
-<div class="sourceCode cell-code" id="cb48" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1">pd.DataFrame(D).head(<span class="dv" style="color: #AD0000;">2</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="40">
+<div class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb49" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1">pd.DataFrame(D).head(<span class="dv" style="color: #AD0000;">2</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="34">
 
 <div>
 
@@ -3288,321 +3159,321 @@ Name: Rahul C, dtype: float64</code></pre>
   <tbody>
     <tr>
       <th>0</th>
-      <td>4.0</td>
-      <td>3.0</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
-      <td>4.0</td>
+      <td>1.0</td>
       <td>4.0</td>
       <td>3.0</td>
       <td>5.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
       <td>4.0</td>
+      <td>1.0</td>
+      <td>3.0</td>
     </tr>
     <tr>
       <th>1</th>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
       <td>1.0</td>
+      <td>3.0</td>
       <td>2.0</td>
       <td>3.0</td>
       <td>4.0</td>
-      <td>5.0</td>
-      <td>2.0</td>
-      <td>2.0</td>
-      <td>1.0</td>
-      <td>4.0</td>
-      <td>1.0</td>
+      <td>3.0</td>
     </tr>
   </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="cell" data-execution_count="41">
-<div class="sourceCode cell-code" id="cb49" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><span class="co" style="color: #5E5E5E;"># With missing values</span></span>
-<span id="cb49-2"></span>
-<span id="cb49-3"><span class="co" style="color: #5E5E5E;"># Randomly replace some entries with NaN</span></span>
-<span id="cb49-4"></span>
-<span id="cb49-5">D <span class="op" style="color: #5E5E5E;">=</span> torch.randint(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">6</span>, (n_users, n_movies), dtype<span class="op" style="color: #5E5E5E;">=</span>torch.<span class="bu" style="color: null;">float</span>)</span>
-<span id="cb49-6">D[torch.rand(D.shape) <span class="op" style="color: #5E5E5E;">&lt;</span> <span class="fl" style="color: #AD0000;">0.5</span>] <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">float</span>(<span class="st" style="color: #20794D;">'nan'</span>)</span>
-<span id="cb49-7">D</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="41">
-<pre><code>tensor([[1., nan, nan, 1., nan, nan, nan, nan, nan, nan],
-        [nan, nan, 3., nan, 2., nan, 1., 4., 4., 4.],
-        [2., 3., 1., nan, 2., 3., 1., nan, 4., 5.],
-        [nan, nan, nan, nan, nan, 4., 2., 3., nan, 3.],
-        [nan, nan, 4., nan, 2., nan, 4., nan, nan, 2.],
-        [nan, 5., 3., nan, nan, 5., nan, nan, nan, 3.],
-        [nan, nan, 3., 4., nan, nan, nan, nan, 1., nan],
-        [nan, 5., nan, nan, 2., nan, 1., 3., nan, nan],
-        [nan, 3., 2., nan, nan, nan, nan, nan, nan, nan],
-        [3., 1., nan, nan, nan, 3., 3., nan, nan, 1.],
-        [3., 3., nan, nan, 1., 1., nan, nan, 1., nan],
-        [2., 2., nan, 2., nan, 2., 2., nan, 5., 5.],
-        [nan, nan, nan, nan, nan, 3., 2., nan, 5., nan],
-        [nan, 2., 4., 2., nan, 3., 2., nan, 5., 1.],
-        [nan, nan, nan, nan, nan, 2., 4., 2., nan, nan],
-        [3., nan, nan, 3., 3., nan, 3., 1., 4., 5.],
-        [2., nan, nan, 4., 3., nan, nan, 2., 5., nan],
-        [1., 5., nan, nan, 4., nan, nan, nan, 5., 4.],
-        [nan, nan, nan, nan, nan, 3., nan, 5., 4., nan],
-        [2., 4., 4., nan, 3., 4., nan, nan, nan, 3.],
-        [4., nan, nan, 4., 4., 2., 2., 4., nan, 3.],
-        [nan, 5., nan, 2., 2., 3., nan, 1., 3., nan],
-        [4., nan, 1., 1., 5., nan, nan, 3., nan, nan],
-        [nan, nan, nan, nan, nan, nan, 1., nan, 4., 1.],
-        [3., nan, 4., nan, 3., 5., 5., nan, 2., nan],
-        [5., nan, 2., nan, 1., nan, 3., nan, nan, nan],
-        [1., 2., nan, nan, 3., 1., 3., 3., 4., 4.],
-        [nan, nan, nan, nan, nan, 5., 1., 3., 1., 5.],
-        [1., 1., nan, 3., 2., nan, nan, 2., nan, nan],
-        [1., 4., nan, nan, nan, 1., nan, 4., 5., nan],
-        [3., nan, 4., 2., nan, nan, 5., 4., nan, nan],
-        [nan, 5., 2., nan, nan, 4., nan, nan, nan, nan],
-        [5., 5., 1., nan, nan, 1., 1., nan, nan, nan],
-        [nan, nan, nan, nan, 3., nan, 4., nan, 5., nan],
-        [nan, 5., nan, 2., nan, nan, nan, nan, nan, 5.],
-        [nan, 4., 2., 2., nan, 2., 5., nan, nan, nan],
-        [nan, nan, nan, nan, 4., nan, nan, 3., nan, 4.],
-        [nan, nan, nan, 5., 4., 5., 1., nan, nan, 1.],
-        [nan, 1., nan, nan, nan, nan, 3., 3., nan, nan],
-        [nan, nan, 2., 2., 5., 4., 1., 1., nan, 5.],
-        [3., nan, 1., nan, nan, nan, nan, 4., 2., nan],
-        [nan, nan, nan, nan, 1., nan, 3., nan, 2., 3.],
-        [nan, nan, nan, 1., 4., 3., 3., nan, 3., 4.],
-        [2., nan, 5., nan, 1., 1., nan, 5., 1., 2.],
-        [2., nan, 5., nan, 3., nan, 1., 5., 5., nan],
-        [5., nan, nan, 5., 4., nan, nan, nan, nan, 4.],
-        [nan, 5., nan, 4., 5., 5., nan, 4., 3., nan],
-        [nan, 2., 3., nan, nan, 3., 3., 5., nan, nan],
-        [1., 4., 5., 3., nan, nan, 2., 5., nan, 1.],
-        [nan, nan, 1., 1., 1., 4., nan, 5., nan, nan],
-        [4., 5., nan, nan, nan, 3., nan, 3., 1., 3.],
-        [2., 3., 4., nan, nan, 2., 2., 3., 4., nan],
-        [nan, 3., 5., 2., nan, 5., 1., nan, nan, nan],
-        [4., 1., nan, nan, 5., nan, nan, nan, nan, 2.],
-        [nan, nan, nan, nan, 2., nan, 3., nan, 3., nan],
-        [3., nan, nan, 1., nan, 5., nan, nan, 2., nan],
-        [nan, nan, nan, nan, 5., nan, nan, 4., 3., 1.],
-        [nan, 4., 3., nan, nan, 3., 5., 1., 5., 3.],
-        [1., 2., 3., 5., nan, 4., 4., nan, 2., 5.],
-        [nan, 2., 2., nan, 1., 2., nan, 2., 4., 1.],
-        [nan, 4., nan, nan, 5., 2., nan, 4., 3., nan],
-        [5., 2., 5., 1., 3., 5., 2., nan, nan, 4.],
-        [nan, nan, nan, nan, nan, nan, 5., nan, 2., 2.],
-        [nan, 1., 1., nan, nan, 1., 4., nan, nan, 4.],
-        [nan, 4., nan, nan, nan, nan, nan, 4., 4., 5.],
-        [5., 4., 1., nan, nan, 5., nan, 3., 2., nan],
-        [4., 5., nan, 5., nan, nan, 1., nan, nan, 3.],
-        [1., nan, 2., nan, 5., 4., 3., nan, 3., 1.],
-        [nan, 3., nan, nan, 5., nan, nan, nan, 5., 2.],
-        [nan, 1., 3., nan, nan, nan, nan, nan, nan, nan],
-        [1., nan, nan, 5., 1., 5., 2., 5., 3., nan],
-        [nan, 2., nan, 5., 2., 4., nan, 4., 2., 5.],
-        [nan, 2., 5., 2., 5., nan, nan, nan, nan, nan],
-        [1., nan, nan, 4., 4., 3., 3., nan, nan, nan],
-        [3., 3., 5., 4., 3., 3., nan, 3., 3., 5.],
-        [1., 3., 4., 5., nan, 1., 2., 3., 1., 5.],
-        [nan, 3., 1., 5., nan, 4., nan, nan, 2., 1.],
-        [nan, 1., 3., 5., 2., nan, 2., 1., 4., 1.],
-        [nan, nan, nan, 3., nan, 1., 2., nan, 2., nan],
-        [3., nan, nan, nan, nan, 1., 4., 4., 3., nan],
-        [1., nan, nan, nan, nan, nan, nan, 1., 5., nan],
-        [2., 4., nan, 2., 5., 4., 3., nan, 4., 5.],
-        [1., 4., 2., nan, 5., nan, 3., 1., 2., 1.],
-        [nan, 2., 4., nan, 3., nan, nan, nan, nan, nan],
-        [nan, 3., 3., 3., 1., 1., nan, 2., 3., nan],
-        [nan, 2., 5., 3., 2., 1., nan, 4., 2., nan],
-        [4., nan, 2., 1., nan, 4., 2., 5., 2., nan],
-        [nan, 5., 4., nan, nan, 1., 3., nan, 3., 2.],
-        [nan, nan, 4., 3., nan, 2., 4., 5., nan, 3.],
-        [nan, nan, 2., 3., nan, nan, 2., 1., nan, 2.],
-        [1., 3., 3., 4., 2., 2., nan, nan, 2., nan],
-        [3., 5., 3., 2., nan, 5., 1., 1., nan, 2.],
-        [4., nan, 2., 3., nan, nan, 5., nan, 5., nan],
-        [nan, 1., nan, nan, 1., nan, nan, nan, 2., 4.],
-        [5., nan, nan, nan, nan, nan, 1., 4., 4., nan],
-        [nan, nan, 1., nan, nan, 5., 5., 4., nan, 2.],
-        [nan, 3., 2., 1., 4., 3., nan, nan, 2., 2.],
-        [4., nan, 3., nan, nan, 1., nan, nan, nan, nan],
-        [nan, nan, nan, 2., 5., 1., 4., 5., nan, nan],
-        [nan, 5., 1., nan, nan, nan, nan, nan, nan, 4.]])</code></pre>
+<div class="cell" data-execution_count="97">
+<div class="sourceCode cell-code" id="cb50" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><span class="co" style="color: #5E5E5E;"># With missing values</span></span>
+<span id="cb50-2"></span>
+<span id="cb50-3"><span class="co" style="color: #5E5E5E;"># Randomly replace some entries with NaN</span></span>
+<span id="cb50-4"></span>
+<span id="cb50-5">D <span class="op" style="color: #5E5E5E;">=</span> torch.randint(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">6</span>, (n_users, n_movies), dtype<span class="op" style="color: #5E5E5E;">=</span>torch.<span class="bu" style="color: null;">float</span>)</span>
+<span id="cb50-6">D[torch.rand(D.shape) <span class="op" style="color: #5E5E5E;">&lt;</span> <span class="fl" style="color: #AD0000;">0.5</span>] <span class="op" style="color: #5E5E5E;">=</span> <span class="bu" style="color: null;">float</span>(<span class="st" style="color: #20794D;">'nan'</span>)</span>
+<span id="cb50-7">D</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="97">
+<pre><code>tensor([[nan, nan, nan, 4., 4., 2., nan, 3., nan, 1.],
+        [nan, nan, 3., nan, 2., nan, nan, 2., 4., 4.],
+        [nan, 5., 5., nan, nan, nan, 1., 2., nan, nan],
+        [5., 3., 5., nan, nan, nan, 4., 3., 4., nan],
+        [nan, nan, 5., 3., 4., nan, nan, 3., 5., nan],
+        [nan, 5., nan, 2., 1., 4., nan, 5., nan, nan],
+        [nan, nan, nan, nan, 4., nan, nan, nan, nan, 4.],
+        [4., 3., nan, nan, 3., nan, 1., nan, nan, 3.],
+        [2., 4., 5., nan, 3., nan, 2., 2., nan, nan],
+        [nan, 2., 1., nan, 2., nan, nan, nan, 3., 1.],
+        [nan, nan, nan, nan, 1., 4., nan, 5., nan, 5.],
+        [nan, nan, 4., 3., nan, nan, nan, nan, nan, 3.],
+        [nan, 5., 2., 2., 4., nan, nan, 3., nan, nan],
+        [5., nan, nan, 1., 4., 1., 3., nan, nan, nan],
+        [nan, nan, nan, nan, 4., 5., nan, 1., 3., 1.],
+        [1., nan, nan, 5., nan, nan, 4., 2., nan, nan],
+        [4., nan, nan, nan, nan, nan, 1., nan, 4., nan],
+        [1., nan, 4., nan, nan, nan, 5., nan, nan, 2.],
+        [nan, 2., 1., nan, nan, 4., 2., 2., nan, 3.],
+        [nan, nan, 3., nan, 3., 1., nan, 1., nan, nan],
+        [nan, 5., nan, 2., 2., nan, 1., 3., 2., 3.],
+        [3., nan, nan, 5., nan, 5., 1., 2., nan, nan],
+        [nan, 4., nan, 3., 1., nan, nan, 4., 1., nan],
+        [nan, nan, nan, 5., 3., nan, nan, nan, nan, 4.],
+        [nan, 1., 5., nan, 3., nan, nan, 2., nan, nan],
+        [nan, nan, 2., nan, 5., nan, nan, 1., 4., 4.],
+        [nan, nan, nan, 5., 2., nan, nan, nan, nan, nan],
+        [2., 5., 1., nan, nan, nan, nan, 1., 4., nan],
+        [nan, 5., nan, nan, 2., 5., nan, 2., 3., nan],
+        [1., nan, nan, nan, 5., nan, 2., nan, 1., nan],
+        [nan, nan, 5., nan, 3., nan, 2., nan, 2., nan],
+        [nan, nan, 3., 4., 1., nan, 5., nan, nan, nan],
+        [nan, 2., nan, 1., 1., nan, nan, 3., nan, nan],
+        [nan, nan, nan, nan, 2., nan, 1., 3., nan, nan],
+        [4., nan, nan, 3., nan, 4., 5., 3., 1., nan],
+        [4., 1., 5., nan, nan, nan, nan, 5., nan, 3.],
+        [nan, 4., nan, 3., nan, nan, 3., 4., nan, nan],
+        [2., 4., nan, 3., 4., 4., 1., nan, nan, nan],
+        [nan, 2., nan, 5., nan, nan, 2., 1., 4., 1.],
+        [2., nan, 5., 5., 4., nan, nan, nan, 5., 2.],
+        [nan, nan, nan, nan, nan, 4., 2., 4., 4., nan],
+        [5., nan, nan, 3., 1., nan, 1., 2., 1., 4.],
+        [3., nan, nan, 2., 5., 4., nan, nan, nan, nan],
+        [nan, 3., nan, nan, 2., 5., nan, nan, 2., nan],
+        [1., 1., nan, 4., 5., 2., nan, 5., 5., nan],
+        [nan, 4., nan, nan, 1., nan, nan, nan, 3., 4.],
+        [4., nan, 5., 2., 5., nan, 1., nan, 1., 1.],
+        [1., 4., 1., 4., 2., 1., 2., nan, 2., nan],
+        [1., nan, 5., 3., nan, 5., 2., nan, nan, 4.],
+        [4., 4., 5., nan, 2., nan, nan, nan, nan, 3.],
+        [nan, 4., 5., nan, nan, nan, 3., 1., nan, nan],
+        [nan, nan, 5., 1., 5., nan, 2., nan, 2., 2.],
+        [4., nan, 5., 1., nan, 2., 5., nan, nan, nan],
+        [nan, nan, 2., nan, 4., 2., 3., nan, 3., 5.],
+        [4., nan, nan, nan, nan, nan, 4., nan, 3., 2.],
+        [3., 3., nan, nan, 5., 2., nan, nan, nan, 4.],
+        [5., nan, nan, nan, 3., nan, nan, nan, 1., nan],
+        [nan, nan, 4., nan, nan, nan, nan, 4., nan, 4.],
+        [5., 2., 2., 2., 5., nan, nan, 3., nan, nan],
+        [2., nan, nan, 2., 1., 1., nan, 3., 2., 5.],
+        [5., nan, nan, nan, 4., 5., nan, nan, 2., 2.],
+        [nan, nan, 3., 1., nan, nan, 2., nan, nan, 2.],
+        [nan, 2., 3., nan, 4., 3., 2., 1., nan, 1.],
+        [4., nan, 4., 3., 2., nan, 2., nan, 2., 5.],
+        [nan, 1., 3., 5., 5., 4., nan, nan, 3., nan],
+        [5., nan, 5., nan, nan, 3., nan, 5., nan, 1.],
+        [nan, nan, 5., nan, nan, 2., 3., nan, nan, nan],
+        [nan, nan, 4., 4., 1., 4., nan, nan, nan, 5.],
+        [nan, nan, 1., nan, nan, 4., nan, nan, nan, 1.],
+        [nan, nan, nan, nan, 1., nan, 3., 3., nan, nan],
+        [nan, nan, 1., 1., nan, 5., 5., nan, 1., 5.],
+        [nan, nan, nan, 3., nan, 4., 1., nan, nan, nan],
+        [nan, nan, 3., 2., nan, nan, nan, nan, 2., 4.],
+        [1., 5., nan, 5., nan, 4., 4., nan, nan, 3.],
+        [nan, nan, nan, 2., nan, 5., 5., 2., nan, nan],
+        [nan, 5., 5., 2., nan, 3., 5., nan, nan, nan],
+        [1., 4., nan, nan, nan, nan, nan, 1., 5., nan],
+        [nan, nan, nan, nan, nan, 5., 2., 5., 5., 1.],
+        [5., nan, 2., 3., nan, 4., nan, nan, 5., 3.],
+        [3., nan, nan, nan, 5., 2., nan, nan, nan, nan],
+        [nan, nan, nan, nan, 1., 1., nan, 1., 3., nan],
+        [4., 2., 4., 4., 1., nan, 2., nan, 4., 4.],
+        [1., 1., nan, nan, nan, nan, 2., nan, 5., nan],
+        [2., 5., nan, 5., 3., 5., nan, nan, nan, nan],
+        [3., nan, nan, 1., nan, 3., 4., 5., 3., 4.],
+        [5., 2., nan, nan, 3., 1., 2., nan, 1., nan],
+        [1., nan, nan, nan, 1., nan, 2., nan, nan, 2.],
+        [1., 5., 1., 5., 5., 2., nan, 1., nan, 3.],
+        [nan, nan, nan, nan, 1., 4., 1., 2., nan, nan],
+        [2., nan, 4., nan, 5., nan, 2., nan, nan, 5.],
+        [nan, nan, 5., nan, nan, nan, nan, nan, nan, nan],
+        [3., 5., nan, nan, nan, nan, 5., nan, 4., 4.],
+        [2., 2., nan, nan, 3., 5., nan, nan, 4., nan],
+        [2., nan, 3., nan, 5., nan, nan, nan, nan, nan],
+        [nan, nan, nan, nan, 2., 5., 4., 3., nan, 3.],
+        [nan, 3., nan, nan, nan, 3., 3., 5., nan, nan],
+        [nan, 4., nan, nan, nan, 5., nan, nan, nan, nan],
+        [2., 5., nan, nan, nan, 3., 2., 4., nan, nan],
+        [1., 4., nan, 4., 5., 3., nan, nan, 1., nan],
+        [4., nan, nan, 5., 4., 1., 5., nan, 4., nan]])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="42">
-<div class="sourceCode cell-code" id="cb51" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1">A, B, loss <span class="op" style="color: #5E5E5E;">=</span> factorize(D, <span class="dv" style="color: #AD0000;">2</span>)</span>
-<span id="cb51-2">loss</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="42">
+<div class="cell" data-execution_count="98">
+<div class="sourceCode cell-code" id="cb52" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1">A, B, loss <span class="op" style="color: #5E5E5E;">=</span> factorize(D, <span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb52-2">loss</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="98">
 <pre><code>tensor(nan, grad_fn=&lt;LinalgVectorNormBackward0&gt;)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="43">
-<div class="sourceCode cell-code" id="cb53" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1">mask <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">~</span>torch.isnan(D)</span>
-<span id="cb53-2">mask</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="43">
-<pre><code>tensor([[ True, False, False,  True, False, False, False, False, False, False],
-        [False, False,  True, False,  True, False,  True,  True,  True,  True],
-        [ True,  True,  True, False,  True,  True,  True, False,  True,  True],
-        [False, False, False, False, False,  True,  True,  True, False,  True],
-        [False, False,  True, False,  True, False,  True, False, False,  True],
-        [False,  True,  True, False, False,  True, False, False, False,  True],
-        [False, False,  True,  True, False, False, False, False,  True, False],
-        [False,  True, False, False,  True, False,  True,  True, False, False],
-        [False,  True,  True, False, False, False, False, False, False, False],
-        [ True,  True, False, False, False,  True,  True, False, False,  True],
-        [ True,  True, False, False,  True,  True, False, False,  True, False],
-        [ True,  True, False,  True, False,  True,  True, False,  True,  True],
-        [False, False, False, False, False,  True,  True, False,  True, False],
-        [False,  True,  True,  True, False,  True,  True, False,  True,  True],
-        [False, False, False, False, False,  True,  True,  True, False, False],
-        [ True, False, False,  True,  True, False,  True,  True,  True,  True],
-        [ True, False, False,  True,  True, False, False,  True,  True, False],
-        [ True,  True, False, False,  True, False, False, False,  True,  True],
-        [False, False, False, False, False,  True, False,  True,  True, False],
-        [ True,  True,  True, False,  True,  True, False, False, False,  True],
-        [ True, False, False,  True,  True,  True,  True,  True, False,  True],
-        [False,  True, False,  True,  True,  True, False,  True,  True, False],
-        [ True, False,  True,  True,  True, False, False,  True, False, False],
-        [False, False, False, False, False, False,  True, False,  True,  True],
-        [ True, False,  True, False,  True,  True,  True, False,  True, False],
-        [ True, False,  True, False,  True, False,  True, False, False, False],
-        [ True,  True, False, False,  True,  True,  True,  True,  True,  True],
-        [False, False, False, False, False,  True,  True,  True,  True,  True],
-        [ True,  True, False,  True,  True, False, False,  True, False, False],
-        [ True,  True, False, False, False,  True, False,  True,  True, False],
-        [ True, False,  True,  True, False, False,  True,  True, False, False],
-        [False,  True,  True, False, False,  True, False, False, False, False],
-        [ True,  True,  True, False, False,  True,  True, False, False, False],
-        [False, False, False, False,  True, False,  True, False,  True, False],
-        [False,  True, False,  True, False, False, False, False, False,  True],
-        [False,  True,  True,  True, False,  True,  True, False, False, False],
-        [False, False, False, False,  True, False, False,  True, False,  True],
-        [False, False, False,  True,  True,  True,  True, False, False,  True],
-        [False,  True, False, False, False, False,  True,  True, False, False],
-        [False, False,  True,  True,  True,  True,  True,  True, False,  True],
-        [ True, False,  True, False, False, False, False,  True,  True, False],
-        [False, False, False, False,  True, False,  True, False,  True,  True],
-        [False, False, False,  True,  True,  True,  True, False,  True,  True],
-        [ True, False,  True, False,  True,  True, False,  True,  True,  True],
-        [ True, False,  True, False,  True, False,  True,  True,  True, False],
-        [ True, False, False,  True,  True, False, False, False, False,  True],
-        [False,  True, False,  True,  True,  True, False,  True,  True, False],
-        [False,  True,  True, False, False,  True,  True,  True, False, False],
-        [ True,  True,  True,  True, False, False,  True,  True, False,  True],
-        [False, False,  True,  True,  True,  True, False,  True, False, False],
-        [ True,  True, False, False, False,  True, False,  True,  True,  True],
-        [ True,  True,  True, False, False,  True,  True,  True,  True, False],
-        [False,  True,  True,  True, False,  True,  True, False, False, False],
-        [ True,  True, False, False,  True, False, False, False, False,  True],
-        [False, False, False, False,  True, False,  True, False,  True, False],
-        [ True, False, False,  True, False,  True, False, False,  True, False],
-        [False, False, False, False,  True, False, False,  True,  True,  True],
-        [False,  True,  True, False, False,  True,  True,  True,  True,  True],
-        [ True,  True,  True,  True, False,  True,  True, False,  True,  True],
-        [False,  True,  True, False,  True,  True, False,  True,  True,  True],
-        [False,  True, False, False,  True,  True, False,  True,  True, False],
-        [ True,  True,  True,  True,  True,  True,  True, False, False,  True],
-        [False, False, False, False, False, False,  True, False,  True,  True],
-        [False,  True,  True, False, False,  True,  True, False, False,  True],
-        [False,  True, False, False, False, False, False,  True,  True,  True],
-        [ True,  True,  True, False, False,  True, False,  True,  True, False],
-        [ True,  True, False,  True, False, False,  True, False, False,  True],
-        [ True, False,  True, False,  True,  True,  True, False,  True,  True],
-        [False,  True, False, False,  True, False, False, False,  True,  True],
-        [False,  True,  True, False, False, False, False, False, False, False],
-        [ True, False, False,  True,  True,  True,  True,  True,  True, False],
-        [False,  True, False,  True,  True,  True, False,  True,  True,  True],
-        [False,  True,  True,  True,  True, False, False, False, False, False],
+<div class="cell" data-execution_count="99">
+<div class="sourceCode cell-code" id="cb54" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1">mask <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">~</span>torch.isnan(D)</span>
+<span id="cb54-2">mask</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="99">
+<pre><code>tensor([[False, False, False,  True,  True,  True, False,  True, False,  True],
+        [False, False,  True, False,  True, False, False,  True,  True,  True],
+        [False,  True,  True, False, False, False,  True,  True, False, False],
+        [ True,  True,  True, False, False, False,  True,  True,  True, False],
+        [False, False,  True,  True,  True, False, False,  True,  True, False],
+        [False,  True, False,  True,  True,  True, False,  True, False, False],
+        [False, False, False, False,  True, False, False, False, False,  True],
+        [ True,  True, False, False,  True, False,  True, False, False,  True],
+        [ True,  True,  True, False,  True, False,  True,  True, False, False],
+        [False,  True,  True, False,  True, False, False, False,  True,  True],
+        [False, False, False, False,  True,  True, False,  True, False,  True],
+        [False, False,  True,  True, False, False, False, False, False,  True],
+        [False,  True,  True,  True,  True, False, False,  True, False, False],
         [ True, False, False,  True,  True,  True,  True, False, False, False],
-        [ True,  True,  True,  True,  True,  True, False,  True,  True,  True],
-        [ True,  True,  True,  True, False,  True,  True,  True,  True,  True],
-        [False,  True,  True,  True, False,  True, False, False,  True,  True],
-        [False,  True,  True,  True,  True, False,  True,  True,  True,  True],
-        [False, False, False,  True, False,  True,  True, False,  True, False],
-        [ True, False, False, False, False,  True,  True,  True,  True, False],
-        [ True, False, False, False, False, False, False,  True,  True, False],
-        [ True,  True, False,  True,  True,  True,  True, False,  True,  True],
-        [ True,  True,  True, False,  True, False,  True,  True,  True,  True],
-        [False,  True,  True, False,  True, False, False, False, False, False],
-        [False,  True,  True,  True,  True,  True, False,  True,  True, False],
-        [False,  True,  True,  True,  True,  True, False,  True,  True, False],
-        [ True, False,  True,  True, False,  True,  True,  True,  True, False],
-        [False,  True,  True, False, False,  True,  True, False,  True,  True],
-        [False, False,  True,  True, False,  True,  True,  True, False,  True],
-        [False, False,  True,  True, False, False,  True,  True, False,  True],
-        [ True,  True,  True,  True,  True,  True, False, False,  True, False],
-        [ True,  True,  True,  True, False,  True,  True,  True, False,  True],
-        [ True, False,  True,  True, False, False,  True, False,  True, False],
+        [False, False, False, False,  True,  True, False,  True,  True,  True],
+        [ True, False, False,  True, False, False,  True,  True, False, False],
+        [ True, False, False, False, False, False,  True, False,  True, False],
+        [ True, False,  True, False, False, False,  True, False, False,  True],
+        [False,  True,  True, False, False,  True,  True,  True, False,  True],
+        [False, False,  True, False,  True,  True, False,  True, False, False],
+        [False,  True, False,  True,  True, False,  True,  True,  True,  True],
+        [ True, False, False,  True, False,  True,  True,  True, False, False],
+        [False,  True, False,  True,  True, False, False,  True,  True, False],
+        [False, False, False,  True,  True, False, False, False, False,  True],
+        [False,  True,  True, False,  True, False, False,  True, False, False],
+        [False, False,  True, False,  True, False, False,  True,  True,  True],
+        [False, False, False,  True,  True, False, False, False, False, False],
+        [ True,  True,  True, False, False, False, False,  True,  True, False],
+        [False,  True, False, False,  True,  True, False,  True,  True, False],
+        [ True, False, False, False,  True, False,  True, False,  True, False],
+        [False, False,  True, False,  True, False,  True, False,  True, False],
+        [False, False,  True,  True,  True, False,  True, False, False, False],
+        [False,  True, False,  True,  True, False, False,  True, False, False],
+        [False, False, False, False,  True, False,  True,  True, False, False],
+        [ True, False, False,  True, False,  True,  True,  True,  True, False],
+        [ True,  True,  True, False, False, False, False,  True, False,  True],
+        [False,  True, False,  True, False, False,  True,  True, False, False],
+        [ True,  True, False,  True,  True,  True,  True, False, False, False],
+        [False,  True, False,  True, False, False,  True,  True,  True,  True],
+        [ True, False,  True,  True,  True, False, False, False,  True,  True],
+        [False, False, False, False, False,  True,  True,  True,  True, False],
+        [ True, False, False,  True,  True, False,  True,  True,  True,  True],
+        [ True, False, False,  True,  True,  True, False, False, False, False],
+        [False,  True, False, False,  True,  True, False, False,  True, False],
+        [ True,  True, False,  True,  True,  True, False,  True,  True, False],
         [False,  True, False, False,  True, False, False, False,  True,  True],
-        [ True, False, False, False, False, False,  True,  True,  True, False],
-        [False, False,  True, False, False,  True,  True,  True, False,  True],
-        [False,  True,  True,  True,  True,  True, False, False,  True,  True],
-        [ True, False,  True, False, False,  True, False, False, False, False],
-        [False, False, False,  True,  True,  True,  True,  True, False, False],
-        [False,  True,  True, False, False, False, False, False, False,  True]])</code></pre>
+        [ True, False,  True,  True,  True, False,  True, False,  True,  True],
+        [ True,  True,  True,  True,  True,  True,  True, False,  True, False],
+        [ True, False,  True,  True, False,  True,  True, False, False,  True],
+        [ True,  True,  True, False,  True, False, False, False, False,  True],
+        [False,  True,  True, False, False, False,  True,  True, False, False],
+        [False, False,  True,  True,  True, False,  True, False,  True,  True],
+        [ True, False,  True,  True, False,  True,  True, False, False, False],
+        [False, False,  True, False,  True,  True,  True, False,  True,  True],
+        [ True, False, False, False, False, False,  True, False,  True,  True],
+        [ True,  True, False, False,  True,  True, False, False, False,  True],
+        [ True, False, False, False,  True, False, False, False,  True, False],
+        [False, False,  True, False, False, False, False,  True, False,  True],
+        [ True,  True,  True,  True,  True, False, False,  True, False, False],
+        [ True, False, False,  True,  True,  True, False,  True,  True,  True],
+        [ True, False, False, False,  True,  True, False, False,  True,  True],
+        [False, False,  True,  True, False, False,  True, False, False,  True],
+        [False,  True,  True, False,  True,  True,  True,  True, False,  True],
+        [ True, False,  True,  True,  True, False,  True, False,  True,  True],
+        [False,  True,  True,  True,  True,  True, False, False,  True, False],
+        [ True, False,  True, False, False,  True, False,  True, False,  True],
+        [False, False,  True, False, False,  True,  True, False, False, False],
+        [False, False,  True,  True,  True,  True, False, False, False,  True],
+        [False, False,  True, False, False,  True, False, False, False,  True],
+        [False, False, False, False,  True, False,  True,  True, False, False],
+        [False, False,  True,  True, False,  True,  True, False,  True,  True],
+        [False, False, False,  True, False,  True,  True, False, False, False],
+        [False, False,  True,  True, False, False, False, False,  True,  True],
+        [ True,  True, False,  True, False,  True,  True, False, False,  True],
+        [False, False, False,  True, False,  True,  True,  True, False, False],
+        [False,  True,  True,  True, False,  True,  True, False, False, False],
+        [ True,  True, False, False, False, False, False,  True,  True, False],
+        [False, False, False, False, False,  True,  True,  True,  True,  True],
+        [ True, False,  True,  True, False,  True, False, False,  True,  True],
+        [ True, False, False, False,  True,  True, False, False, False, False],
+        [False, False, False, False,  True,  True, False,  True,  True, False],
+        [ True,  True,  True,  True,  True, False,  True, False,  True,  True],
+        [ True,  True, False, False, False, False,  True, False,  True, False],
+        [ True,  True, False,  True,  True,  True, False, False, False, False],
+        [ True, False, False,  True, False,  True,  True,  True,  True,  True],
+        [ True,  True, False, False,  True,  True,  True, False,  True, False],
+        [ True, False, False, False,  True, False,  True, False, False,  True],
+        [ True,  True,  True,  True,  True,  True, False,  True, False,  True],
+        [False, False, False, False,  True,  True,  True,  True, False, False],
+        [ True, False,  True, False,  True, False,  True, False, False,  True],
+        [False, False,  True, False, False, False, False, False, False, False],
+        [ True,  True, False, False, False, False,  True, False,  True,  True],
+        [ True,  True, False, False,  True,  True, False, False,  True, False],
+        [ True, False,  True, False,  True, False, False, False, False, False],
+        [False, False, False, False,  True,  True,  True,  True, False,  True],
+        [False,  True, False, False, False,  True,  True,  True, False, False],
+        [False,  True, False, False, False,  True, False, False, False, False],
+        [ True,  True, False, False, False,  True,  True,  True, False, False],
+        [ True,  True, False,  True,  True,  True, False, False,  True, False],
+        [ True, False, False,  True,  True,  True,  True, False,  True, False]])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="44">
-<div class="sourceCode cell-code" id="cb55" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1">mask.<span class="bu" style="color: null;">sum</span>()</span></code></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1">mask.<span class="bu" style="color: null;">sum</span>()</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="44">
 <pre><code>tensor(522)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="46">
-<div class="sourceCode cell-code" id="cb57" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1">A <span class="op" style="color: #5E5E5E;">=</span> torch.randn(D.shape[<span class="dv" style="color: #AD0000;">0</span>], k, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb57-2">B <span class="op" style="color: #5E5E5E;">=</span> torch.randn(D.shape[<span class="dv" style="color: #AD0000;">1</span>], k, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb57-3"></span>
-<span id="cb57-4">diff_matrix <span class="op" style="color: #5E5E5E;">=</span> torch.mm(A, B.t())<span class="op" style="color: #5E5E5E;">-</span>D</span>
-<span id="cb57-5">diff_matrix.shape</span></code></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1">A <span class="op" style="color: #5E5E5E;">=</span> torch.randn(D.shape[<span class="dv" style="color: #AD0000;">0</span>], k, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb58-2">B <span class="op" style="color: #5E5E5E;">=</span> torch.randn(D.shape[<span class="dv" style="color: #AD0000;">1</span>], k, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb58-3"></span>
+<span id="cb58-4">diff_matrix <span class="op" style="color: #5E5E5E;">=</span> torch.mm(A, B.t())<span class="op" style="color: #5E5E5E;">-</span>D</span>
+<span id="cb58-5">diff_matrix.shape</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="46">
 <pre><code>torch.Size([100, 10])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="47">
-<div class="sourceCode cell-code" id="cb59" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><span class="co" style="color: #5E5E5E;"># Mask the matrix</span></span>
-<span id="cb59-2">diff_matrix[mask].shape</span></code></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><span class="co" style="color: #5E5E5E;"># Mask the matrix</span></span>
+<span id="cb60-2">diff_matrix[mask].shape</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="47">
 <pre><code>torch.Size([522])</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="48">
-<div class="sourceCode cell-code" id="cb61" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><span class="co" style="color: #5E5E5E;"># Modify the loss function to ignore NaN values</span></span>
-<span id="cb61-2"></span>
-<span id="cb61-3"><span class="kw" style="color: #003B4F;">def</span> factorize(D, k):</span>
-<span id="cb61-4">    <span class="co" style="color: #5E5E5E;">"""Factorize the matrix D into A and B"""</span></span>
-<span id="cb61-5">    <span class="co" style="color: #5E5E5E;"># Randomly initialize A and B</span></span>
-<span id="cb61-6">    A <span class="op" style="color: #5E5E5E;">=</span> torch.randn(D.shape[<span class="dv" style="color: #AD0000;">0</span>], k, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb61-7">    B <span class="op" style="color: #5E5E5E;">=</span> torch.randn(D.shape[<span class="dv" style="color: #AD0000;">1</span>], k, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
-<span id="cb61-8">    </span>
-<span id="cb61-9">    <span class="co" style="color: #5E5E5E;"># Optimizer</span></span>
-<span id="cb61-10">    optimizer <span class="op" style="color: #5E5E5E;">=</span> optim.Adam([A, B], lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.01</span>)</span>
-<span id="cb61-11">    </span>
-<span id="cb61-12">    <span class="co" style="color: #5E5E5E;"># Train the model</span></span>
-<span id="cb61-13">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1000</span>):</span>
-<span id="cb61-14">        <span class="co" style="color: #5E5E5E;"># Compute the loss</span></span>
-<span id="cb61-15">        diff_matrix <span class="op" style="color: #5E5E5E;">=</span> torch.mm(A, B.t())<span class="op" style="color: #5E5E5E;">-</span>D</span>
-<span id="cb61-16">        diff_vector <span class="op" style="color: #5E5E5E;">=</span> diff_matrix[mask]</span>
-<span id="cb61-17">        loss <span class="op" style="color: #5E5E5E;">=</span> torch.norm(diff_vector)</span>
-<span id="cb61-18">        </span>
-<span id="cb61-19">        <span class="co" style="color: #5E5E5E;"># Zero the gradients</span></span>
-<span id="cb61-20">        optimizer.zero_grad()</span>
-<span id="cb61-21">        </span>
-<span id="cb61-22">        <span class="co" style="color: #5E5E5E;"># Backpropagate</span></span>
-<span id="cb61-23">        loss.backward()</span>
-<span id="cb61-24">        </span>
-<span id="cb61-25">        <span class="co" style="color: #5E5E5E;"># Update the parameters</span></span>
-<span id="cb61-26">        optimizer.step()</span>
-<span id="cb61-27">        </span>
-<span id="cb61-28">    <span class="cf" style="color: #003B4F;">return</span> A, B, loss</span></code></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><span class="co" style="color: #5E5E5E;"># Modify the loss function to ignore NaN values</span></span>
+<span id="cb62-2"></span>
+<span id="cb62-3"><span class="kw" style="color: #003B4F;">def</span> factorize(D, k):</span>
+<span id="cb62-4">    <span class="co" style="color: #5E5E5E;">"""Factorize the matrix D into A and B"""</span></span>
+<span id="cb62-5">    <span class="co" style="color: #5E5E5E;"># Randomly initialize A and B</span></span>
+<span id="cb62-6">    A <span class="op" style="color: #5E5E5E;">=</span> torch.randn(D.shape[<span class="dv" style="color: #AD0000;">0</span>], k, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb62-7">    B <span class="op" style="color: #5E5E5E;">=</span> torch.randn(D.shape[<span class="dv" style="color: #AD0000;">1</span>], k, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb62-8">    </span>
+<span id="cb62-9">    <span class="co" style="color: #5E5E5E;"># Optimizer</span></span>
+<span id="cb62-10">    optimizer <span class="op" style="color: #5E5E5E;">=</span> optim.Adam([A, B], lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.01</span>)</span>
+<span id="cb62-11">    </span>
+<span id="cb62-12">    <span class="co" style="color: #5E5E5E;"># Train the model</span></span>
+<span id="cb62-13">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1000</span>):</span>
+<span id="cb62-14">        <span class="co" style="color: #5E5E5E;"># Compute the loss</span></span>
+<span id="cb62-15">        diff_matrix <span class="op" style="color: #5E5E5E;">=</span> torch.mm(A, B.t())<span class="op" style="color: #5E5E5E;">-</span>D</span>
+<span id="cb62-16">        diff_vector <span class="op" style="color: #5E5E5E;">=</span> diff_matrix[mask]</span>
+<span id="cb62-17">        loss <span class="op" style="color: #5E5E5E;">=</span> torch.norm(diff_vector)</span>
+<span id="cb62-18">        </span>
+<span id="cb62-19">        <span class="co" style="color: #5E5E5E;"># Zero the gradients</span></span>
+<span id="cb62-20">        optimizer.zero_grad()</span>
+<span id="cb62-21">        </span>
+<span id="cb62-22">        <span class="co" style="color: #5E5E5E;"># Backpropagate</span></span>
+<span id="cb62-23">        loss.backward()</span>
+<span id="cb62-24">        </span>
+<span id="cb62-25">        <span class="co" style="color: #5E5E5E;"># Update the parameters</span></span>
+<span id="cb62-26">        optimizer.step()</span>
+<span id="cb62-27">        </span>
+<span id="cb62-28">    <span class="cf" style="color: #003B4F;">return</span> A, B, loss</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="51">
-<div class="sourceCode cell-code" id="cb62" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1">A, B, loss <span class="op" style="color: #5E5E5E;">=</span> factorize(D, <span class="dv" style="color: #AD0000;">5</span>)</span>
-<span id="cb62-2">loss</span></code></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1">A, B, loss <span class="op" style="color: #5E5E5E;">=</span> factorize(D, <span class="dv" style="color: #AD0000;">5</span>)</span>
+<span id="cb63-2">loss</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="51">
 <pre><code>tensor(8.3795, grad_fn=&lt;LinalgVectorNormBackward0&gt;)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="52">
-<div class="sourceCode cell-code" id="cb64" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1">torch.mm(A, B.t())</span></code></pre></div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1">torch.mm(A, B.t())</span></code></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="52">
 <pre><code>tensor([[ 1.0002e+00, -6.1860e-01,  1.6844e+00,  9.9991e-01, -2.2450e+00,
          -4.0025e-01, -9.3873e-01,  4.5819e+00,  8.8804e-01,  2.8812e-01],
@@ -3807,48 +3678,797 @@ Name: Rahul C, dtype: float64</code></pre>
        grad_fn=&lt;MmBackward0&gt;)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="44">
-<div class="sourceCode cell-code" id="cb66" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><span class="co" style="color: #5E5E5E;"># Now use matrix factorization to predict the ratings</span></span>
-<span id="cb66-2"></span>
-<span id="cb66-3"><span class="im" style="color: #00769E;">import</span> torch</span>
-<span id="cb66-4"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
-<span id="cb66-5"><span class="im" style="color: #00769E;">import</span> torch.nn.functional <span class="im" style="color: #00769E;">as</span> F</span>
-<span id="cb66-6"></span>
-<span id="cb66-7"><span class="co" style="color: #5E5E5E;"># Create a class for the model</span></span>
-<span id="cb66-8"></span>
-<span id="cb66-9"><span class="kw" style="color: #003B4F;">class</span> MatrixFactorization(nn.Module):</span>
-<span id="cb66-10">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>, n_users, n_movies, n_factors<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">20</span>):</span>
-<span id="cb66-11">        <span class="bu" style="color: null;">super</span>().<span class="fu" style="color: #4758AB;">__init__</span>()</span>
-<span id="cb66-12">        <span class="va" style="color: #111111;">self</span>.user_factors <span class="op" style="color: #5E5E5E;">=</span> nn.Embedding(n_users, n_factors)</span>
-<span id="cb66-13">        <span class="va" style="color: #111111;">self</span>.movie_factors <span class="op" style="color: #5E5E5E;">=</span> nn.Embedding(n_movies, n_factors)</span>
-<span id="cb66-14"></span>
-<span id="cb66-15">    <span class="kw" style="color: #003B4F;">def</span> forward(<span class="va" style="color: #111111;">self</span>, user, movie):</span>
-<span id="cb66-16">        <span class="cf" style="color: #003B4F;">return</span> (<span class="va" style="color: #111111;">self</span>.user_factors(user) <span class="op" style="color: #5E5E5E;">*</span> <span class="va" style="color: #111111;">self</span>.movie_factors(movie)).<span class="bu" style="color: null;">sum</span>(<span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb66-17">    </span>
-<span id="cb66-18"></span>
-<span id="cb66-19">    </span></code></pre></div>
+<div class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb67" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1"><span class="co" style="color: #5E5E5E;"># Now use matrix factorization to predict the ratings</span></span>
+<span id="cb67-2"></span>
+<span id="cb67-3"><span class="im" style="color: #00769E;">import</span> torch</span>
+<span id="cb67-4"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
+<span id="cb67-5"><span class="im" style="color: #00769E;">import</span> torch.nn.functional <span class="im" style="color: #00769E;">as</span> F</span>
+<span id="cb67-6"></span>
+<span id="cb67-7"><span class="co" style="color: #5E5E5E;"># Create a class for the model</span></span>
+<span id="cb67-8"></span>
+<span id="cb67-9"><span class="kw" style="color: #003B4F;">class</span> MatrixFactorization(nn.Module):</span>
+<span id="cb67-10">    <span class="kw" style="color: #003B4F;">def</span> <span class="fu" style="color: #4758AB;">__init__</span>(<span class="va" style="color: #111111;">self</span>, n_users, n_movies, n_factors<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">20</span>):</span>
+<span id="cb67-11">        <span class="bu" style="color: null;">super</span>().<span class="fu" style="color: #4758AB;">__init__</span>()</span>
+<span id="cb67-12">        <span class="va" style="color: #111111;">self</span>.user_factors <span class="op" style="color: #5E5E5E;">=</span> nn.Embedding(n_users, n_factors)</span>
+<span id="cb67-13">        <span class="va" style="color: #111111;">self</span>.movie_factors <span class="op" style="color: #5E5E5E;">=</span> nn.Embedding(n_movies, n_factors)</span>
+<span id="cb67-14"></span>
+<span id="cb67-15">    <span class="kw" style="color: #003B4F;">def</span> forward(<span class="va" style="color: #111111;">self</span>, user, movie):</span>
+<span id="cb67-16">        <span class="cf" style="color: #003B4F;">return</span> (<span class="va" style="color: #111111;">self</span>.user_factors(user) <span class="op" style="color: #5E5E5E;">*</span> <span class="va" style="color: #111111;">self</span>.movie_factors(movie)).<span class="bu" style="color: null;">sum</span>(<span class="dv" style="color: #AD0000;">1</span>)      </span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="46">
-<div class="sourceCode cell-code" id="cb67" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb67-1">model <span class="op" style="color: #5E5E5E;">=</span> MatrixFactorization(n_users, n_movies, <span class="dv" style="color: #AD0000;">2</span>)</span>
-<span id="cb67-2">model</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="46">
+<div class="cell" data-execution_count="38">
+<div class="sourceCode cell-code" id="cb68" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1">model <span class="op" style="color: #5E5E5E;">=</span> MatrixFactorization(n_users, n_movies, <span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb68-2">model</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="38">
 <pre><code>MatrixFactorization(
   (user_factors): Embedding(100, 2)
   (movie_factors): Embedding(10, 2)
 )</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="49">
-<div class="sourceCode cell-code" id="cb69" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1">model(torch.tensor([<span class="dv" style="color: #AD0000;">0</span>]), torch.tensor([<span class="dv" style="color: #AD0000;">0</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="49">
-<pre><code>tensor([2.0891], grad_fn=&lt;SumBackward1&gt;)</code></pre>
+<div class="cell" data-execution_count="41">
+<div class="sourceCode cell-code" id="cb70" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1">model(torch.tensor([<span class="dv" style="color: #AD0000;">0</span>]), torch.tensor([<span class="dv" style="color: #AD0000;">2</span>]))</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="41">
+<pre><code>tensor([0.7200], grad_fn=&lt;SumBackward1&gt;)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="61">
+<div class="sourceCode cell-code" id="cb72" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1">D[<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">2</span>]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="61">
+<pre><code>tensor(4.)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="93">
+<div class="sourceCode cell-code" id="cb74" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><span class="bu" style="color: null;">type</span>(D)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="93">
+<pre><code>torch.Tensor</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="100">
+<div class="sourceCode cell-code" id="cb76" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1">mask <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">~</span>torch.isnan(D)</span>
+<span id="cb76-2"></span>
+<span id="cb76-3"><span class="co" style="color: #5E5E5E;"># Get the indices of the non-NaN values</span></span>
+<span id="cb76-4">i, j <span class="op" style="color: #5E5E5E;">=</span> torch.where(mask)</span>
+<span id="cb76-5"></span>
+<span id="cb76-6"><span class="co" style="color: #5E5E5E;"># Get the values of the non-NaN values</span></span>
+<span id="cb76-7">v <span class="op" style="color: #5E5E5E;">=</span> D[mask]</span>
+<span id="cb76-8"></span>
+<span id="cb76-9"><span class="co" style="color: #5E5E5E;"># Store in PyTorch tensors</span></span>
+<span id="cb76-10">users <span class="op" style="color: #5E5E5E;">=</span> i.to(torch.int64)</span>
+<span id="cb76-11">movies <span class="op" style="color: #5E5E5E;">=</span> j.to(torch.int64)</span>
+<span id="cb76-12">ratings <span class="op" style="color: #5E5E5E;">=</span> v.to(torch.float32)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="101">
+<div class="sourceCode cell-code" id="cb77" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1">pd.DataFrame({<span class="st" style="color: #20794D;">'user'</span>: users, <span class="st" style="color: #20794D;">'movie'</span>: movies, <span class="st" style="color: #20794D;">'rating'</span>: ratings})</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="101">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>user</th>
+      <th>movie</th>
+      <th>rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>3</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>4</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>5</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>7</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>9</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>475</th>
+      <td>99</td>
+      <td>3</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>476</th>
+      <td>99</td>
+      <td>4</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>477</th>
+      <td>99</td>
+      <td>5</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>478</th>
+      <td>99</td>
+      <td>6</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>479</th>
+      <td>99</td>
+      <td>8</td>
+      <td>4.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>480 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="109">
+<div class="sourceCode cell-code" id="cb78" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><span class="co" style="color: #5E5E5E;"># Fit the Matrix Factorization model</span></span>
+<span id="cb78-2">model <span class="op" style="color: #5E5E5E;">=</span> MatrixFactorization(n_users, n_movies, <span class="dv" style="color: #AD0000;">4</span>)</span>
+<span id="cb78-3">optimizer <span class="op" style="color: #5E5E5E;">=</span> optim.Adam(model.parameters(), lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.01</span>)</span>
+<span id="cb78-4"></span>
+<span id="cb78-5"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1000</span>):</span>
+<span id="cb78-6">    <span class="co" style="color: #5E5E5E;"># Compute the loss</span></span>
+<span id="cb78-7">    pred <span class="op" style="color: #5E5E5E;">=</span> model(users, movies)</span>
+<span id="cb78-8">    loss <span class="op" style="color: #5E5E5E;">=</span> F.mse_loss(pred, ratings)</span>
+<span id="cb78-9">    </span>
+<span id="cb78-10">    <span class="co" style="color: #5E5E5E;"># Zero the gradients</span></span>
+<span id="cb78-11">    optimizer.zero_grad()</span>
+<span id="cb78-12">    </span>
+<span id="cb78-13">    <span class="co" style="color: #5E5E5E;"># Backpropagate</span></span>
+<span id="cb78-14">    loss.backward()</span>
+<span id="cb78-15">    </span>
+<span id="cb78-16">    <span class="co" style="color: #5E5E5E;"># Update the parameters</span></span>
+<span id="cb78-17">    optimizer.step()</span>
+<span id="cb78-18">    </span>
+<span id="cb78-19">    <span class="co" style="color: #5E5E5E;"># Print the loss</span></span>
+<span id="cb78-20">    <span class="cf" style="color: #003B4F;">if</span> i <span class="op" style="color: #5E5E5E;">%</span> <span class="dv" style="color: #AD0000;">100</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>:</span>
+<span id="cb78-21">        <span class="bu" style="color: null;">print</span>(loss.item())</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>14.76720142364502
+5.302879810333252
+1.1853851079940796
+0.8891506195068359
+0.7703914642333984
+0.6836224794387817
+0.6128221154212952
+0.5464457869529724
+0.4790089726448059
+0.4133472144603729</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="110">
+<div class="sourceCode cell-code" id="cb80" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1">model(users, movies)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="110">
+<pre><code>tensor([3.5504, 4.5726, 2.0893, 2.4884, 1.2936, 2.9384, 2.1470, 2.1019, 3.5093,
+        4.2946, 4.8612, 4.9779, 0.7723, 2.4426, 4.9019, 2.7154, 4.6238, 4.5157,
+        3.9727, 3.1138, 4.8520, 4.0885, 3.1867, 3.5673, 4.2483, 4.7854, 1.5278,
+        1.8672, 4.9511, 3.6045, 4.0314, 3.9938, 4.2236, 2.8767, 3.1728, 1.5280,
+        2.2486, 1.5754, 4.0558, 4.6967, 2.4291, 2.3517, 2.8293, 1.9220, 0.9125,
+        2.4512, 1.9802, 1.6365, 0.8372, 3.9049, 5.2756, 4.9593, 3.9328, 2.9037,
+        3.1141, 5.3814, 2.1344, 2.6688, 3.4172, 2.3595, 5.3566, 2.2460, 2.8877,
+        1.1667, 2.3674, 4.3707, 4.4671, 1.6232, 2.4872, 0.9337, 0.9816, 5.0356,
+        3.9339, 2.0467, 4.0377, 0.9808, 3.9774, 0.9072, 4.0687, 3.5003, 3.4486,
+        2.3463, 1.1872, 3.4819, 2.4824, 1.8702, 2.5937, 3.0414, 3.1106, 1.0834,
+        0.7252, 4.9046, 1.6202, 2.4190, 1.8594, 3.1568, 1.8595, 2.2732, 2.4453,
+        4.7729, 4.4842, 0.7743, 3.3701, 4.0804, 1.6852, 2.0471, 3.1755, 1.9141,
+        5.1160, 2.9357, 3.9531, 0.9427, 4.9578, 2.9373, 2.1836, 1.9240, 4.4972,
+        1.4154, 4.5825, 3.6304, 4.9335, 2.0749, 1.7073, 4.5244, 0.6666, 2.7636,
+        3.1754, 4.6945, 2.2122, 4.2737, 3.8038, 2.1844, 1.1224, 4.6357, 1.5525,
+        1.7303, 5.2041, 2.9134, 1.4150, 2.5948, 3.0763, 4.0576, 1.0618, 4.8325,
+        2.1248, 1.1957, 0.8336, 2.7950, 1.9650, 0.9979, 3.0467, 3.4920, 1.8927,
+        3.9347, 4.4920, 3.7236, 2.5417, 3.5688, 1.8157, 5.0774, 3.3736, 4.3310,
+        4.1089, 3.1310, 3.1309, 3.6488, 1.5450, 4.5918, 3.0997, 3.6214, 3.4861,
+        1.5617, 1.8908, 5.0735, 1.0031, 1.2261, 3.8872, 1.8437, 1.5890, 4.8111,
+        4.6179, 4.7851, 3.6651, 3.3427, 3.9875, 2.0088, 3.9784, 3.9879, 4.6589,
+        1.5484, 1.6383, 2.2056, 2.2131, 2.1536, 2.7818, 3.1034, 1.9198, 5.0519,
+        3.9291, 3.1162, 1.7061, 4.9571, 2.2661, 1.9295, 1.0611, 5.2397, 4.2658,
+        2.6563, 3.1615, 4.7674, 3.9496, 1.2654, 2.2939, 4.4160, 4.0951, 5.0589,
+        2.1283, 4.8196, 0.9184, 1.1921, 0.8478, 1.4660, 2.9261, 0.6669, 2.8499,
+        3.0275, 2.2024, 1.6987, 2.3080, 1.1716, 5.1204, 3.2879, 4.8894, 2.8906,
+        2.7831, 3.9280, 4.1422, 4.8829, 1.7140, 3.2438, 3.3947, 4.9017, 2.0458,
+        2.7026, 4.9444, 1.6571, 4.5633, 2.0250, 1.5407, 2.2006, 4.2746, 5.2480,
+        1.4201, 1.7007, 4.3778, 2.2966, 3.9923, 1.9333, 3.4057, 4.0327, 3.5390,
+        3.9271, 2.9201, 2.7027, 3.3297, 3.0168, 3.0481, 5.1035, 1.8360, 3.9833,
+        5.0582, 2.9292, 1.0382, 4.0508, 3.8930, 4.0067, 4.8149, 2.3026, 1.7069,
+        3.4267, 3.1120, 3.6164, 2.3082, 1.9987, 0.6232, 1.3492, 2.3994, 2.7838,
+        4.6602, 5.0888, 3.9673, 4.9551, 2.0347, 1.9640, 2.9836, 0.9779, 2.0205,
+        2.0087, 1.7446, 2.7367, 3.7122, 3.4894, 1.6120, 1.1975, 1.4710, 3.9296,
+        3.9017, 2.2767, 2.3583, 3.4504, 2.5856, 3.6031, 1.2024, 3.0122, 5.1747,
+        4.5718, 3.8806, 3.2524, 5.3072, 4.7787, 3.7848, 3.5267, 1.6829, 5.0166,
+        1.9989, 2.9831, 4.7302, 3.1548, 2.7528, 3.1149, 4.3910, 1.0141, 3.9930,
+        0.9875, 0.9372, 3.0393, 3.0338, 1.8012, 1.3336, 4.6768, 3.6524, 2.4870,
+        4.3179, 3.0068, 3.9975, 1.0024, 3.1920, 2.1036, 2.4352, 3.3581, 1.4066,
+        4.5507, 5.2796, 4.4308, 3.1042, 3.2778, 1.9613, 4.6138, 4.9244, 2.5226,
+        4.9642, 4.7832, 1.7949, 3.0818, 5.2887, 1.0500, 3.8949, 1.2380, 4.7658,
+        5.2319, 1.2119, 4.4511, 4.9884, 2.0136, 5.0272, 1.8745, 3.6636, 3.9354,
+        3.5262, 3.8342, 3.0293, 5.0180, 1.9718, 1.0241, 0.8656, 1.3043, 2.8483,
+        3.4284, 2.0108, 3.6046, 2.7003, 2.3305, 3.7959, 2.9962, 3.9723, 1.0880,
+        0.9551, 1.8982, 5.0531, 2.0814, 4.6891, 4.0077, 4.0894, 5.0302, 3.6051,
+        1.6802, 3.5425, 4.1980, 3.5684, 2.3596, 4.1367, 4.4500, 2.7960, 1.9353,
+        0.4775, 2.1907, 2.0642, 0.9823, 1.0218, 1.8203, 2.1463, 1.0953, 3.8434,
+        0.4024, 4.7627, 4.9139, 3.1105, 2.5272, 2.4698, 1.0022, 4.0023, 1.0069,
+        1.9934, 2.0410, 4.0398, 5.1972, 3.4594, 3.5575, 5.0009, 2.9782, 4.9950,
+        4.4440, 4.0633, 4.4900, 2.1110, 2.1829, 3.1008, 4.4881, 3.7592, 1.9632,
+        3.0318, 5.0554, 1.9397, 5.0368, 3.6756, 2.9673, 3.3422, 3.5383, 3.0946,
+        3.8896, 3.3948, 4.0218, 4.9802, 2.3230, 5.1215, 3.2226, 2.2078, 3.0848,
+        0.5148, 4.5484, 3.6065, 4.3127, 2.7101, 2.3162, 4.0013, 4.6726, 3.9981,
+        0.9850, 4.5959, 4.6673], grad_fn=&lt;SumBackward1&gt;)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="117">
+<div class="sourceCode cell-code" id="cb82" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><span class="co" style="color: #5E5E5E;"># Now, let's predict the ratings for our df dataframe</span></span>
+<span id="cb82-2"></span>
+<span id="cb82-3">D <span class="op" style="color: #5E5E5E;">=</span> torch.from_numpy(df.values)</span>
+<span id="cb82-4">D.shape</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="117">
+<pre><code>torch.Size([45, 10])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="118">
+<div class="sourceCode cell-code" id="cb84" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb84-1">mask <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">~</span>torch.isnan(D)</span>
+<span id="cb84-2"></span>
+<span id="cb84-3"><span class="co" style="color: #5E5E5E;"># Get the indices of the non-NaN values</span></span>
+<span id="cb84-4">i, j <span class="op" style="color: #5E5E5E;">=</span> torch.where(mask)</span>
+<span id="cb84-5"></span>
+<span id="cb84-6"><span class="co" style="color: #5E5E5E;"># Get the values of the non-NaN values</span></span>
+<span id="cb84-7">v <span class="op" style="color: #5E5E5E;">=</span> D[mask]</span>
+<span id="cb84-8"></span>
+<span id="cb84-9"><span class="co" style="color: #5E5E5E;"># Store in PyTorch tensors</span></span>
+<span id="cb84-10">users <span class="op" style="color: #5E5E5E;">=</span> i.to(torch.int64)</span>
+<span id="cb84-11">movies <span class="op" style="color: #5E5E5E;">=</span> j.to(torch.int64)</span>
+<span id="cb84-12">ratings <span class="op" style="color: #5E5E5E;">=</span> v.to(torch.float32)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="119">
+<div class="sourceCode cell-code" id="cb85" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb85-1">pd.DataFrame({<span class="st" style="color: #20794D;">'user'</span>: users, <span class="st" style="color: #20794D;">'movie'</span>: movies, <span class="st" style="color: #20794D;">'rating'</span>: ratings})</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="119">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>user</th>
+      <th>movie</th>
+      <th>rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>1</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>2</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>3</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>4</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>371</th>
+      <td>44</td>
+      <td>3</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>372</th>
+      <td>44</td>
+      <td>4</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>373</th>
+      <td>44</td>
+      <td>5</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>374</th>
+      <td>44</td>
+      <td>6</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>375</th>
+      <td>44</td>
+      <td>7</td>
+      <td>5.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>376 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="120">
+<div class="sourceCode cell-code" id="cb86" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><span class="co" style="color: #5E5E5E;"># Fit the Matrix Factorization model</span></span>
+<span id="cb86-2">n_users <span class="op" style="color: #5E5E5E;">=</span> D.shape[<span class="dv" style="color: #AD0000;">0</span>]</span>
+<span id="cb86-3">n_movies <span class="op" style="color: #5E5E5E;">=</span> D.shape[<span class="dv" style="color: #AD0000;">1</span>]</span>
+<span id="cb86-4">model <span class="op" style="color: #5E5E5E;">=</span> MatrixFactorization(n_users, n_movies, <span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb86-5">optimizer <span class="op" style="color: #5E5E5E;">=</span> optim.Adam(model.parameters(), lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">0.01</span>)</span>
+<span id="cb86-6"></span>
+<span id="cb86-7"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1000</span>):</span>
+<span id="cb86-8">    <span class="co" style="color: #5E5E5E;"># Compute the loss</span></span>
+<span id="cb86-9">    pred <span class="op" style="color: #5E5E5E;">=</span> model(users, movies)</span>
+<span id="cb86-10">    loss <span class="op" style="color: #5E5E5E;">=</span> F.mse_loss(pred, ratings)</span>
+<span id="cb86-11">    </span>
+<span id="cb86-12">    <span class="co" style="color: #5E5E5E;"># Zero the gradients</span></span>
+<span id="cb86-13">    optimizer.zero_grad()</span>
+<span id="cb86-14">    </span>
+<span id="cb86-15">    <span class="co" style="color: #5E5E5E;"># Backpropagate</span></span>
+<span id="cb86-16">    loss.backward()</span>
+<span id="cb86-17">    </span>
+<span id="cb86-18">    <span class="co" style="color: #5E5E5E;"># Update the parameters</span></span>
+<span id="cb86-19">    optimizer.step()</span>
+<span id="cb86-20">    </span>
+<span id="cb86-21">    <span class="co" style="color: #5E5E5E;"># Print the loss</span></span>
+<span id="cb86-22">    <span class="cf" style="color: #003B4F;">if</span> i <span class="op" style="color: #5E5E5E;">%</span> <span class="dv" style="color: #AD0000;">100</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>:</span>
+<span id="cb86-23">        <span class="bu" style="color: null;">print</span>(loss.item())</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>20.632976531982422
+5.898342132568359
+0.9872512221336365
+0.6203917860984802
+0.5766275525093079
+0.5532926321029663
+0.5254881381988525
+0.4971170723438263
+0.47530585527420044
+0.4588383734226227</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="124">
+<div class="sourceCode cell-code" id="cb88" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><span class="co" style="color: #5E5E5E;"># Now, let us predict the ratings for any user and movie from df for which we already have the ratings</span></span>
+<span id="cb88-2"></span>
+<span id="cb88-3">username <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Dhruv'</span></span>
+<span id="cb88-4">movie <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'The Dark Knight'</span></span>
+<span id="cb88-5"></span>
+<span id="cb88-6"><span class="co" style="color: #5E5E5E;"># Get the user and movie indices</span></span>
+<span id="cb88-7">user_idx <span class="op" style="color: #5E5E5E;">=</span> df.index.get_loc(username)</span>
+<span id="cb88-8">movie_idx <span class="op" style="color: #5E5E5E;">=</span> df.columns.get_loc(movie)</span>
+<span id="cb88-9"></span>
+<span id="cb88-10"><span class="co" style="color: #5E5E5E;"># Predict the rating</span></span>
+<span id="cb88-11">pred <span class="op" style="color: #5E5E5E;">=</span> model(torch.tensor([user_idx]), torch.tensor([movie_idx]))</span>
+<span id="cb88-12">pred.item(), df.loc[username, movie]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="124">
+<pre><code>(4.905300140380859, 5.0)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="126">
+<div class="sourceCode cell-code" id="cb90" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb90-1">df.loc[username]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="126">
+<pre><code>Sholay                      NaN
+Swades (We The People)      NaN
+The Matrix (I)              5.0
+Interstellar                5.0
+Dangal                      3.0
+Taare Zameen Par            NaN
+Shawshank Redemption        5.0
+The Dark Knight             5.0
+Notting Hill                4.0
+Uri: The Surgical Strike    5.0
+Name: Dhruv, dtype: float64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="131">
+<div class="sourceCode cell-code" id="cb92" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb92-1"><span class="co" style="color: #5E5E5E;"># Now, let us predict the ratings for any user and movie from df for which we do not have the ratings</span></span>
+<span id="cb92-2"></span>
+<span id="cb92-3">username <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Dhruv'</span></span>
+<span id="cb92-4">movie <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'Sholay'</span></span>
+<span id="cb92-5"></span>
+<span id="cb92-6"><span class="co" style="color: #5E5E5E;"># Get the user and movie indices</span></span>
+<span id="cb92-7">user_idx <span class="op" style="color: #5E5E5E;">=</span> df.index.get_loc(username)</span>
+<span id="cb92-8">movie_idx <span class="op" style="color: #5E5E5E;">=</span> df.columns.get_loc(movie)</span>
+<span id="cb92-9"></span>
+<span id="cb92-10"><span class="co" style="color: #5E5E5E;"># Predict the rating</span></span>
+<span id="cb92-11">pred <span class="op" style="color: #5E5E5E;">=</span> model(torch.tensor([user_idx]), torch.tensor([movie_idx]))</span>
+<span id="cb92-12">pred, df.loc[username, movie]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="131">
+<pre><code>(tensor([4.5043], grad_fn=&lt;SumBackward1&gt;), nan)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="136">
+<div class="sourceCode cell-code" id="cb94" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb94-1"><span class="co" style="color: #5E5E5E;"># Complete the matrix</span></span>
+<span id="cb94-2"><span class="cf" style="color: #003B4F;">with</span> torch.no_grad():</span>
+<span id="cb94-3">    completed_matrix <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(model.user_factors.weight <span class="op" style="color: #5E5E5E;">@</span> model.movie_factors.weight.t(), index<span class="op" style="color: #5E5E5E;">=</span>df.index, columns<span class="op" style="color: #5E5E5E;">=</span>df.columns)</span>
+<span id="cb94-4">    <span class="co" style="color: #5E5E5E;"># round to nearest integer</span></span>
+<span id="cb94-5">    completed_matrix <span class="op" style="color: #5E5E5E;">=</span> completed_matrix.<span class="bu" style="color: null;">round</span>()</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="137">
+<div class="sourceCode cell-code" id="cb95" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb95-1">completed_matrix.head()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="137">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Sholay</th>
+      <th>Swades (We The People)</th>
+      <th>The Matrix (I)</th>
+      <th>Interstellar</th>
+      <th>Dangal</th>
+      <th>Taare Zameen Par</th>
+      <th>Shawshank Redemption</th>
+      <th>The Dark Knight</th>
+      <th>Notting Hill</th>
+      <th>Uri: The Surgical Strike</th>
+    </tr>
+    <tr>
+      <th>Your name</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Nipun</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Gautam Vashishtha</th>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Eshan Gujarathi</th>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Sai Krishna Avula</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Ankit Yadav</th>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="138">
+<div class="sourceCode cell-code" id="cb96" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb96-1">df.head()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="138">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Sholay</th>
+      <th>Swades (We The People)</th>
+      <th>The Matrix (I)</th>
+      <th>Interstellar</th>
+      <th>Dangal</th>
+      <th>Taare Zameen Par</th>
+      <th>Shawshank Redemption</th>
+      <th>The Dark Knight</th>
+      <th>Notting Hill</th>
+      <th>Uri: The Surgical Strike</th>
+    </tr>
+    <tr>
+      <th>Your name</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Nipun</th>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Gautam Vashishtha</th>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Eshan Gujarathi</th>
+      <td>4.0</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Sai Krishna Avula</th>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Ankit Yadav</th>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>2.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>3.0</td>
+      <td>3.0</td>
+      <td>4.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 </div>
 </div>
 
 
 
  ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn.html</guid>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn-mf.html</guid>
+  <pubDate>Fri, 14 Apr 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Autodiff</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-helper.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> torch</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> torch.nn.functional <span class="im" style="color: #00769E;">as</span> F</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> torch.optim <span class="im" style="color: #00769E;">as</span> optim</span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="im" style="color: #00769E;">from</span> torch.utils.data <span class="im" style="color: #00769E;">import</span> DataLoader, TensorDataset</span>
+<span id="cb1-10"><span class="im" style="color: #00769E;">import</span> seaborn <span class="im" style="color: #00769E;">as</span> sns</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-13"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span>
+<span id="cb1-14"></span>
+<span id="cb1-15"><span class="co" style="color: #5E5E5E;"># Set random seed for reproducibility</span></span>
+<span id="cb1-16">torch.manual_seed(<span class="dv" style="color: #AD0000;">0</span>)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18"><span class="co" style="color: #5E5E5E;"># Torch version</span></span>
+<span id="cb1-19">torch.__version__</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>'2.0.0+cu118'</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">theta_0 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">1.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb3-2">theta_1 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">1.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb3-3">theta_2 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">2.0</span>, requires_grad<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb3-4"></span>
+<span id="cb3-5">x1 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">1.0</span>)</span>
+<span id="cb3-6">x2 <span class="op" style="color: #5E5E5E;">=</span> torch.tensor(<span class="fl" style="color: #AD0000;">2.0</span>)</span>
+<span id="cb3-7"></span>
+<span id="cb3-8">f1 <span class="op" style="color: #5E5E5E;">=</span> theta_1<span class="op" style="color: #5E5E5E;">*</span>x1</span>
+<span id="cb3-9">f2 <span class="op" style="color: #5E5E5E;">=</span> theta_2<span class="op" style="color: #5E5E5E;">*</span>x2</span>
+<span id="cb3-10"></span>
+<span id="cb3-11">f3 <span class="op" style="color: #5E5E5E;">=</span> f1 <span class="op" style="color: #5E5E5E;">+</span> f2</span>
+<span id="cb3-12"></span>
+<span id="cb3-13">f4 <span class="op" style="color: #5E5E5E;">=</span> f3 <span class="op" style="color: #5E5E5E;">+</span> theta_0</span>
+<span id="cb3-14"></span>
+<span id="cb3-15">f5 <span class="op" style="color: #5E5E5E;">=</span> f4<span class="op" style="color: #5E5E5E;">*-</span><span class="dv" style="color: #AD0000;">1</span></span>
+<span id="cb3-16"></span>
+<span id="cb3-17">f6 <span class="op" style="color: #5E5E5E;">=</span> torch.exp(f5)</span>
+<span id="cb3-18"></span>
+<span id="cb3-19">f7 <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span> <span class="op" style="color: #5E5E5E;">+</span> f6</span>
+<span id="cb3-20"></span>
+<span id="cb3-21">f8 <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span>f7</span>
+<span id="cb3-22"></span>
+<span id="cb3-23">f9 <span class="op" style="color: #5E5E5E;">=</span> torch.log(f8)</span>
+<span id="cb3-24"></span>
+<span id="cb3-25">L <span class="op" style="color: #5E5E5E;">=</span> f9<span class="op" style="color: #5E5E5E;">*-</span><span class="dv" style="color: #AD0000;">1</span></span>
+<span id="cb3-26"></span>
+<span id="cb3-27">all_nodes <span class="op" style="color: #5E5E5E;">=</span> {<span class="st" style="color: #20794D;">"theta_0"</span>: theta_0, <span class="st" style="color: #20794D;">"theta_1"</span>: theta_1, <span class="st" style="color: #20794D;">"theta_2"</span>: theta_2,  </span>
+<span id="cb3-28">             <span class="st" style="color: #20794D;">"f1"</span>: f1, <span class="st" style="color: #20794D;">"f2"</span>: f2, <span class="st" style="color: #20794D;">"f3"</span>: f3, <span class="st" style="color: #20794D;">"f4"</span>: f4, <span class="st" style="color: #20794D;">"f5"</span>: f5, <span class="st" style="color: #20794D;">"f6"</span>: f6, <span class="st" style="color: #20794D;">"f7"</span>: f7, <span class="st" style="color: #20794D;">"f8"</span>: f8, <span class="st" style="color: #20794D;">"f9"</span>: f9, <span class="st" style="color: #20794D;">"L"</span>: L}</span>
+<span id="cb3-29"></span>
+<span id="cb3-30"><span class="co" style="color: #5E5E5E;"># Retain grad for all nodes</span></span>
+<span id="cb3-31"><span class="cf" style="color: #003B4F;">for</span> node <span class="kw" style="color: #003B4F;">in</span> all_nodes.values():</span>
+<span id="cb3-32">    node.retain_grad()</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Print out the function evaluation for all nodes along with name of the node</span></span>
+<span id="cb4-2"><span class="cf" style="color: #003B4F;">for</span> name, node <span class="kw" style="color: #003B4F;">in</span> all_nodes.items():</span>
+<span id="cb4-3">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"</span><span class="sc" style="color: #5E5E5E;">{</span>name<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">: </span><span class="sc" style="color: #5E5E5E;">{</span>node<span class="sc" style="color: #5E5E5E;">.</span>item()<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta_0: 1.0
+theta_1: 1.0
+theta_2: 2.0
+f1: 1.0
+f2: 4.0
+f3: 5.0
+f4: 6.0
+f5: -6.0
+f6: 0.0024787522852420807
+f7: 1.0024787187576294
+f8: 0.9975274205207825
+f9: -0.0024756414350122213
+L: 0.0024756414350122213</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">L.backward()</span>
+<span id="cb6-2"></span>
+<span id="cb6-3"><span class="co" style="color: #5E5E5E;"># Print out the gradient for all nodes along with name of the node</span></span>
+<span id="cb6-4"><span class="cf" style="color: #003B4F;">for</span> name, node <span class="kw" style="color: #003B4F;">in</span> all_nodes.items():</span>
+<span id="cb6-5">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"</span><span class="sc" style="color: #5E5E5E;">{</span>name<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">: </span><span class="sc" style="color: #5E5E5E;">{</span>node<span class="sc" style="color: #5E5E5E;">.</span>grad<span class="sc" style="color: #5E5E5E;">.</span>item()<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>theta_0: -0.00247262348420918
+theta_1: -0.00247262348420918
+theta_2: -0.00494524696841836
+f1: -0.00247262348420918
+f2: -0.00247262348420918
+f3: -0.00247262348420918
+f4: -0.00247262348420918
+f5: 0.00247262348420918
+f6: 0.9975274801254272
+f7: 0.9975274801254272
+f8: -1.0024787187576294
+f9: -1.0
+L: 1.0</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span><span class="op" style="color: #5E5E5E;">/</span>(f7<span class="op" style="color: #5E5E5E;">**</span><span class="dv" style="color: #AD0000;">2</span>))<span class="op" style="color: #5E5E5E;">*-</span><span class="fl" style="color: #AD0000;">1.00247</span></span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>tensor(0.9975, grad_fn=&lt;MulBackward0&gt;)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">torch.exp(f5)<span class="op" style="color: #5E5E5E;">*</span><span class="fl" style="color: #AD0000;">0.9975</span></span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>tensor(0.0025, grad_fn=&lt;MulBackward0&gt;)</code></pre>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/autodiff-helper.html</guid>
   <pubDate>Tue, 04 Apr 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
