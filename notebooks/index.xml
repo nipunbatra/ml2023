@@ -452,6 +452,431 @@ elif X1 &lt; 0.5 and X2 &gt;= 0.5:
   <pubDate>Sun, 16 Apr 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Image Segmentation using K-Means Clustering</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="116">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="op" style="color: #5E5E5E;">!</span>wget https:<span class="op" style="color: #5E5E5E;">//</span>segment<span class="op" style="color: #5E5E5E;">-</span>anything.com<span class="op" style="color: #5E5E5E;">/</span>assets<span class="op" style="color: #5E5E5E;">/</span>gallery<span class="op" style="color: #5E5E5E;">/</span>AdobeStock_94274587_welsh_corgi_pembroke_CD.jpg <span class="op" style="color: #5E5E5E;">-</span>O dog.jpg</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--2023-04-15 11:58:51--  https://segment-anything.com/assets/gallery/AdobeStock_94274587_welsh_corgi_pembroke_CD.jpg
+Resolving segment-anything.com (segment-anything.com)... 108.158.245.28, 108.158.245.33, 108.158.245.84, ...
+Connecting to segment-anything.com (segment-anything.com)|108.158.245.28|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 221810 (217K) [image/jpeg]
+Saving to: ‘dog.jpg’
+
+dog.jpg             100%[===================&gt;] 216.61K   348KB/s    in 0.6s    
+
+2023-04-15 11:58:53 (348 KB/s) - ‘dog.jpg’ saved [221810/221810]
+</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="117">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;"># Read image and convert to RGB</span></span>
+<span id="cb4-2">img <span class="op" style="color: #5E5E5E;">=</span> plt.imread(<span class="st" style="color: #20794D;">'dog.jpg'</span>)</span>
+<span id="cb4-3"></span>
+<span id="cb4-4"><span class="co" style="color: #5E5E5E;"># Convert to [0, 1] range</span></span>
+<span id="cb4-5"></span>
+<span id="cb4-6">img <span class="op" style="color: #5E5E5E;">=</span> img <span class="op" style="color: #5E5E5E;">/</span> <span class="dv" style="color: #AD0000;">255</span></span>
+<span id="cb4-7"></span>
+<span id="cb4-8"></span>
+<span id="cb4-9"><span class="co" style="color: #5E5E5E;"># Plot image</span></span>
+<span id="cb4-10">plt.imshow(img)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="117">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f24a424f460&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="118">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">img</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="118">
+<pre><code>array([[[0.30980392, 0.20392157, 0.1372549 ],
+        [0.31372549, 0.20784314, 0.14117647],
+        [0.31372549, 0.20784314, 0.14117647],
+        ...,
+        [0.29411765, 0.21568627, 0.11764706],
+        [0.29411765, 0.21568627, 0.11764706],
+        [0.29803922, 0.21176471, 0.11764706]],
+
+       [[0.30980392, 0.20392157, 0.1372549 ],
+        [0.31372549, 0.20784314, 0.14117647],
+        [0.31372549, 0.20784314, 0.14117647],
+        ...,
+        [0.29411765, 0.21568627, 0.11764706],
+        [0.29411765, 0.21568627, 0.11764706],
+        [0.29803922, 0.21176471, 0.11764706]],
+
+       [[0.30980392, 0.20392157, 0.1372549 ],
+        [0.31372549, 0.20784314, 0.14117647],
+        [0.31372549, 0.20784314, 0.14117647],
+        ...,
+        [0.29411765, 0.21568627, 0.11764706],
+        [0.29411765, 0.21568627, 0.11764706],
+        [0.29803922, 0.21176471, 0.11764706]],
+
+       ...,
+
+       [[0.4745098 , 0.40392157, 0.14509804],
+        [0.4745098 , 0.40392157, 0.14509804],
+        [0.47843137, 0.40784314, 0.14901961],
+        ...,
+        [0.38039216, 0.32156863, 0.16862745],
+        [0.37647059, 0.31764706, 0.16470588],
+        [0.37647059, 0.31764706, 0.16470588]],
+
+       [[0.4745098 , 0.40392157, 0.14509804],
+        [0.4745098 , 0.40392157, 0.14509804],
+        [0.47843137, 0.40784314, 0.14901961],
+        ...,
+        [0.38039216, 0.32156863, 0.16862745],
+        [0.38039216, 0.32156863, 0.16862745],
+        [0.37647059, 0.31764706, 0.16470588]],
+
+       [[0.4745098 , 0.40392157, 0.14509804],
+        [0.4745098 , 0.40392157, 0.14509804],
+        [0.47843137, 0.40784314, 0.14901961],
+        ...,
+        [0.38431373, 0.3254902 , 0.17254902],
+        [0.38039216, 0.32156863, 0.16862745],
+        [0.38039216, 0.32156863, 0.16862745]]])</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="119">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="im" style="color: #00769E;">from</span> sklearn.cluster <span class="im" style="color: #00769E;">import</span> KMeans</span>
+<span id="cb8-2"></span>
+<span id="cb8-3"><span class="co" style="color: #5E5E5E;"># Reshape image to 2D array</span></span>
+<span id="cb8-4">img_2d <span class="op" style="color: #5E5E5E;">=</span> img.reshape(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="120">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="co" style="color: #5E5E5E;"># Fit KMeans from scikit-learn (slow!)</span></span>
+<span id="cb9-2">kmeans <span class="op" style="color: #5E5E5E;">=</span> KMeans(n_clusters<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>, random_state<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>).fit(img_2d)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="126">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">kmeans.cluster_centers_, kmeans.labels_</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="126">
+<pre><code>(array([[0.59260829, 0.48656705, 0.2670584 ],
+        [0.24250138, 0.22963615, 0.12538282],
+        [0.8270407 , 0.74152134, 0.54547183],
+        [0.71622954, 0.62308534, 0.39023071],
+        [0.419752  , 0.3354403 , 0.18325719]]),
+ array([1, 1, 1, ..., 4, 4, 4], dtype=int32))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="127">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="co" style="color: #5E5E5E;"># instead use FAISS with GPU</span></span>
+<span id="cb12-2"></span>
+<span id="cb12-3"><span class="im" style="color: #00769E;">import</span> faiss</span>
+<span id="cb12-4"><span class="co" style="color: #5E5E5E;"># Set up FAISS index</span></span>
+<span id="cb12-5">d <span class="op" style="color: #5E5E5E;">=</span> img_2d.shape[<span class="dv" style="color: #AD0000;">1</span>]  <span class="co" style="color: #5E5E5E;"># Dimension of the feature vectors</span></span>
+<span id="cb12-6">n_clusters <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">5</span>   <span class="co" style="color: #5E5E5E;"># Number of clusters</span></span>
+<span id="cb12-7">n_gpus <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">2</span>         <span class="co" style="color: #5E5E5E;"># Number of GPUs to use</span></span>
+<span id="cb12-8"></span>
+<span id="cb12-9"><span class="co" style="color: #5E5E5E;"># Initialize a multi-GPU IndexFlatL2 index</span></span>
+<span id="cb12-10">index_flat <span class="op" style="color: #5E5E5E;">=</span> faiss.IndexFlatL2(d)</span>
+<span id="cb12-11">index <span class="op" style="color: #5E5E5E;">=</span> faiss.index_cpu_to_all_gpus(index_flat, ngpu<span class="op" style="color: #5E5E5E;">=</span>n_gpus)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="128">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">kmeans_gpu <span class="op" style="color: #5E5E5E;">=</span> faiss.Clustering(d, n_clusters)</span>
+<span id="cb13-2">kmeans_gpu.verbose <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
+<span id="cb13-3">kmeans_gpu.niter <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">20</span></span>
+<span id="cb13-4">kmeans_gpu.train(img_2d.astype(np.float32), index)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sampling a subset of 1280 / 2795520 for training
+Clustering 1280 points in 3D to 5 clusters, redo 1 times, 20 iterations
+  Preprocessing in 0.02 s
+  Iteration 19 (0.48 s, search 0.00 s): objective=12.4307 imbalance=1.031 nsplit=0       </code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="129">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">_, I <span class="op" style="color: #5E5E5E;">=</span> index.search(img_2d.astype(np.float32), <span class="dv" style="color: #AD0000;">1</span>)  <span class="co" style="color: #5E5E5E;"># Search for nearest centroid</span></span>
+<span id="cb15-2">cluster_ids <span class="op" style="color: #5E5E5E;">=</span> I.squeeze()</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="130">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="co" style="color: #5E5E5E;"># Create segmented image using cluster centers frmo sklearn</span></span>
+<span id="cb16-2">segmented_img <span class="op" style="color: #5E5E5E;">=</span> kmeans.cluster_centers_[kmeans.labels_]</span>
+<span id="cb16-3">segmented_img <span class="op" style="color: #5E5E5E;">=</span> segmented_img.reshape(img.shape)</span>
+<span id="cb16-4"></span>
+<span id="cb16-5">centroids_gpu <span class="op" style="color: #5E5E5E;">=</span> faiss.vector_float_to_array(kmeans_gpu.centroids).reshape(n_clusters, d)</span>
+<span id="cb16-6"><span class="co" style="color: #5E5E5E;"># Create segmented image using cluster centers from FAISS</span></span>
+<span id="cb16-7">segmented_img_faiss <span class="op" style="color: #5E5E5E;">=</span> centroids_gpu[cluster_ids]</span>
+<span id="cb16-8"></span>
+<span id="cb16-9"><span class="co" style="color: #5E5E5E;"># Plot segmented image side by side</span></span>
+<span id="cb16-10">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">10</span>, <span class="dv" style="color: #AD0000;">5</span>))</span>
+<span id="cb16-11">ax[<span class="dv" style="color: #AD0000;">0</span>].imshow(segmented_img)</span>
+<span id="cb16-12">ax[<span class="dv" style="color: #AD0000;">1</span>].imshow(segmented_img_faiss.reshape(img.shape))</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="130">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f24ac0d80a0&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="131">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><span class="co" style="color: #5E5E5E;"># Now, let's try to segment the image using a different number of clusters using FAISS</span></span>
+<span id="cb18-2"></span>
+<span id="cb18-3"><span class="kw" style="color: #003B4F;">def</span> segment_plot(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>):</span>
+<span id="cb18-4">    <span class="co" style="color: #5E5E5E;"># Reshape image to 2D array</span></span>
+<span id="cb18-5">    img_2d <span class="op" style="color: #5E5E5E;">=</span> img.reshape(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb18-6"></span>
+<span id="cb18-7">    <span class="co" style="color: #5E5E5E;"># Set up FAISS index</span></span>
+<span id="cb18-8">    d <span class="op" style="color: #5E5E5E;">=</span> img_2d.shape[<span class="dv" style="color: #AD0000;">1</span>]  <span class="co" style="color: #5E5E5E;"># Dimension of the feature vectors</span></span>
+<span id="cb18-9">    n_clusters <span class="op" style="color: #5E5E5E;">=</span> k   <span class="co" style="color: #5E5E5E;"># Number of clusters</span></span>
+<span id="cb18-10">    n_gpus <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">2</span>         <span class="co" style="color: #5E5E5E;"># Number of GPUs to use</span></span>
+<span id="cb18-11"></span>
+<span id="cb18-12">    <span class="co" style="color: #5E5E5E;"># Initialize a multi-GPU IndexFlatL2 index</span></span>
+<span id="cb18-13">    index_flat <span class="op" style="color: #5E5E5E;">=</span> faiss.IndexFlatL2(d)</span>
+<span id="cb18-14">    index <span class="op" style="color: #5E5E5E;">=</span> faiss.index_cpu_to_all_gpus(index_flat, ngpu<span class="op" style="color: #5E5E5E;">=</span>n_gpus)</span>
+<span id="cb18-15"></span>
+<span id="cb18-16">    kmeans_gpu <span class="op" style="color: #5E5E5E;">=</span> faiss.Clustering(d, n_clusters)</span>
+<span id="cb18-17">    kmeans_gpu.verbose <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
+<span id="cb18-18">    kmeans_gpu.niter <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">20</span></span>
+<span id="cb18-19">    kmeans_gpu.train(img_2d.astype(np.float32), index)</span>
+<span id="cb18-20"></span>
+<span id="cb18-21">    _, I <span class="op" style="color: #5E5E5E;">=</span> index.search(img_2d.astype(np.float32), <span class="dv" style="color: #AD0000;">1</span>)  <span class="co" style="color: #5E5E5E;"># Search for nearest centroid</span></span>
+<span id="cb18-22">    cluster_ids <span class="op" style="color: #5E5E5E;">=</span> I.squeeze()</span>
+<span id="cb18-23"></span>
+<span id="cb18-24">    centroids_gpu <span class="op" style="color: #5E5E5E;">=</span> faiss.vector_float_to_array(kmeans_gpu.centroids).reshape(n_clusters, d)</span>
+<span id="cb18-25">    <span class="co" style="color: #5E5E5E;"># Create segmented image using cluster centers from FAISS</span></span>
+<span id="cb18-26">    segmented_img_faiss <span class="op" style="color: #5E5E5E;">=</span> centroids_gpu[cluster_ids]</span>
+<span id="cb18-27"></span>
+<span id="cb18-28">    <span class="co" style="color: #5E5E5E;"># Plot segmented image side by side</span></span>
+<span id="cb18-29">    fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">10</span>, <span class="dv" style="color: #AD0000;">5</span>))</span>
+<span id="cb18-30">    ax[<span class="dv" style="color: #AD0000;">0</span>].imshow(img)</span>
+<span id="cb18-31">    ax[<span class="dv" style="color: #AD0000;">1</span>].imshow(segmented_img_faiss.reshape(img.shape))</span>
+<span id="cb18-32"></span>
+<span id="cb18-33">    <span class="co" style="color: #5E5E5E;"># Plot the color of each cluster</span></span>
+<span id="cb18-34">    fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">4</span>))</span>
+<span id="cb18-35">    ax.imshow(centroids_gpu.reshape(<span class="dv" style="color: #AD0000;">1</span>, n_clusters, <span class="dv" style="color: #AD0000;">3</span>))</span>
+<span id="cb18-36">    </span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="132">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">segment_plot(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sampling a subset of 512 / 2795520 for training
+Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
+  Preprocessing in 0.02 s
+  Iteration 19 (0.45 s, search 0.00 s): objective=14.8063 imbalance=1.000 nsplit=0       </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-14-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-14-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="133">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">segment_plot(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sampling a subset of 2560 / 2795520 for training
+Clustering 2560 points in 3D to 10 clusters, redo 1 times, 20 iterations
+  Preprocessing in 0.02 s
+  Iteration 19 (0.44 s, search 0.00 s): objective=13.6225 imbalance=1.202 nsplit=0       </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-15-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-15-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="134">
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1">segment_plot(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">20</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sampling a subset of 5120 / 2795520 for training
+Clustering 5120 points in 3D to 20 clusters, redo 1 times, 20 iterations
+  Preprocessing in 0.02 s
+  Iteration 19 (0.44 s, search 0.01 s): objective=15.3261 imbalance=1.215 nsplit=0       </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-16-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="139">
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><span class="co" style="color: #5E5E5E;"># Modify segmentation function to mask out all but the given cluster</span></span>
+<span id="cb25-2"><span class="im" style="color: #00769E;">from</span> copy <span class="im" style="color: #00769E;">import</span> deepcopy</span>
+<span id="cb25-3"><span class="kw" style="color: #003B4F;">def</span> segment_plot_mask(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>, cluster_id<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>):</span>
+<span id="cb25-4">    <span class="co" style="color: #5E5E5E;"># Reshape image to 2D array</span></span>
+<span id="cb25-5">    img_2d <span class="op" style="color: #5E5E5E;">=</span> img.reshape(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb25-6"></span>
+<span id="cb25-7">    <span class="co" style="color: #5E5E5E;"># Set up FAISS index</span></span>
+<span id="cb25-8">    d <span class="op" style="color: #5E5E5E;">=</span> img_2d.shape[<span class="dv" style="color: #AD0000;">1</span>]  <span class="co" style="color: #5E5E5E;"># Dimension of the feature vectors</span></span>
+<span id="cb25-9">    n_clusters <span class="op" style="color: #5E5E5E;">=</span> k   <span class="co" style="color: #5E5E5E;"># Number of clusters</span></span>
+<span id="cb25-10">    n_gpus <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">2</span>         <span class="co" style="color: #5E5E5E;"># Number of GPUs to use</span></span>
+<span id="cb25-11"></span>
+<span id="cb25-12">    <span class="co" style="color: #5E5E5E;"># Initialize a multi-GPU IndexFlatL2 index</span></span>
+<span id="cb25-13">    index_flat <span class="op" style="color: #5E5E5E;">=</span> faiss.IndexFlatL2(d)</span>
+<span id="cb25-14">    index <span class="op" style="color: #5E5E5E;">=</span> faiss.index_cpu_to_all_gpus(index_flat, ngpu<span class="op" style="color: #5E5E5E;">=</span>n_gpus)</span>
+<span id="cb25-15"></span>
+<span id="cb25-16">    kmeans_gpu <span class="op" style="color: #5E5E5E;">=</span> faiss.Clustering(d, n_clusters)</span>
+<span id="cb25-17">    kmeans_gpu.verbose <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
+<span id="cb25-18">    kmeans_gpu.niter <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">20</span></span>
+<span id="cb25-19">    kmeans_gpu.train(img_2d.astype(np.float32), index)</span>
+<span id="cb25-20"></span>
+<span id="cb25-21">    _, I <span class="op" style="color: #5E5E5E;">=</span> index.search(img_2d.astype(np.float32), <span class="dv" style="color: #AD0000;">1</span>)  <span class="co" style="color: #5E5E5E;"># Search for nearest centroid</span></span>
+<span id="cb25-22">    cluster_ids <span class="op" style="color: #5E5E5E;">=</span> I.squeeze()</span>
+<span id="cb25-23"></span>
+<span id="cb25-24">    centroids_gpu <span class="op" style="color: #5E5E5E;">=</span> faiss.vector_float_to_array(kmeans_gpu.centroids).reshape(n_clusters, d)</span>
+<span id="cb25-25">    <span class="co" style="color: #5E5E5E;"># Create segmented image using cluster centers from FAISS</span></span>
+<span id="cb25-26">    segmented_img_faiss <span class="op" style="color: #5E5E5E;">=</span> centroids_gpu[cluster_ids]</span>
+<span id="cb25-27"></span>
+<span id="cb25-28">    <span class="co" style="color: #5E5E5E;"># Plot segmented image side by side</span></span>
+<span id="cb25-29">    fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">10</span>, <span class="dv" style="color: #AD0000;">5</span>))</span>
+<span id="cb25-30">    ax[<span class="dv" style="color: #AD0000;">0</span>].imshow(img)</span>
+<span id="cb25-31">    segmented_img_faiss <span class="op" style="color: #5E5E5E;">=</span> segmented_img_faiss.reshape(img.shape)</span>
+<span id="cb25-32">    ax[<span class="dv" style="color: #AD0000;">1</span>].imshow(segmented_img_faiss)</span>
+<span id="cb25-33"></span>
+<span id="cb25-34">    </span>
+<span id="cb25-35">    <span class="co" style="color: #5E5E5E;"># Now, only show the cluster we want</span></span>
+<span id="cb25-36">    mask <span class="op" style="color: #5E5E5E;">=</span> cluster_ids <span class="op" style="color: #5E5E5E;">==</span> cluster_id</span>
+<span id="cb25-37">    mask <span class="op" style="color: #5E5E5E;">=</span> mask.reshape(img.shape[:<span class="dv" style="color: #AD0000;">2</span>])</span>
+<span id="cb25-38"></span>
+<span id="cb25-39">    img_copy <span class="op" style="color: #5E5E5E;">=</span> deepcopy(segmented_img_faiss.reshape(img.shape))</span>
+<span id="cb25-40">    <span class="co" style="color: #5E5E5E;"># Set all pixels that are not in the cluster to black</span></span>
+<span id="cb25-41">    img_copy[<span class="op" style="color: #5E5E5E;">~</span>mask] <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">0</span></span>
+<span id="cb25-42"></span>
+<span id="cb25-43">    ax[<span class="dv" style="color: #AD0000;">2</span>].imshow(img_copy)</span>
+<span id="cb25-44">    </span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="142">
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1">mask <span class="op" style="color: #5E5E5E;">=</span> segment_plot_mask(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, cluster_id<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sampling a subset of 512 / 2795520 for training
+Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
+  Preprocessing in 0.02 s
+  Iteration 19 (0.04 s, search 0.00 s): objective=14.8063 imbalance=1.000 nsplit=0       </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-18-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="143">
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">mask <span class="op" style="color: #5E5E5E;">=</span> segment_plot_mask(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, cluster_id<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sampling a subset of 512 / 2795520 for training
+Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
+  Preprocessing in 0.02 s
+  Iteration 19 (0.01 s, search 0.00 s): objective=14.8063 imbalance=1.000 nsplit=0       </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-19-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="145">
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">mask <span class="op" style="color: #5E5E5E;">=</span> segment_plot_mask(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">4</span>, cluster_id<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sampling a subset of 1024 / 2795520 for training
+Clustering 1024 points in 3D to 4 clusters, redo 1 times, 20 iterations
+  Preprocessing in 0.02 s
+  Iteration 19 (0.47 s, search 0.00 s): objective=12.6442 imbalance=1.031 nsplit=0       </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-20-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="146">
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><span class="co" style="color: #5E5E5E;"># Now, let us segment the image using not only RGB but also the spatial coordinates</span></span>
+<span id="cb32-2"></span>
+<span id="cb32-3"><span class="co" style="color: #5E5E5E;"># Reshape image to 2D array</span></span>
+<span id="cb32-4">img_2d <span class="op" style="color: #5E5E5E;">=</span> img.reshape(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb32-5"></span>
+<span id="cb32-6"><span class="co" style="color: #5E5E5E;"># Add spatial coordinates</span></span>
+<span id="cb32-7">x <span class="op" style="color: #5E5E5E;">=</span> np.arange(img.shape[<span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb32-8">y <span class="op" style="color: #5E5E5E;">=</span> np.arange(img.shape[<span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb32-9"></span>
+<span id="cb32-10"><span class="co" style="color: #5E5E5E;"># Let us bring the spatial coordinates to the range [0, 1] like the RGB values</span></span>
+<span id="cb32-11">x <span class="op" style="color: #5E5E5E;">=</span> x <span class="op" style="color: #5E5E5E;">/</span> x.<span class="bu" style="color: null;">max</span>()</span>
+<span id="cb32-12">y <span class="op" style="color: #5E5E5E;">=</span> y <span class="op" style="color: #5E5E5E;">/</span> y.<span class="bu" style="color: null;">max</span>()</span>
+<span id="cb32-13"></span>
+<span id="cb32-14">xx, yy <span class="op" style="color: #5E5E5E;">=</span> np.meshgrid(x, y)</span>
+<span id="cb32-15">xx <span class="op" style="color: #5E5E5E;">=</span> xx.reshape(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb32-16">yy <span class="op" style="color: #5E5E5E;">=</span> yy.reshape(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb32-17"></span>
+<span id="cb32-18">img_2d_spatial <span class="op" style="color: #5E5E5E;">=</span> np.hstack((img_2d, xx, yy))</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="147">
+<div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="co" style="color: #5E5E5E;"># Now, modify the segment_plot function to include spatial coordinates</span></span>
+<span id="cb33-2"></span>
+<span id="cb33-3"><span class="kw" style="color: #003B4F;">def</span> segment_plot_spatial(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>):</span>
+<span id="cb33-4">    <span class="co" style="color: #5E5E5E;"># Reshape image to 2D array</span></span>
+<span id="cb33-5">    img_2d <span class="op" style="color: #5E5E5E;">=</span> img.reshape(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">3</span>)</span>
+<span id="cb33-6"></span>
+<span id="cb33-7">    <span class="co" style="color: #5E5E5E;"># Add spatial coordinates</span></span>
+<span id="cb33-8">    x <span class="op" style="color: #5E5E5E;">=</span> np.arange(img.shape[<span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb33-9">    y <span class="op" style="color: #5E5E5E;">=</span> np.arange(img.shape[<span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb33-10"></span>
+<span id="cb33-11">    <span class="co" style="color: #5E5E5E;"># Normalize spatial coordinates</span></span>
+<span id="cb33-12">    x <span class="op" style="color: #5E5E5E;">=</span> (x <span class="op" style="color: #5E5E5E;">-</span> x.mean()) <span class="op" style="color: #5E5E5E;">/</span> x.std()</span>
+<span id="cb33-13">    y <span class="op" style="color: #5E5E5E;">=</span> (y <span class="op" style="color: #5E5E5E;">-</span> y.mean()) <span class="op" style="color: #5E5E5E;">/</span> y.std()</span>
+<span id="cb33-14"></span>
+<span id="cb33-15">    xx, yy <span class="op" style="color: #5E5E5E;">=</span> np.meshgrid(x, y)</span>
+<span id="cb33-16">    xx <span class="op" style="color: #5E5E5E;">=</span> xx.reshape(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb33-17">    yy <span class="op" style="color: #5E5E5E;">=</span> yy.reshape(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb33-18"></span>
+<span id="cb33-19">    img_2d_spatial <span class="op" style="color: #5E5E5E;">=</span> np.hstack((img_2d, xx, yy))</span>
+<span id="cb33-20"></span>
+<span id="cb33-21">    <span class="co" style="color: #5E5E5E;"># Set up FAISS index</span></span>
+<span id="cb33-22">    d <span class="op" style="color: #5E5E5E;">=</span> img_2d_spatial.shape[<span class="dv" style="color: #AD0000;">1</span>]  <span class="co" style="color: #5E5E5E;"># Dimension of the feature vectors</span></span>
+<span id="cb33-23">    n_clusters <span class="op" style="color: #5E5E5E;">=</span> k   <span class="co" style="color: #5E5E5E;"># Number of clusters</span></span>
+<span id="cb33-24">    n_gpus <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">2</span>         <span class="co" style="color: #5E5E5E;"># Number of GPUs to use</span></span>
+<span id="cb33-25"></span>
+<span id="cb33-26">    <span class="co" style="color: #5E5E5E;"># Initialize a multi-GPU IndexFlatL2 index</span></span>
+<span id="cb33-27">    index_flat <span class="op" style="color: #5E5E5E;">=</span> faiss.IndexFlatL2(d)</span>
+<span id="cb33-28">    index <span class="op" style="color: #5E5E5E;">=</span> faiss.index_cpu_to_all_gpus(index_flat, ngpu<span class="op" style="color: #5E5E5E;">=</span>n_gpus)</span>
+<span id="cb33-29"></span>
+<span id="cb33-30">    kmeans_gpu <span class="op" style="color: #5E5E5E;">=</span> faiss.Clustering(d, n_clusters)</span>
+<span id="cb33-31">    kmeans_gpu.verbose <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
+<span id="cb33-32">    kmeans_gpu.niter <span class="op" style="color: #5E5E5E;">=</span> <span class="dv" style="color: #AD0000;">20</span>    </span>
+<span id="cb33-33">    kmeans_gpu.train(img_2d_spatial.astype(np.float32), index)</span>
+<span id="cb33-34"></span>
+<span id="cb33-35">    _, I <span class="op" style="color: #5E5E5E;">=</span> index.search(img_2d_spatial.astype(np.float32), <span class="dv" style="color: #AD0000;">1</span>)  <span class="co" style="color: #5E5E5E;"># Search for nearest centroid</span></span>
+<span id="cb33-36">    cluster_ids <span class="op" style="color: #5E5E5E;">=</span> I.squeeze()</span>
+<span id="cb33-37"></span>
+<span id="cb33-38">    centroids_gpu <span class="op" style="color: #5E5E5E;">=</span> faiss.vector_float_to_array(kmeans_gpu.centroids).reshape(n_clusters, d)</span>
+<span id="cb33-39">    <span class="co" style="color: #5E5E5E;"># Create segmented image using cluster centers from FAISS with spatial coordinates excluded for plotting</span></span>
+<span id="cb33-40">    segmented_img_faiss <span class="op" style="color: #5E5E5E;">=</span> centroids_gpu[cluster_ids, :<span class="dv" style="color: #AD0000;">3</span>]</span>
+<span id="cb33-41"></span>
+<span id="cb33-42">    <span class="co" style="color: #5E5E5E;"># Plot segmented image side by side</span></span>
+<span id="cb33-43">    fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, figsize<span class="op" style="color: #5E5E5E;">=</span>(<span class="dv" style="color: #AD0000;">10</span>, <span class="dv" style="color: #AD0000;">5</span>))</span>
+<span id="cb33-44">    ax[<span class="dv" style="color: #AD0000;">0</span>].imshow(img)</span>
+<span id="cb33-45">    ax[<span class="dv" style="color: #AD0000;">1</span>].imshow(segmented_img_faiss.reshape(img.shape))</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="150">
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1">segment_plot_spatial(img, k<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">5</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sampling a subset of 1280 / 2795520 for training
+Clustering 1280 points in 5D to 5 clusters, redo 1 times, 20 iterations
+  Preprocessing in 0.03 s
+  Iteration 19 (0.42 s, search 0.00 s): objective=626.83 imbalance=1.086 nsplit=0        </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation_files/figure-html/cell-23-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/kmeans-segmentation.html</guid>
+  <pubDate>Sun, 16 Apr 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Movie Recommendation using KNN and Matrix Factorization</title>
   <dc:creator>Nipun Batra</dc:creator>
   <link>https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn-mf.html</link>
@@ -7872,267 +8297,6 @@ Global minimum: 0.0 at [0.28000003 0.84      ]</code></pre>
 
  ]]></description>
   <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/python-utils.html</guid>
-  <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Dataset splitting for machine learning</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/split.html</link>
-  <description><![CDATA[ 
-
-
-
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
-<span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'retina'</span></span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;"># Create a dataset with 3 features and 1000 samples for a classification problem</span></span>
-<span id="cb2-2"></span>
-<span id="cb2-3">df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame(np.random.randn(<span class="dv" style="color: #AD0000;">1000</span>, <span class="dv" style="color: #AD0000;">3</span>), columns<span class="op" style="color: #5E5E5E;">=</span>[<span class="st" style="color: #20794D;">'A'</span>, <span class="st" style="color: #20794D;">'B'</span>, <span class="st" style="color: #20794D;">'C'</span>])</span>
-<span id="cb2-4">df[<span class="st" style="color: #20794D;">'D'</span>] <span class="op" style="color: #5E5E5E;">=</span> np.random.randint(<span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">1000</span>)</span>
-<span id="cb2-5"></span>
-<span id="cb2-6">df</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>A</th>
-      <th>B</th>
-      <th>C</th>
-      <th>D</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0.112981</td>
-      <td>-0.033889</td>
-      <td>0.348708</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1.821601</td>
-      <td>1.267423</td>
-      <td>0.274915</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>0.148040</td>
-      <td>-1.412712</td>
-      <td>-0.271345</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0.004766</td>
-      <td>-1.209944</td>
-      <td>0.122512</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>0.854442</td>
-      <td>-0.559497</td>
-      <td>-0.605376</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>995</th>
-      <td>0.161444</td>
-      <td>-0.969567</td>
-      <td>-2.079664</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>996</th>
-      <td>1.615938</td>
-      <td>0.219218</td>
-      <td>-0.322223</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>997</th>
-      <td>0.501970</td>
-      <td>-0.874313</td>
-      <td>1.571102</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>998</th>
-      <td>0.386063</td>
-      <td>-1.481215</td>
-      <td>-1.974313</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>999</th>
-      <td>0.468528</td>
-      <td>1.060850</td>
-      <td>0.612252</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
-<p>1000 rows × 4 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">X, y <span class="op" style="color: #5E5E5E;">=</span> df[[<span class="st" style="color: #20794D;">'A'</span>, <span class="st" style="color: #20794D;">'B'</span>, <span class="st" style="color: #20794D;">'C'</span>]], df[<span class="st" style="color: #20794D;">'D'</span>]</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">train_X, test_X <span class="op" style="color: #5E5E5E;">=</span> X[:<span class="dv" style="color: #AD0000;">800</span>], X[<span class="dv" style="color: #AD0000;">800</span>:]</span>
-<span id="cb4-2">train_y, test_y <span class="op" style="color: #5E5E5E;">=</span> y[:<span class="dv" style="color: #AD0000;">800</span>], y[<span class="dv" style="color: #AD0000;">800</span>:]</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;">from</span> sklearn.tree <span class="im" style="color: #00769E;">import</span> DecisionTreeClassifier</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">dt <span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier(max_depth<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span>
-<span id="cb6-2">dt.fit(train_X, train_y)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
-<style>#sk-container-id-2 {color: black;background-color: white;}#sk-container-id-2 pre{padding: 0;}#sk-container-id-2 div.sk-toggleable {background-color: white;}#sk-container-id-2 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-2 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-2 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-2 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-2 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-2 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-2 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-2 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-2 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-2 div.sk-item {position: relative;z-index: 1;}#sk-container-id-2 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-2 div.sk-item::before, #sk-container-id-2 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-2 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-2 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-2 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-2 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-2 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-2 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-2 div.sk-label-container {text-align: center;}#sk-container-id-2 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-2 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>DecisionTreeClassifier(max_depth=2)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked=""><label for="sk-estimator-id-2" class="sk-toggleable__label sk-toggleable__label-arrow">DecisionTreeClassifier</label><div class="sk-toggleable__content"><pre>DecisionTreeClassifier(max_depth=2)</pre></div></div></div></div></div>
-</div>
-</div>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="im" style="color: #00769E;">from</span> sklearn <span class="im" style="color: #00769E;">import</span> tree</span>
-<span id="cb7-2">tree.plot_tree(dt)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="16">
-<pre><code>[Text(0.5, 0.8333333333333334, 'X[0] &lt;= -0.17\ngini = 0.5\nsamples = 800\nvalue = [400, 400]'),
- Text(0.25, 0.5, 'X[0] &lt;= -0.307\ngini = 0.495\nsamples = 348\nvalue = [157, 191]'),
- Text(0.125, 0.16666666666666666, 'gini = 0.499\nsamples = 316\nvalue = [153, 163]'),
- Text(0.375, 0.16666666666666666, 'gini = 0.219\nsamples = 32\nvalue = [4, 28]'),
- Text(0.75, 0.5, 'X[2] &lt;= 1.656\ngini = 0.497\nsamples = 452\nvalue = [243, 209]'),
- Text(0.625, 0.16666666666666666, 'gini = 0.495\nsamples = 434\nvalue = [239, 195]'),
- Text(0.875, 0.16666666666666666, 'gini = 0.346\nsamples = 18\nvalue = [4, 14]')]</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/split_files/figure-html/cell-8-output-2.png" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="20">
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">y_hat <span class="op" style="color: #5E5E5E;">=</span> dt.predict(test_X)</span>
-<span id="cb9-2">pd.DataFrame({<span class="st" style="color: #20794D;">"y_true"</span>: test_y, <span class="st" style="color: #20794D;">"y_hat"</span>: y_hat})</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
-
-<div>
-
-<table class="dataframe table table-sm table-striped">
-  <thead>
-    <tr>
-      <th></th>
-      <th>y_true</th>
-      <th>y_hat</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>800</th>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>801</th>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>802</th>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>803</th>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>804</th>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>995</th>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>996</th>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>997</th>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>998</th>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>999</th>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
-<p>200 rows × 2 columns</p>
-</div>
-</div>
-</div>
-<div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="im" style="color: #00769E;">from</span> sklearn.tree <span class="im" style="color: #00769E;">import</span> DecisionTreeClassifier</span>
-<span id="cb10-2"></span>
-<span id="cb10-3">train_scores <span class="op" style="color: #5E5E5E;">=</span> {}</span>
-<span id="cb10-4">test_scores <span class="op" style="color: #5E5E5E;">=</span> {}</span>
-<span id="cb10-5"></span>
-<span id="cb10-6"><span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">20</span>):</span>
-<span id="cb10-7">    dt <span class="op" style="color: #5E5E5E;">=</span> DecisionTreeClassifier(max_depth<span class="op" style="color: #5E5E5E;">=</span>i)</span>
-<span id="cb10-8">    dt.fit(train_X, train_y)</span>
-<span id="cb10-9">    train_scores[i] <span class="op" style="color: #5E5E5E;">=</span> dt.score(train_X, train_y)</span>
-<span id="cb10-10">    </span>
-<span id="cb10-11">    test_scores[i] <span class="op" style="color: #5E5E5E;">=</span> dt.score(test_X, test_y)</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="18">
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">scores_df <span class="op" style="color: #5E5E5E;">=</span> pd.DataFrame({<span class="st" style="color: #20794D;">'train'</span>: train_scores, <span class="st" style="color: #20794D;">'test'</span>: test_scores})</span>
-<span id="cb11-2">scores_df.plot()</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
-<pre><code>&lt;AxesSubplot:&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/split_files/figure-html/cell-11-output-2.png" class="img-fluid"></p>
-</div>
-</div>
-
-
-
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/split.html</guid>
   <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 </channel>
