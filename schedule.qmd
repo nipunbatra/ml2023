@@ -29,11 +29,10 @@ title: "Schedule"
 |21| 30 Mar| Next work prediction [[Slides](lectures/next-token.pdf)], [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/names.html)|
 |22| 4 Apr | Convolutional Neural Networks [[Slides](lectures/CNN.pdf)], [1d CNN slides](lectures/1d-cnn.pdf), [Notebook 1](https://nipunbatra.github.io/ml2023/notebooks/posts/cnn.html), [Notebook 2](https://nipunbatra.github.io/ml2023/notebooks/posts/cnn-edge.html), [Notebook 3](https://nipunbatra.github.io/ml2023/notebooks/posts/1d-cnn.html), [Equivariance v/s Invariance](https://www.doc.ic.ac.uk/~bkainz/teaching/DL/notes/equivariance.pdf), [Reference1](https://poloclub.github.io/cnn-explainer/), [Reference2](https://e2eml.school/how_convolutional_neural_networks_work.html), [Notebook](https://nipunbatra.github.io/ml2023/notebooks/posts/cnn.html)|
 |23| 6 Apr| Autograd  [[Slides](lectures/autograd.pdf)], [Notebook on Autodiff](https://nipunbatra.github.io/ml2023/notebooks/posts/autodiff-helper.html), [Reference on chain rule](https://tutorial.math.lamar.edu/classes/calciii/chainrule.aspx) Naive Bayes [[Slides](lectures/naive-bayes.pdf)]|
-|24| 11 Apr| SVM-II|
-|25| 13 Apr| SVM-III|
-|26| 18 Apr| Naive Bayes + KNN|
-|27| 20 Apr| KNN + Unsupervised|
-|28| 25 Apr| Unsupervised + RL?| 
+|24| 11 Apr| Naive Bayes [[Slides](lectures/naive-bayes.pdf)], KNN [[Slides](lectures/knn.pdf)]|
+|25| 13 Apr| KNN, [Parametric v/s Non-Parametric](https://nipunbatra.github.io/ml2023/notebooks/posts/parametric-non-parametric.html), [Movie Recommendation](https://nipunbatra.github.io/ml2023/notebooks/posts/movie-recommendation-knn-mf.html)|
+|26| 18 Apr| Curse of Dimensionality, Unsupervised learning: Clustering, [PCA](https://www.youtube.com/watch?v=g-Hb26agBFg)|
+
 
 
 
