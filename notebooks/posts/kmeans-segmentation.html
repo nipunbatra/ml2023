@@ -126,6 +126,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -225,7 +228,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<div class="cell" data-execution_count="116">
+<div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -249,7 +252,7 @@ dog.jpg             100%[===================&gt;] 216.61K   348KB/s    in 0.6s
 </code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="117">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read image and convert to RGB</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> plt.imread(<span class="st">'dog.jpg'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -260,80 +263,99 @@ dog.jpg             100%[===================&gt;] 216.61K   348KB/s    in 0.6s
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot image</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>plt.imshow(img)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="117">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f24a424f460&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9f93236fd0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="kmeans-segmentation_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="118">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>img</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="118">
-<pre><code>array([[[0.30980392, 0.20392157, 0.1372549 ],
-        [0.31372549, 0.20784314, 0.14117647],
-        [0.31372549, 0.20784314, 0.14117647],
-        ...,
-        [0.29411765, 0.21568627, 0.11764706],
-        [0.29411765, 0.21568627, 0.11764706],
-        [0.29803922, 0.21176471, 0.11764706]],
-
-       [[0.30980392, 0.20392157, 0.1372549 ],
-        [0.31372549, 0.20784314, 0.14117647],
-        [0.31372549, 0.20784314, 0.14117647],
-        ...,
-        [0.29411765, 0.21568627, 0.11764706],
-        [0.29411765, 0.21568627, 0.11764706],
-        [0.29803922, 0.21176471, 0.11764706]],
-
-       [[0.30980392, 0.20392157, 0.1372549 ],
-        [0.31372549, 0.20784314, 0.14117647],
-        [0.31372549, 0.20784314, 0.14117647],
-        ...,
-        [0.29411765, 0.21568627, 0.11764706],
-        [0.29411765, 0.21568627, 0.11764706],
-        [0.29803922, 0.21176471, 0.11764706]],
-
-       ...,
-
-       [[0.4745098 , 0.40392157, 0.14509804],
-        [0.4745098 , 0.40392157, 0.14509804],
-        [0.47843137, 0.40784314, 0.14901961],
-        ...,
-        [0.38039216, 0.32156863, 0.16862745],
-        [0.37647059, 0.31764706, 0.16470588],
-        [0.37647059, 0.31764706, 0.16470588]],
-
-       [[0.4745098 , 0.40392157, 0.14509804],
-        [0.4745098 , 0.40392157, 0.14509804],
-        [0.47843137, 0.40784314, 0.14901961],
-        ...,
-        [0.38039216, 0.32156863, 0.16862745],
-        [0.38039216, 0.32156863, 0.16862745],
-        [0.37647059, 0.31764706, 0.16470588]],
-
-       [[0.4745098 , 0.40392157, 0.14509804],
-        [0.4745098 , 0.40392157, 0.14509804],
-        [0.47843137, 0.40784314, 0.14901961],
-        ...,
-        [0.38431373, 0.3254902 , 0.17254902],
-        [0.38039216, 0.32156863, 0.16862745],
-        [0.38039216, 0.32156863, 0.16862745]]])</code></pre>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>img.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>(1365, 2048, 3)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="119">
+<div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape image to 2D array</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>img_2d <span class="op">=</span> img.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>img_2d <span class="op">=</span> img.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(img_2d).describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>2.795520e+06</td>
+      <td>2.795520e+06</td>
+      <td>2.795520e+06</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>5.542249e-01</td>
+      <td>4.757675e-01</td>
+      <td>2.935504e-01</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>2.068960e-01</td>
+      <td>1.844162e-01</td>
+      <td>1.533922e-01</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>3.921569e-02</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>3.882353e-01</td>
+      <td>3.176471e-01</td>
+      <td>1.647059e-01</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>5.725490e-01</td>
+      <td>4.705882e-01</td>
+      <td>2.666667e-01</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>7.294118e-01</td>
+      <td>6.392157e-01</td>
+      <td>4.078431e-01</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>1.000000e+00</td>
+      <td>1.000000e+00</td>
+      <td>1.000000e+00</td>
+    </tr>
+  </tbody>
+</table>
 </div>
-<div class="cell" data-execution_count="120">
+</div>
+</div>
+<div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit KMeans from scikit-learn (slow!)</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>kmeans <span class="op">=</span> KMeans(n_clusters<span class="op">=</span><span class="dv">5</span>, random_state<span class="op">=</span><span class="dv">0</span>).fit(img_2d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="126">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>kmeans.cluster_centers_, kmeans.labels_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="126">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>(array([[0.59260829, 0.48656705, 0.2670584 ],
         [0.24250138, 0.22963615, 0.12538282],
         [0.8270407 , 0.74152134, 0.54547183],
@@ -342,7 +364,7 @@ dog.jpg             100%[===================&gt;] 216.61K   348KB/s    in 0.6s
  array([1, 1, 1, ..., 4, 4, 4], dtype=int32))</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="127">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># instead use FAISS with GPU</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> faiss</span>
@@ -355,7 +377,7 @@ dog.jpg             100%[===================&gt;] 216.61K   348KB/s    in 0.6s
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>index_flat <span class="op">=</span> faiss.IndexFlatL2(d)</span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>index <span class="op">=</span> faiss.index_cpu_to_all_gpus(index_flat, ngpu<span class="op">=</span>n_gpus)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="128">
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>kmeans_gpu <span class="op">=</span> faiss.Clustering(d, n_clusters)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>kmeans_gpu.verbose <span class="op">=</span> <span class="va">True</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>kmeans_gpu.niter <span class="op">=</span> <span class="dv">20</span></span>
@@ -363,15 +385,15 @@ dog.jpg             100%[===================&gt;] 216.61K   348KB/s    in 0.6s
 <div class="cell-output cell-output-stdout">
 <pre><code>Sampling a subset of 1280 / 2795520 for training
 Clustering 1280 points in 3D to 5 clusters, redo 1 times, 20 iterations
-  Preprocessing in 0.02 s
-  Iteration 19 (0.48 s, search 0.00 s): objective=12.4307 imbalance=1.031 nsplit=0       </code></pre>
+  Preprocessing in 0.03 s
+  Iteration 19 (0.44 s, search 0.00 s): objective=12.4307 imbalance=1.031 nsplit=0       </code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="129">
+<div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>_, I <span class="op">=</span> index.search(img_2d.astype(np.float32), <span class="dv">1</span>)  <span class="co"># Search for nearest centroid</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>cluster_ids <span class="op">=</span> I.squeeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="130">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create segmented image using cluster centers frmo sklearn</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>segmented_img <span class="op">=</span> kmeans.cluster_centers_[kmeans.labels_]</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>segmented_img <span class="op">=</span> segmented_img.reshape(img.shape)</span>
@@ -384,14 +406,14 @@ Clustering 1280 points in 3D to 5 clusters, redo 1 times, 20 iterations
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
 <span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].imshow(segmented_img)</span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].imshow(segmented_img_faiss.reshape(img.shape))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="130">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f24ac0d80a0&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9d5c6fe160&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="kmeans-segmentation_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="131">
+<div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, let's try to segment the image using a different number of clusters using FAISS</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> segment_plot(img, k<span class="op">=</span><span class="dv">5</span>):</span>
@@ -429,13 +451,13 @@ Clustering 1280 points in 3D to 5 clusters, redo 1 times, 20 iterations
 <span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>    ax.imshow(centroids_gpu.reshape(<span class="dv">1</span>, n_clusters, <span class="dv">3</span>))</span>
 <span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="132">
+<div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>segment_plot(img, k<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Sampling a subset of 512 / 2795520 for training
 Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
-  Preprocessing in 0.02 s
-  Iteration 19 (0.45 s, search 0.00 s): objective=14.8063 imbalance=1.000 nsplit=0       </code></pre>
+  Preprocessing in 0.03 s
+  Iteration 19 (0.14 s, search 0.00 s): objective=14.8063 imbalance=1.000 nsplit=0       </code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="kmeans-segmentation_files/figure-html/cell-14-output-2.png" class="img-fluid"></p>
@@ -444,13 +466,13 @@ Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
 <p><img src="kmeans-segmentation_files/figure-html/cell-14-output-3.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="133">
+<div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>segment_plot(img, k<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Sampling a subset of 2560 / 2795520 for training
 Clustering 2560 points in 3D to 10 clusters, redo 1 times, 20 iterations
-  Preprocessing in 0.02 s
-  Iteration 19 (0.44 s, search 0.00 s): objective=13.6225 imbalance=1.202 nsplit=0       </code></pre>
+  Preprocessing in 0.03 s
+  Iteration 19 (0.03 s, search 0.01 s): objective=13.6225 imbalance=1.202 nsplit=0       </code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="kmeans-segmentation_files/figure-html/cell-15-output-2.png" class="img-fluid"></p>
@@ -459,104 +481,108 @@ Clustering 2560 points in 3D to 10 clusters, redo 1 times, 20 iterations
 <p><img src="kmeans-segmentation_files/figure-html/cell-15-output-3.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="134">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>segment_plot(img, k<span class="op">=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Sampling a subset of 5120 / 2795520 for training
-Clustering 5120 points in 3D to 20 clusters, redo 1 times, 20 iterations
-  Preprocessing in 0.02 s
-  Iteration 19 (0.44 s, search 0.01 s): objective=15.3261 imbalance=1.215 nsplit=0       </code></pre>
+<div class="cell" data-execution_count="58">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modify segmentation function to mask out all but the given cluster</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> copy <span class="im">import</span> deepcopy</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> segment_plot_mask(img, k<span class="op">=</span><span class="dv">5</span>):</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Reshape image to 2D array</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    img_2d <span class="op">=</span> img.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set up FAISS index</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> img_2d.shape[<span class="dv">1</span>]  <span class="co"># Dimension of the feature vectors</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    n_clusters <span class="op">=</span> k   <span class="co"># Number of clusters</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    n_gpus <span class="op">=</span> <span class="dv">2</span>         <span class="co"># Number of GPUs to use</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize a multi-GPU IndexFlatL2 index</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    index_flat <span class="op">=</span> faiss.IndexFlatL2(d)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    index <span class="op">=</span> faiss.index_cpu_to_all_gpus(index_flat, ngpu<span class="op">=</span>n_gpus)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    kmeans_gpu <span class="op">=</span> faiss.Clustering(d, n_clusters)</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    kmeans_gpu.verbose <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    kmeans_gpu.niter <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    kmeans_gpu.train(img_2d.astype(np.float32), index)</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    _, I <span class="op">=</span> index.search(img_2d.astype(np.float32), <span class="dv">1</span>)  <span class="co"># Search for nearest centroid</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    cluster_ids <span class="op">=</span> I.squeeze()</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>    centroids_gpu <span class="op">=</span> faiss.vector_float_to_array(kmeans_gpu.centroids).reshape(n_clusters, d)</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create segmented image using cluster centers from FAISS</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>    segmented_img_faiss <span class="op">=</span> centroids_gpu[cluster_ids]</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot segmented image side by side</span></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">0</span>].imshow(img)</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>    segmented_img_faiss <span class="op">=</span> segmented_img_faiss.reshape(img.shape)</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].imshow(segmented_img_faiss)</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Now, create another figure with number of cluser columns</span></span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># and plot each cluster with mask applied to the original image</span></span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The mask is an alpha channel</span></span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, n_clusters, figsize<span class="op">=</span>(n_clusters<span class="op">*</span><span class="dv">4</span>, <span class="dv">5</span>))</span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_clusters):</span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>        img_masked <span class="op">=</span> deepcopy(img_2d)</span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>        img_masked[cluster_ids <span class="op">!=</span> i] <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>        ax[i].imshow(img_masked.reshape(img.shape))</span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>        ax[i].set_title(<span class="ss">f'Cluster </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>        ax[i].axis(<span class="st">'off'</span>)</span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a>    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell-output cell-output-display">
-<p><img src="kmeans-segmentation_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
+<div class="cell" data-execution_count="59">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>img.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="59">
+<pre><code>(1365, 2048, 3)</code></pre>
 </div>
-<div class="cell-output cell-output-display">
-<p><img src="kmeans-segmentation_files/figure-html/cell-16-output-3.png" class="img-fluid"></p>
 </div>
-</div>
-<div class="cell" data-execution_count="139">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modify segmentation function to mask out all but the given cluster</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> copy <span class="im">import</span> deepcopy</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> segment_plot_mask(img, k<span class="op">=</span><span class="dv">5</span>, cluster_id<span class="op">=</span><span class="dv">0</span>):</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Reshape image to 2D array</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    img_2d <span class="op">=</span> img.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">3</span>)</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set up FAISS index</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    d <span class="op">=</span> img_2d.shape[<span class="dv">1</span>]  <span class="co"># Dimension of the feature vectors</span></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    n_clusters <span class="op">=</span> k   <span class="co"># Number of clusters</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    n_gpus <span class="op">=</span> <span class="dv">2</span>         <span class="co"># Number of GPUs to use</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Initialize a multi-GPU IndexFlatL2 index</span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    index_flat <span class="op">=</span> faiss.IndexFlatL2(d)</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>    index <span class="op">=</span> faiss.index_cpu_to_all_gpus(index_flat, ngpu<span class="op">=</span>n_gpus)</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    kmeans_gpu <span class="op">=</span> faiss.Clustering(d, n_clusters)</span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    kmeans_gpu.verbose <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    kmeans_gpu.niter <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>    kmeans_gpu.train(img_2d.astype(np.float32), index)</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    _, I <span class="op">=</span> index.search(img_2d.astype(np.float32), <span class="dv">1</span>)  <span class="co"># Search for nearest centroid</span></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    cluster_ids <span class="op">=</span> I.squeeze()</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>    centroids_gpu <span class="op">=</span> faiss.vector_float_to_array(kmeans_gpu.centroids).reshape(n_clusters, d)</span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create segmented image using cluster centers from FAISS</span></span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>    segmented_img_faiss <span class="op">=</span> centroids_gpu[cluster_ids]</span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot segmented image side by side</span></span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
-<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">0</span>].imshow(img)</span>
-<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>    segmented_img_faiss <span class="op">=</span> segmented_img_faiss.reshape(img.shape)</span>
-<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].imshow(segmented_img_faiss)</span>
-<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Now, only show the cluster we want</span></span>
-<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> cluster_ids <span class="op">==</span> cluster_id</span>
-<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> mask.reshape(img.shape[:<span class="dv">2</span>])</span>
-<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>    img_copy <span class="op">=</span> deepcopy(segmented_img_faiss.reshape(img.shape))</span>
-<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set all pixels that are not in the cluster to black</span></span>
-<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a>    img_copy[<span class="op">~</span>mask] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">2</span>].imshow(img_copy)</span>
-<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a>    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell" data-execution_count="142">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> segment_plot_mask(img, k<span class="op">=</span><span class="dv">2</span>, cluster_id<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="60">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> segment_plot_mask(img, k<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Sampling a subset of 512 / 2795520 for training
 Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
   Preprocessing in 0.02 s
-  Iteration 19 (0.04 s, search 0.00 s): objective=14.8063 imbalance=1.000 nsplit=0       </code></pre>
+  Iteration 19 (0.46 s, search 0.00 s): objective=14.8063 imbalance=1.000 nsplit=0       </code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="kmeans-segmentation_files/figure-html/cell-18-output-2.png" class="img-fluid"></p>
 </div>
+<div class="cell-output cell-output-display">
+<p><img src="kmeans-segmentation_files/figure-html/cell-18-output-3.png" class="img-fluid"></p>
 </div>
-<div class="cell" data-execution_count="143">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> segment_plot_mask(img, k<span class="op">=</span><span class="dv">2</span>, cluster_id<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="61">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> segment_plot_mask(img, k<span class="op">=</span><span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Sampling a subset of 512 / 2795520 for training
-Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
+<pre><code>Sampling a subset of 768 / 2795520 for training
+Clustering 768 points in 3D to 3 clusters, redo 1 times, 20 iterations
   Preprocessing in 0.02 s
-  Iteration 19 (0.01 s, search 0.00 s): objective=14.8063 imbalance=1.000 nsplit=0       </code></pre>
+  Iteration 19 (0.46 s, search 0.00 s): objective=12.5181 imbalance=1.009 nsplit=0       </code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="kmeans-segmentation_files/figure-html/cell-19-output-2.png" class="img-fluid"></p>
 </div>
+<div class="cell-output cell-output-display">
+<p><img src="kmeans-segmentation_files/figure-html/cell-19-output-3.png" class="img-fluid"></p>
 </div>
-<div class="cell" data-execution_count="145">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> segment_plot_mask(img, k<span class="op">=</span><span class="dv">4</span>, cluster_id<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="62">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> segment_plot_mask(img, k<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Sampling a subset of 1024 / 2795520 for training
 Clustering 1024 points in 3D to 4 clusters, redo 1 times, 20 iterations
   Preprocessing in 0.02 s
-  Iteration 19 (0.47 s, search 0.00 s): objective=12.6442 imbalance=1.031 nsplit=0       </code></pre>
+  Iteration 19 (0.15 s, search 0.00 s): objective=12.6442 imbalance=1.031 nsplit=0       </code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="kmeans-segmentation_files/figure-html/cell-20-output-2.png" class="img-fluid"></p>
 </div>
+<div class="cell-output cell-output-display">
+<p><img src="kmeans-segmentation_files/figure-html/cell-20-output-3.png" class="img-fluid"></p>
 </div>
-<div class="cell" data-execution_count="146">
+</div>
+<div class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, let us segment the image using not only RGB but also the spatial coordinates</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Reshape image to 2D array</span></span>
@@ -566,17 +592,105 @@ Clustering 1024 points in 3D to 4 clusters, redo 1 times, 20 iterations
 <span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.arange(img.shape[<span class="dv">0</span>])</span>
 <span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.arange(img.shape[<span class="dv">1</span>])</span>
 <span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Let us bring the spatial coordinates to the range [0, 1] like the RGB values</span></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> x <span class="op">/</span> x.<span class="bu">max</span>()</span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> y <span class="op">/</span> y.<span class="bu">max</span>()</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Scale the spatial coordinates to be between a and b</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scale(x, a, b):</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (b<span class="op">-</span>a)<span class="op">*</span>(x<span class="op">-</span>x.<span class="bu">min</span>())<span class="op">/</span>(x.<span class="bu">max</span>()<span class="op">-</span>x.<span class="bu">min</span>()) <span class="op">+</span> a</span>
 <span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>xx, yy <span class="op">=</span> np.meshgrid(x, y)</span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>xx <span class="op">=</span> xx.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>yy <span class="op">=</span> yy.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>img_2d_spatial <span class="op">=</span> np.hstack((img_2d, xx, yy))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> scale(x, <span class="fl">0.25</span>, <span class="fl">0.75</span>)</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> scale(y, <span class="fl">0.25</span>, <span class="fl">0.75</span>)</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>xx, yy <span class="op">=</span> np.meshgrid(x, y)</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>xx <span class="op">=</span> xx.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>yy <span class="op">=</span> yy.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>img_2d_spatial <span class="op">=</span> np.hstack((img_2d, xx, yy))</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(img_2d_spatial).describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>2.795520e+06</td>
+      <td>2.795520e+06</td>
+      <td>2.795520e+06</td>
+      <td>2.795520e+06</td>
+      <td>2.795520e+06</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>5.542249e-01</td>
+      <td>4.757675e-01</td>
+      <td>2.935504e-01</td>
+      <td>5.000000e-01</td>
+      <td>5.000000e-01</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>2.068960e-01</td>
+      <td>1.844162e-01</td>
+      <td>1.533922e-01</td>
+      <td>1.444434e-01</td>
+      <td>1.444081e-01</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>3.921569e-02</td>
+      <td>0.000000e+00</td>
+      <td>0.000000e+00</td>
+      <td>2.500000e-01</td>
+      <td>2.500000e-01</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>3.882353e-01</td>
+      <td>3.176471e-01</td>
+      <td>1.647059e-01</td>
+      <td>3.750000e-01</td>
+      <td>3.750000e-01</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>5.725490e-01</td>
+      <td>4.705882e-01</td>
+      <td>2.666667e-01</td>
+      <td>5.000000e-01</td>
+      <td>5.000000e-01</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>7.294118e-01</td>
+      <td>6.392157e-01</td>
+      <td>4.078431e-01</td>
+      <td>6.250000e-01</td>
+      <td>6.250000e-01</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>1.000000e+00</td>
+      <td>1.000000e+00</td>
+      <td>1.000000e+00</td>
+      <td>7.500000e-01</td>
+      <td>7.500000e-01</td>
+    </tr>
+  </tbody>
+</table>
 </div>
-<div class="cell" data-execution_count="147">
+</div>
+</div>
+<div class="cell" data-execution_count="72">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, modify the segment_plot function to include spatial coordinates</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> segment_plot_spatial(img, k<span class="op">=</span><span class="dv">5</span>):</span>
@@ -587,9 +701,9 @@ Clustering 1024 points in 3D to 4 clusters, redo 1 times, 20 iterations
 <span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.arange(img.shape[<span class="dv">0</span>])</span>
 <span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.arange(img.shape[<span class="dv">1</span>])</span>
 <span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Normalize spatial coordinates</span></span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> (x <span class="op">-</span> x.mean()) <span class="op">/</span> x.std()</span>
-<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> (y <span class="op">-</span> y.mean()) <span class="op">/</span> y.std()</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Scale the spatial coordinates to be between a and b</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> scale(x, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> scale(y, <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>    xx, yy <span class="op">=</span> np.meshgrid(x, y)</span>
 <span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>    xx <span class="op">=</span> xx.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
@@ -621,18 +735,48 @@ Clustering 1024 points in 3D to 4 clusters, redo 1 times, 20 iterations
 <span id="cb33-42"><a href="#cb33-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot segmented image side by side</span></span>
 <span id="cb33-43"><a href="#cb33-43" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
 <span id="cb33-44"><a href="#cb33-44" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">0</span>].imshow(img)</span>
-<span id="cb33-45"><a href="#cb33-45" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].imshow(segmented_img_faiss.reshape(img.shape))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb33-45"><a href="#cb33-45" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].imshow(segmented_img_faiss.reshape(img.shape))</span>
+<span id="cb33-46"><a href="#cb33-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-47"><a href="#cb33-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Now, create another figure with number of cluser columns</span></span>
+<span id="cb33-48"><a href="#cb33-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># and plot each cluster with mask applied to the original image</span></span>
+<span id="cb33-49"><a href="#cb33-49" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The mask is an alpha channel</span></span>
+<span id="cb33-50"><a href="#cb33-50" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-51"><a href="#cb33-51" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, n_clusters, figsize<span class="op">=</span>(n_clusters<span class="op">*</span><span class="dv">4</span>, <span class="dv">5</span>))</span>
+<span id="cb33-52"><a href="#cb33-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n_clusters):</span>
+<span id="cb33-53"><a href="#cb33-53" aria-hidden="true" tabindex="-1"></a>        img_masked <span class="op">=</span> deepcopy(img_2d_spatial[:, :<span class="dv">3</span> ])</span>
+<span id="cb33-54"><a href="#cb33-54" aria-hidden="true" tabindex="-1"></a>        img_masked[cluster_ids <span class="op">!=</span> i] <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb33-55"><a href="#cb33-55" aria-hidden="true" tabindex="-1"></a>        ax[i].imshow(img_masked.reshape(img.shape))</span>
+<span id="cb33-56"><a href="#cb33-56" aria-hidden="true" tabindex="-1"></a>        ax[i].set_title(<span class="ss">f'Cluster </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb33-57"><a href="#cb33-57" aria-hidden="true" tabindex="-1"></a>        ax[i].axis(<span class="st">'off'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="150">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>segment_plot_spatial(img, k<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="73">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>segment_plot_spatial(img, k<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Sampling a subset of 1280 / 2795520 for training
-Clustering 1280 points in 5D to 5 clusters, redo 1 times, 20 iterations
+<pre><code>Sampling a subset of 512 / 2795520 for training
+Clustering 512 points in 5D to 2 clusters, redo 1 times, 20 iterations
   Preprocessing in 0.03 s
-  Iteration 19 (0.42 s, search 0.00 s): objective=626.83 imbalance=1.086 nsplit=0        </code></pre>
+  Iteration 19 (0.44 s, search 0.00 s): objective=73.9492 imbalance=1.018 nsplit=0       </code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="kmeans-segmentation_files/figure-html/cell-23-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="kmeans-segmentation_files/figure-html/cell-23-output-3.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="75">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>segment_plot_mask(img, k<span class="op">=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sampling a subset of 512 / 2795520 for training
+Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
+  Preprocessing in 0.02 s
+  Iteration 19 (0.03 s, search 0.00 s): objective=14.8063 imbalance=1.000 nsplit=0       </code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="kmeans-segmentation_files/figure-html/cell-24-output-2.png" class="img-fluid"></p>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="kmeans-segmentation_files/figure-html/cell-24-output-3.png" class="img-fluid"></p>
 </div>
 </div>
 
