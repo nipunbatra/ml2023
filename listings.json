@@ -4,10 +4,10 @@
     "items": [
       "/notebooks/posts/mle.html",
       "/notebooks/posts/log-sum-exp.html",
-      "/notebooks/posts/parametric-non-parametric.html",
       "/notebooks/posts/curse-dimensionality.html",
       "/notebooks/posts/kmeans-segmentation.html",
       "/notebooks/posts/movie-recommendation-knn-mf.html",
+      "/notebooks/posts/parametric-non-parametric.html",
       "/notebooks/posts/autodiff-helper.html",
       "/notebooks/posts/1d-cnn.html",
       "/notebooks/posts/knn-lsh.html",
