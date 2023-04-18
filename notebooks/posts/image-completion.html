@@ -263,7 +263,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="image-completion_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
+<div class="cell" data-execution_count="59">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MF code with missing values</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
@@ -276,62 +276,64 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If we do not init well, our solution is poor</span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> torch.<span class="bu">abs</span>(torch.randn(n, k)<span class="op">/</span><span class="dv">10</span>).to(A.device)</span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    H <span class="op">=</span> torch.<span class="bu">abs</span>(torch.randn(k, m)<span class="op">/</span><span class="dv">10</span>).to(A.device)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    W.requires_grad <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    H.requires_grad <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Mask where A is not missing</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> <span class="op">~</span>torch.isnan(A).to(A.device)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(mask.shape)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> torch.optim.Adam([W, H], lr<span class="op">=</span>lr)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(niter):</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        Ahat <span class="op">=</span> W <span class="op">@</span> H</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> F.mse_loss(Ahat[mask], A[mask])</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">%</span> <span class="dv">50</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(i, loss.item())</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> W, H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">#W = torch.randn(n, k).to(A.device)</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">#H = torch.randn(k, m).to(A.device)</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    W.requires_grad <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    H.requires_grad <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Mask where A is not missing</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> <span class="op">~</span>torch.isnan(A).to(A.device)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(mask.shape)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> torch.optim.Adam([W, H], lr<span class="op">=</span>lr)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(niter):</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        Ahat <span class="op">=</span> W <span class="op">@</span> H</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> F.mse_loss(Ahat[mask], A[mask])</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">%</span> <span class="dv">50</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(i, loss.item())</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> W, H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="6">
+<div class="cell" data-execution_count="60">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> torch.device(<span class="st">'cuda'</span> <span class="cf">if</span> torch.cuda.is_available() <span class="cf">else</span> <span class="st">'cpu'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="61">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img).<span class="bu">float</span>().to(device)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch.Size([1365, 2048])
-0 0.06850835680961609
-50 0.009701593779027462
-100 0.00462625827640295
-150 0.0027797664515674114
-200 0.0018166942754760385
-250 0.0014186976477503777
-300 0.0012928626965731382
-350 0.0012565605575218797
-400 0.0012421724386513233
-450 0.0012345816940069199</code></pre>
+0 0.06817418336868286
+50 0.009624256752431393
+100 0.004642861895263195
+150 0.0027925868052989244
+200 0.0018268945859745145
+250 0.001446255948394537
+300 0.001321688061580062
+350 0.0012761197285726666
+400 0.0012540414463728666
+450 0.0012417419347912073</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="8">
+<div class="cell" data-execution_count="62">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>W<span class="op">@</span>H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>tensor([[0.2225, 0.2276, 0.2318,  ..., 0.2057, 0.2104, 0.2136],
-        [0.2227, 0.2277, 0.2319,  ..., 0.2056, 0.2102, 0.2134],
-        [0.2230, 0.2278, 0.2320,  ..., 0.2048, 0.2094, 0.2124],
+<div class="cell-output cell-output-display" data-execution_count="62">
+<pre><code>tensor([[0.2184, 0.2236, 0.2266,  ..., 0.2066, 0.2106, 0.2134],
+        [0.2185, 0.2236, 0.2265,  ..., 0.2064, 0.2104, 0.2131],
+        [0.2187, 0.2238, 0.2267,  ..., 0.2056, 0.2094, 0.2121],
         ...,
-        [0.3373, 0.3356, 0.3350,  ..., 0.3352, 0.3366, 0.3367],
-        [0.3346, 0.3334, 0.3335,  ..., 0.3418, 0.3431, 0.3432],
-        [0.3329, 0.3322, 0.3327,  ..., 0.3468, 0.3481, 0.3483]],
+        [0.3433, 0.3438, 0.3415,  ..., 0.3319, 0.3323, 0.3321],
+        [0.3411, 0.3423, 0.3405,  ..., 0.3397, 0.3399, 0.3396],
+        [0.3397, 0.3416, 0.3401,  ..., 0.3455, 0.3457, 0.3453]],
        device='cuda:0', grad_fn=&lt;MmBackward0&gt;)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="63">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot reconstructed image</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plt.imshow((W <span class="op">@</span> H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b90068430&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="63">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b59caa280&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>

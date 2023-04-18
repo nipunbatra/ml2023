@@ -1411,7 +1411,7 @@ Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="5">
+<div class="cell" data-execution_count="59">
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;"># MF code with missing values</span></span>
 <span id="cb7-2"><span class="im" style="color: #00769E;">import</span> torch</span>
 <span id="cb7-3"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
@@ -1424,62 +1424,64 @@ Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
 <span id="cb7-10">    <span class="co" style="color: #5E5E5E;"># If we do not init well, our solution is poor</span></span>
 <span id="cb7-11">    W <span class="op" style="color: #5E5E5E;">=</span> torch.<span class="bu" style="color: null;">abs</span>(torch.randn(n, k)<span class="op" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">10</span>).to(A.device)</span>
 <span id="cb7-12">    H <span class="op" style="color: #5E5E5E;">=</span> torch.<span class="bu" style="color: null;">abs</span>(torch.randn(k, m)<span class="op" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">10</span>).to(A.device)</span>
-<span id="cb7-13">    W.requires_grad <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
-<span id="cb7-14">    H.requires_grad <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
-<span id="cb7-15"></span>
-<span id="cb7-16">    <span class="co" style="color: #5E5E5E;"># Mask where A is not missing</span></span>
-<span id="cb7-17">    mask <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">~</span>torch.isnan(A).to(A.device)</span>
-<span id="cb7-18">    <span class="bu" style="color: null;">print</span>(mask.shape)</span>
-<span id="cb7-19"></span>
-<span id="cb7-20">    optimizer <span class="op" style="color: #5E5E5E;">=</span> torch.optim.Adam([W, H], lr<span class="op" style="color: #5E5E5E;">=</span>lr)</span>
-<span id="cb7-21">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(niter):</span>
-<span id="cb7-22">        optimizer.zero_grad()</span>
-<span id="cb7-23">        Ahat <span class="op" style="color: #5E5E5E;">=</span> W <span class="op" style="color: #5E5E5E;">@</span> H</span>
-<span id="cb7-24">        loss <span class="op" style="color: #5E5E5E;">=</span> F.mse_loss(Ahat[mask], A[mask])</span>
-<span id="cb7-25">        loss.backward()</span>
-<span id="cb7-26">        optimizer.step()</span>
-<span id="cb7-27">        <span class="cf" style="color: #003B4F;">if</span> i <span class="op" style="color: #5E5E5E;">%</span> <span class="dv" style="color: #AD0000;">50</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>:</span>
-<span id="cb7-28">            <span class="bu" style="color: null;">print</span>(i, loss.item())</span>
-<span id="cb7-29">    <span class="cf" style="color: #003B4F;">return</span> W, H</span></code></pre></div>
+<span id="cb7-13">    <span class="co" style="color: #5E5E5E;">#W = torch.randn(n, k).to(A.device)</span></span>
+<span id="cb7-14">    <span class="co" style="color: #5E5E5E;">#H = torch.randn(k, m).to(A.device)</span></span>
+<span id="cb7-15">    W.requires_grad <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
+<span id="cb7-16">    H.requires_grad <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
+<span id="cb7-17"></span>
+<span id="cb7-18">    <span class="co" style="color: #5E5E5E;"># Mask where A is not missing</span></span>
+<span id="cb7-19">    mask <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">~</span>torch.isnan(A).to(A.device)</span>
+<span id="cb7-20">    <span class="bu" style="color: null;">print</span>(mask.shape)</span>
+<span id="cb7-21"></span>
+<span id="cb7-22">    optimizer <span class="op" style="color: #5E5E5E;">=</span> torch.optim.Adam([W, H], lr<span class="op" style="color: #5E5E5E;">=</span>lr)</span>
+<span id="cb7-23">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(niter):</span>
+<span id="cb7-24">        optimizer.zero_grad()</span>
+<span id="cb7-25">        Ahat <span class="op" style="color: #5E5E5E;">=</span> W <span class="op" style="color: #5E5E5E;">@</span> H</span>
+<span id="cb7-26">        loss <span class="op" style="color: #5E5E5E;">=</span> F.mse_loss(Ahat[mask], A[mask])</span>
+<span id="cb7-27">        loss.backward()</span>
+<span id="cb7-28">        optimizer.step()</span>
+<span id="cb7-29">        <span class="cf" style="color: #003B4F;">if</span> i <span class="op" style="color: #5E5E5E;">%</span> <span class="dv" style="color: #AD0000;">50</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>:</span>
+<span id="cb7-30">            <span class="bu" style="color: null;">print</span>(i, loss.item())</span>
+<span id="cb7-31">    <span class="cf" style="color: #003B4F;">return</span> W, H</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="6">
+<div class="cell" data-execution_count="60">
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">device <span class="op" style="color: #5E5E5E;">=</span> torch.device(<span class="st" style="color: #20794D;">'cuda'</span> <span class="cf" style="color: #003B4F;">if</span> torch.cuda.is_available() <span class="cf" style="color: #003B4F;">else</span> <span class="st" style="color: #20794D;">'cpu'</span>)</span></code></pre></div>
 </div>
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="61">
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">A <span class="op" style="color: #5E5E5E;">=</span> torch.from_numpy(img).<span class="bu" style="color: null;">float</span>().to(device)</span>
 <span id="cb9-2">W, H <span class="op" style="color: #5E5E5E;">=</span> factorize(A, <span class="dv" style="color: #AD0000;">40</span>, niter<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">500</span>, lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">1e-2</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch.Size([1365, 2048])
-0 0.06850835680961609
-50 0.009701593779027462
-100 0.00462625827640295
-150 0.0027797664515674114
-200 0.0018166942754760385
-250 0.0014186976477503777
-300 0.0012928626965731382
-350 0.0012565605575218797
-400 0.0012421724386513233
-450 0.0012345816940069199</code></pre>
+0 0.06817418336868286
+50 0.009624256752431393
+100 0.004642861895263195
+150 0.0027925868052989244
+200 0.0018268945859745145
+250 0.001446255948394537
+300 0.001321688061580062
+350 0.0012761197285726666
+400 0.0012540414463728666
+450 0.0012417419347912073</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="8">
+<div class="cell" data-execution_count="62">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">W<span class="op" style="color: #5E5E5E;">@</span>H</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
-<pre><code>tensor([[0.2225, 0.2276, 0.2318,  ..., 0.2057, 0.2104, 0.2136],
-        [0.2227, 0.2277, 0.2319,  ..., 0.2056, 0.2102, 0.2134],
-        [0.2230, 0.2278, 0.2320,  ..., 0.2048, 0.2094, 0.2124],
+<div class="cell-output cell-output-display" data-execution_count="62">
+<pre><code>tensor([[0.2184, 0.2236, 0.2266,  ..., 0.2066, 0.2106, 0.2134],
+        [0.2185, 0.2236, 0.2265,  ..., 0.2064, 0.2104, 0.2131],
+        [0.2187, 0.2238, 0.2267,  ..., 0.2056, 0.2094, 0.2121],
         ...,
-        [0.3373, 0.3356, 0.3350,  ..., 0.3352, 0.3366, 0.3367],
-        [0.3346, 0.3334, 0.3335,  ..., 0.3418, 0.3431, 0.3432],
-        [0.3329, 0.3322, 0.3327,  ..., 0.3468, 0.3481, 0.3483]],
+        [0.3433, 0.3438, 0.3415,  ..., 0.3319, 0.3323, 0.3321],
+        [0.3411, 0.3423, 0.3405,  ..., 0.3397, 0.3399, 0.3396],
+        [0.3397, 0.3416, 0.3401,  ..., 0.3455, 0.3457, 0.3453]],
        device='cuda:0', grad_fn=&lt;MmBackward0&gt;)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="63">
 <div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="co" style="color: #5E5E5E;"># Plot reconstructed image</span></span>
 <span id="cb13-2">plt.imshow((W <span class="op" style="color: #5E5E5E;">@</span> H).cpu().detach().numpy(), cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b90068430&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="63">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b59caa280&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
