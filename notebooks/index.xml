@@ -869,6 +869,324 @@ Clustering 512 points in 3D to 2 clusters, redo 1 times, 20 iterations
   <pubDate>Sun, 16 Apr 2023 00:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Image Completion using Matrix Factorization</title>
+  <dc:creator>Nipun Batra</dc:creator>
+  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion.html</link>
+  <description><![CDATA[ 
+
+
+
+<div class="cell" data-execution_count="69">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="op" style="color: #5E5E5E;">%</span>matplotlib inline</span>
+<span id="cb1-6"><span class="op" style="color: #5E5E5E;">%</span>config InlineBackend.figure_format <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'retina'</span></span>
+<span id="cb1-7"></span>
+<span id="cb1-8">img <span class="op" style="color: #5E5E5E;">=</span> plt.imread(<span class="st" style="color: #20794D;">'dog.jpg'</span>)</span>
+<span id="cb1-9">plt.imshow(img)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="69">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f0096ec4370&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion_files/figure-html/cell-2-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="70">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;"># Convert to grayscale</span></span>
+<span id="cb3-2">img <span class="op" style="color: #5E5E5E;">=</span> img.mean(axis<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb3-3">plt.imshow(img, cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="70">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f0096e99a30&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion_files/figure-html/cell-3-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="71">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">img <span class="op" style="color: #5E5E5E;">=</span> img<span class="op" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">255</span></span>
+<span id="cb5-2">plt.imshow(img, cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="71">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f0096e0d190&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="72">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;"># MF code with missing values</span></span>
+<span id="cb7-2"><span class="im" style="color: #00769E;">import</span> torch</span>
+<span id="cb7-3"><span class="im" style="color: #00769E;">import</span> torch.nn <span class="im" style="color: #00769E;">as</span> nn</span>
+<span id="cb7-4"><span class="im" style="color: #00769E;">import</span> torch.nn.functional <span class="im" style="color: #00769E;">as</span> F</span>
+<span id="cb7-5"></span>
+<span id="cb7-6"><span class="co" style="color: #5E5E5E;"># INIT WELL!</span></span>
+<span id="cb7-7"></span>
+<span id="cb7-8"><span class="kw" style="color: #003B4F;">def</span> factorize(A, k, niter<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">100</span>, lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">1e-3</span>):</span>
+<span id="cb7-9">    n, m <span class="op" style="color: #5E5E5E;">=</span> A.shape</span>
+<span id="cb7-10">    <span class="co" style="color: #5E5E5E;"># If we do not init well, our solution is poor</span></span>
+<span id="cb7-11">    W <span class="op" style="color: #5E5E5E;">=</span> torch.<span class="bu" style="color: null;">abs</span>(torch.randn(n, k)<span class="op" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">10</span>)</span>
+<span id="cb7-12">    H <span class="op" style="color: #5E5E5E;">=</span> torch.<span class="bu" style="color: null;">abs</span>(torch.randn(k, m)<span class="op" style="color: #5E5E5E;">/</span><span class="dv" style="color: #AD0000;">10</span>)</span>
+<span id="cb7-13">    W.requires_grad <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
+<span id="cb7-14">    H.requires_grad <span class="op" style="color: #5E5E5E;">=</span> <span class="va" style="color: #111111;">True</span></span>
+<span id="cb7-15"></span>
+<span id="cb7-16">    <span class="co" style="color: #5E5E5E;"># Mask where A is not missing</span></span>
+<span id="cb7-17">    mask <span class="op" style="color: #5E5E5E;">=</span> <span class="op" style="color: #5E5E5E;">~</span>torch.isnan(A)</span>
+<span id="cb7-18">    <span class="bu" style="color: null;">print</span>(mask.shape)</span>
+<span id="cb7-19"></span>
+<span id="cb7-20">    optimizer <span class="op" style="color: #5E5E5E;">=</span> torch.optim.Adam([W, H], lr<span class="op" style="color: #5E5E5E;">=</span>lr)</span>
+<span id="cb7-21">    <span class="cf" style="color: #003B4F;">for</span> i <span class="kw" style="color: #003B4F;">in</span> <span class="bu" style="color: null;">range</span>(niter):</span>
+<span id="cb7-22">        optimizer.zero_grad()</span>
+<span id="cb7-23">        Ahat <span class="op" style="color: #5E5E5E;">=</span> W <span class="op" style="color: #5E5E5E;">@</span> H</span>
+<span id="cb7-24">        loss <span class="op" style="color: #5E5E5E;">=</span> F.mse_loss(Ahat[mask], A[mask])</span>
+<span id="cb7-25">        loss.backward()</span>
+<span id="cb7-26">        optimizer.step()</span>
+<span id="cb7-27">        <span class="cf" style="color: #003B4F;">if</span> i <span class="op" style="color: #5E5E5E;">%</span> <span class="dv" style="color: #AD0000;">10</span> <span class="op" style="color: #5E5E5E;">==</span> <span class="dv" style="color: #AD0000;">0</span>:</span>
+<span id="cb7-28">            <span class="bu" style="color: null;">print</span>(i, loss.item())</span>
+<span id="cb7-29">    <span class="cf" style="color: #003B4F;">return</span> W, H</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="73">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">A <span class="op" style="color: #5E5E5E;">=</span> torch.from_numpy(img).<span class="bu" style="color: null;">float</span>()</span>
+<span id="cb8-2">W, H <span class="op" style="color: #5E5E5E;">=</span> factorize(A, <span class="dv" style="color: #AD0000;">40</span>, niter<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">500</span>, lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">1e-2</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1365, 2048])
+0 0.06878390163183212
+10 0.017641961574554443
+20 0.013675637543201447
+30 0.012160271406173706
+40 0.011076226830482483
+50 0.009752877987921238
+60 0.00799858570098877
+70 0.006828860845416784
+80 0.005765202455222607
+90 0.005096124950796366
+100 0.004480705596506596
+110 0.004078681580722332
+120 0.0037061739712953568
+130 0.003374426392838359
+140 0.003071725834161043
+150 0.002793976804241538
+160 0.0025442165788263083
+170 0.002325482200831175
+180 0.002138724084943533
+190 0.0019804597832262516
+200 0.0018459585262462497
+210 0.0017309547401964664
+220 0.0016330457292497158
+230 0.0015512455720454454
+240 0.0014844628749415278
+250 0.0014310493133962154
+260 0.0013891091803088784
+270 0.001356679480522871
+280 0.0013318833662196994
+290 0.0013130680890753865
+300 0.0012987118680030107
+310 0.0012876922264695168
+320 0.0012790841283276677
+330 0.0012722165556624532
+340 0.0012666513212025166
+350 0.0012620592024177313
+360 0.0012582143535837531
+370 0.0012549541424959898
+380 0.0012521587777882814
+390 0.0012497449060902
+400 0.0012476170668378472
+410 0.0012457720004022121
+420 0.0012440882856026292
+430 0.0012425617314875126
+440 0.0012411960633471608
+450 0.0012399449478834867
+460 0.0012387968599796295
+470 0.0012377715902402997
+480 0.0012367598246783018
+490 0.0012358457315713167</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="74">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">W<span class="op" style="color: #5E5E5E;">@</span>H</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="74">
+<pre><code>tensor([[0.2180, 0.2236, 0.2274,  ..., 0.2116, 0.2148, 0.2170],
+        [0.2181, 0.2236, 0.2274,  ..., 0.2113, 0.2145, 0.2166],
+        [0.2194, 0.2248, 0.2286,  ..., 0.2115, 0.2145, 0.2166],
+        ...,
+        [0.3338, 0.3343, 0.3320,  ..., 0.3234, 0.3249, 0.3254],
+        [0.3312, 0.3321, 0.3303,  ..., 0.3301, 0.3314, 0.3318],
+        [0.3295, 0.3309, 0.3295,  ..., 0.3352, 0.3363, 0.3366]],
+       grad_fn=&lt;MmBackward0&gt;)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="75">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="co" style="color: #5E5E5E;"># Plot reconstructed image</span></span>
+<span id="cb12-2">plt.imshow((W <span class="op" style="color: #5E5E5E;">@</span> H).detach().numpy(), cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="75">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f0096de2a30&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion_files/figure-html/cell-8-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="100">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="co" style="color: #5E5E5E;"># Now, remove a rectangular patch from the image</span></span>
+<span id="cb14-2"></span>
+<span id="cb14-3">patch <span class="op" style="color: #5E5E5E;">=</span> [<span class="dv" style="color: #AD0000;">600</span>, <span class="dv" style="color: #AD0000;">600</span>, <span class="dv" style="color: #AD0000;">800</span>, <span class="dv" style="color: #AD0000;">1000</span>]</span>
+<span id="cb14-4">img_copy <span class="op" style="color: #5E5E5E;">=</span> img.copy()</span>
+<span id="cb14-5"></span>
+<span id="cb14-6"><span class="co" style="color: #5E5E5E;"># NAN the patch region</span></span>
+<span id="cb14-7">img_copy[patch[<span class="dv" style="color: #AD0000;">0</span>]:patch[<span class="dv" style="color: #AD0000;">2</span>], patch[<span class="dv" style="color: #AD0000;">1</span>]: patch[<span class="dv" style="color: #AD0000;">3</span>]] <span class="op" style="color: #5E5E5E;">=</span> np.NaN</span>
+<span id="cb14-8">plt.imshow(img_copy,cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="100">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f00968af6a0&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="101">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1">A <span class="op" style="color: #5E5E5E;">=</span> torch.from_numpy(img_copy).<span class="bu" style="color: null;">float</span>()</span>
+<span id="cb16-2">W, H <span class="op" style="color: #5E5E5E;">=</span> factorize(A, <span class="dv" style="color: #AD0000;">40</span>, niter<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">500</span>, lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">1e-2</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1365, 2048])
+0 0.06534166634082794
+10 0.016764190047979355
+20 0.01331931259483099
+30 0.011844543740153313
+40 0.010817058384418488
+50 0.009500273503363132
+60 0.007599512115120888
+70 0.0062559195794165134
+80 0.005385400261729956
+90 0.004801942501217127
+100 0.004279572982341051
+110 0.0038952480535954237
+120 0.0034984315279871225
+130 0.0031491280533373356
+140 0.00283654872328043
+150 0.002559138461947441
+160 0.002317321952432394
+170 0.0021104514598846436
+180 0.0019397551659494638
+190 0.0017990069463849068
+200 0.0016806680941954255
+210 0.0015813149511814117
+220 0.0014992393553256989
+230 0.0014321209164336324
+240 0.0013772461097687483
+250 0.0013323401799425483
+260 0.0012959304731339216
+270 0.0012669989373534918
+280 0.0012444277526810765
+290 0.001226888969540596
+300 0.0012131185503676534
+310 0.0012020922731608152
+320 0.00119305111002177
+330 0.0011854616459459066
+340 0.0011789959389716387
+350 0.0011733113788068295
+360 0.0011683371849358082
+370 0.0011639605509117246
+380 0.0011599833378568292
+390 0.0011564294109120965
+400 0.0011532541830092669
+410 0.0011503471760079265
+420 0.0011477306252345443
+430 0.0011453256011009216
+440 0.0011431451421231031
+450 0.001141166896559298
+460 0.0011393221793696284
+470 0.001137636718340218
+480 0.0011360804783180356
+490 0.001134637976065278</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="102">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">plt.imshow((W<span class="op" style="color: #5E5E5E;">@</span>H).detach().numpy(), cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="102">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f009672b880&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion_files/figure-html/cell-11-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="103">
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">A <span class="op" style="color: #5E5E5E;">=</span> torch.from_numpy(img_copy).<span class="bu" style="color: null;">float</span>()</span>
+<span id="cb20-2">W, H <span class="op" style="color: #5E5E5E;">=</span> factorize(A, <span class="dv" style="color: #AD0000;">60</span>, niter<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">500</span>, lr<span class="op" style="color: #5E5E5E;">=</span><span class="fl" style="color: #AD0000;">1e-2</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1365, 2048])
+0 0.03654739633202553
+10 0.013844924978911877
+20 0.011254158802330494
+30 0.008139904588460922
+40 0.005958809982985258
+50 0.004800867289304733
+60 0.0039076777175068855
+70 0.003209929447621107
+80 0.002667149296030402
+90 0.0022080461494624615
+100 0.001845289603807032
+110 0.001571413828060031
+120 0.0013656431110575795
+130 0.0012097436701878905
+140 0.001089801313355565
+150 0.0009958198061212897
+160 0.0009214665042236447
+170 0.000862495566252619
+180 0.0008156576077453792
+190 0.0007784682093188167
+200 0.0007491472060792148
+210 0.0007263932493515313
+220 0.000709055457264185
+230 0.0006959859747439623
+240 0.0006861292058601975
+250 0.0006786245503462851
+260 0.00067281280644238
+270 0.0006682201637886465
+280 0.0006645139073953032
+290 0.0006614882149733603
+300 0.0006589092081412673
+310 0.0006567960954271257
+320 0.0006548746605403721
+330 0.0006532598636113107
+340 0.0006518311565741897
+350 0.0006505639175884426
+360 0.0006494127446785569
+370 0.0006483919569291174
+380 0.0006474741385318339
+390 0.0006466351915150881
+400 0.0006459042197093368
+410 0.0006451817462220788
+420 0.0006445850012823939
+430 0.0006439826684072614
+440 0.0006434395327232778
+450 0.0006429454078897834
+460 0.0006424533785320818
+470 0.000642016064375639
+480 0.0006416026735678315
+490 0.0006412289221771061</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="104">
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">plt.imshow((W<span class="op" style="color: #5E5E5E;">@</span>H).detach().numpy(), cmap<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'gray'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="104">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f0096692850&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion_files/figure-html/cell-13-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="99">
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1">A.size()[<span class="dv" style="color: #AD0000;">0</span>]<span class="op" style="color: #5E5E5E;">*</span>A.size()[<span class="dv" style="color: #AD0000;">1</span>]dd</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="99">
+<pre><code>2795520</code></pre>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/image-completion.html</guid>
+  <pubDate>Fri, 14 Apr 2023 00:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Movie Recommendation using KNN and Matrix Factorization</title>
   <dc:creator>Nipun Batra</dc:creator>
   <link>https://github.com/nipunbatra/ml2023/notebooks/posts/movie-recommendation-knn-mf.html</link>
@@ -8399,128 +8717,6 @@ Global minimum: 0.0 at [0.28000003 0.84      ]</code></pre>
   <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/lowrank-matrix.html</guid>
   <pubDate>Tue, 31 Jan 2023 00:00:00 GMT</pubDate>
   <media:content url="https://github.com/nipunbatra/ml2023/notebooks/posts/Ax-combined.png" medium="image" type="image/png"/>
-</item>
-<item>
-  <title>Some Python Utilities</title>
-  <dc:creator>Nipun Batra</dc:creator>
-  <link>https://github.com/nipunbatra/ml2023/notebooks/posts/python-utils.html</link>
-  <description><![CDATA[ 
-
-
-
-<section id="function-argument-unpacking" class="level4">
-<h4 class="anchored" data-anchor-id="function-argument-unpacking">Function Argument Unpacking</h4>
-<p>Reference: https://www.youtube.com/watch?v=YWY4BZi_o28</p>
-<div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="kw" style="color: #003B4F;">def</span> print_vec(x, y, z):</span>
-<span id="cb1-2">    <span class="bu" style="color: null;">print</span>(<span class="ss" style="color: #20794D;">f"[</span><span class="sc" style="color: #5E5E5E;">{</span>x<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;"> </span><span class="ch" style="color: #20794D;">\n</span><span class="sc" style="color: #5E5E5E;">{</span>y<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;"> </span><span class="ch" style="color: #20794D;">\n</span><span class="sc" style="color: #5E5E5E;">{</span>z<span class="sc" style="color: #5E5E5E;">}</span><span class="ss" style="color: #20794D;">]"</span>)</span></code></pre></div>
-</div>
-<div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">print_vec(<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1 
-2 
-3]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">tuple_vec <span class="op" style="color: #5E5E5E;">=</span> (<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>)</span>
-<span id="cb4-2"><span class="co" style="color: #5E5E5E;">#print_vec(tuple_vec)</span></span>
-<span id="cb4-3">print_vec(tuple_vec[<span class="dv" style="color: #AD0000;">0</span>], tuple_vec[<span class="dv" style="color: #AD0000;">1</span>], tuple_vec[<span class="dv" style="color: #AD0000;">2</span>])</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1 
-0 
-1]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">list_vec <span class="op" style="color: #5E5E5E;">=</span> [<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">0</span>, <span class="dv" style="color: #AD0000;">1</span>]</span>
-<span id="cb6-2"></span>
-<span id="cb6-3">print_vec(tuple_vec[<span class="dv" style="color: #AD0000;">0</span>], tuple_vec[<span class="dv" style="color: #AD0000;">1</span>], tuple_vec[<span class="dv" style="color: #AD0000;">2</span>])</span>
-<span id="cb6-4"><span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"*"</span><span class="op" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">20</span>)</span>
-<span id="cb6-5">print_vec(<span class="op" style="color: #5E5E5E;">*</span>tuple_vec)</span>
-<span id="cb6-6"><span class="bu" style="color: null;">print</span>(<span class="st" style="color: #20794D;">"*"</span><span class="op" style="color: #5E5E5E;">*</span><span class="dv" style="color: #AD0000;">20</span>)</span>
-<span id="cb6-7"></span>
-<span id="cb6-8">print_vec(<span class="op" style="color: #5E5E5E;">*</span>list_vec)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1 
-0 
-1]
-********************
-[1 
-0 
-1]
-********************
-[1 
-0 
-1]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1">dictionary_vec <span class="op" style="color: #5E5E5E;">=</span> {<span class="st" style="color: #20794D;">"x"</span>: <span class="dv" style="color: #AD0000;">1</span>, <span class="st" style="color: #20794D;">"y"</span>: <span class="dv" style="color: #AD0000;">0</span>, <span class="st" style="color: #20794D;">"z"</span>: <span class="dv" style="color: #AD0000;">1</span>}</span>
-<span id="cb8-2">print_vec(<span class="op" style="color: #5E5E5E;">**</span>dictionary_vec)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1 
-0 
-1]</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">dictionary_vec <span class="op" style="color: #5E5E5E;">=</span> {<span class="st" style="color: #20794D;">"a"</span>: <span class="dv" style="color: #AD0000;">1</span>, <span class="st" style="color: #20794D;">"b"</span>: <span class="dv" style="color: #AD0000;">0</span>, <span class="st" style="color: #20794D;">"c"</span>:<span class="dv" style="color: #AD0000;">1</span>}</span>
-<span id="cb10-2">print_vec(<span class="op" style="color: #5E5E5E;">**</span>dictionary_vec)</span></code></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>TypeError: print_vec() got an unexpected keyword argument 'a'</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="bu" style="color: null;">print</span>(<span class="op" style="color: #5E5E5E;">*</span>dictionary_vec)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>a b c</code></pre>
-</div>
-</div>
-</section>
-<section id="zip" class="level4">
-<h4 class="anchored" data-anchor-id="zip">Zip</h4>
-<div class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="bu" style="color: null;">list</span>(<span class="bu" style="color: null;">zip</span>([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>, <span class="dv" style="color: #AD0000;">3</span>], [<span class="st" style="color: #20794D;">'a'</span>, <span class="st" style="color: #20794D;">'b'</span>, <span class="st" style="color: #20794D;">'c'</span>], [<span class="dv" style="color: #AD0000;">7</span>, <span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">9</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<pre><code>[(1, 'a', 7), (2, 'b', 8), (3, 'c', 9)]</code></pre>
-</div>
-</div>
-</section>
-<section id="itertools-product" class="level4">
-<h4 class="anchored" data-anchor-id="itertools-product">Itertools Product</h4>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="im" style="color: #00769E;">import</span> itertools</span>
-<span id="cb16-2"><span class="bu" style="color: null;">list</span>(itertools.product([<span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">2</span>], [<span class="st" style="color: #20794D;">'a'</span>, <span class="st" style="color: #20794D;">'b'</span>, <span class="st" style="color: #20794D;">'c'</span>], [<span class="dv" style="color: #AD0000;">7</span>, <span class="dv" style="color: #AD0000;">8</span>, <span class="dv" style="color: #AD0000;">9</span>]))</span></code></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<pre><code>[(1, 'a', 7),
- (1, 'a', 8),
- (1, 'a', 9),
- (1, 'b', 7),
- (1, 'b', 8),
- (1, 'b', 9),
- (1, 'c', 7),
- (1, 'c', 8),
- (1, 'c', 9),
- (2, 'a', 7),
- (2, 'a', 8),
- (2, 'a', 9),
- (2, 'b', 7),
- (2, 'b', 8),
- (2, 'b', 9),
- (2, 'c', 7),
- (2, 'c', 8),
- (2, 'c', 9)]</code></pre>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <guid>https://github.com/nipunbatra/ml2023/notebooks/posts/python-utils.html</guid>
-  <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
