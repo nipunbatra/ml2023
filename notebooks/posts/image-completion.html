@@ -236,7 +236,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> plt.imread(<span class="st">'dog.jpg'</span>)</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>plt.imshow(img)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f060df66250&gt;</code></pre>
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9c2a687f10&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-2-output-2.png" class="img-fluid"></p>
@@ -247,7 +247,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> img.mean(axis<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.imshow(img, cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f060df1deb0&gt;</code></pre>
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9c2a5cbbb0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-3-output-2.png" class="img-fluid"></p>
@@ -257,13 +257,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> img<span class="op">/</span><span class="dv">255</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>plt.imshow(img, cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f060d697c70&gt;</code></pre>
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9c29d44970&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="17">
+<div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MF code with missing values</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
@@ -294,90 +294,50 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(i, loss.item())</span>
 <span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> W, H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> torch.device(<span class="st">'cuda'</span> <span class="cf">if</span> torch.cuda.is_available() <span class="cf">else</span> <span class="st">'cpu'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="8">
+<div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img).<span class="bu">float</span>().to(device)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch.Size([1365, 2048])
-0 0.06829886883497238
-10 0.01749359630048275
-20 0.013666706159710884
-30 0.012201043777167797
-40 0.011160558089613914
-50 0.009914325550198555
-60 0.008142316713929176
-70 0.0068585933186113834
-80 0.005886096972972155
-90 0.005254762712866068
-100 0.004644310101866722
-110 0.004189325962215662
-120 0.003762295236811042
-130 0.003400223096832633
-140 0.0030894046649336815
-150 0.0028140596114099026
-160 0.002575189108029008
-170 0.002369344001635909
-180 0.002189089311286807
-190 0.0020303716883063316
-200 0.001891914987936616
-210 0.0017732753185555339
-220 0.0016737726982682943
-230 0.001591882319189608
-240 0.0015251439763233066
-250 0.0014707562513649464
-260 0.0014264964265748858
-270 0.0013910450506955385
-280 0.0013630962930619717
-290 0.0013412574771791697
-300 0.0013241033302620053
-310 0.0013104281388223171
-320 0.0012993116397410631
-330 0.0012900681467726827
-340 0.0012822631979361176
-350 0.0012755474308505654
-360 0.0012697557685896754
-370 0.0012646956602111459
-380 0.0012602793285623193
-390 0.0012564437929540873
-400 0.001253018039278686
-410 0.0012500555021688342
-420 0.0012474115937948227
-430 0.0012450997019186616
-440 0.0012430207571014762
-450 0.0012411868665367365
-460 0.0012395658995956182
-470 0.001238090917468071
-480 0.001236780546605587
-490 0.0012355914805084467</code></pre>
+0 0.06850835680961609
+50 0.009701593779027462
+100 0.00462625827640295
+150 0.0027797664515674114
+200 0.0018166942754760385
+250 0.0014186976477503777
+300 0.0012928626965731382
+350 0.0012565605575218797
+400 0.0012421724386513233
+450 0.0012345816940069199</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>W<span class="op">@</span>H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="9">
-<pre><code>tensor([[0.2114, 0.2170, 0.2225,  ..., 0.2079, 0.2116, 0.2141],
-        [0.2113, 0.2168, 0.2222,  ..., 0.2076, 0.2112, 0.2136],
-        [0.2117, 0.2171, 0.2225,  ..., 0.2066, 0.2102, 0.2125],
+<div class="cell-output cell-output-display" data-execution_count="8">
+<pre><code>tensor([[0.2225, 0.2276, 0.2318,  ..., 0.2057, 0.2104, 0.2136],
+        [0.2227, 0.2277, 0.2319,  ..., 0.2056, 0.2102, 0.2134],
+        [0.2230, 0.2278, 0.2320,  ..., 0.2048, 0.2094, 0.2124],
         ...,
-        [0.3229, 0.3245, 0.3225,  ..., 0.3303, 0.3296, 0.3284],
-        [0.3192, 0.3211, 0.3199,  ..., 0.3376, 0.3367, 0.3354],
-        [0.3166, 0.3189, 0.3183,  ..., 0.3432, 0.3421, 0.3407]],
+        [0.3373, 0.3356, 0.3350,  ..., 0.3352, 0.3366, 0.3367],
+        [0.3346, 0.3334, 0.3335,  ..., 0.3418, 0.3431, 0.3432],
+        [0.3329, 0.3322, 0.3327,  ..., 0.3468, 0.3481, 0.3483]],
        device='cuda:0', grad_fn=&lt;MmBackward0&gt;)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot reconstructed image</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plt.imshow((W <span class="op">@</span> H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f0578172490&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b90068430&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="12">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, remove a rectangular patch from the image</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>patch <span class="op">=</span> [<span class="dv">100</span>, <span class="dv">600</span>, <span class="dv">400</span>, <span class="dv">1000</span>]</span>
@@ -386,462 +346,362 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># NAN the patch region</span></span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>img_copy[patch[<span class="dv">0</span>]:patch[<span class="dv">2</span>], patch[<span class="dv">1</span>]: patch[<span class="dv">3</span>]] <span class="op">=</span> np.NaN</span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy,cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f057814ebe0&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b90050a00&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-10-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="13">
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy).<span class="bu">float</span>().to(device)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch.Size([1365, 2048])
-0 0.07003924995660782
-10 0.01769193261861801
-20 0.013949600048363209
-30 0.01242945995181799
-40 0.01138114370405674
-50 0.010110059753060341
-60 0.008373978547751904
-70 0.007100649643689394
-80 0.006054402329027653
-90 0.00539542268961668
-100 0.004787002224475145
-110 0.004339388106018305
-120 0.0039057331159710884
-130 0.003520655445754528
-140 0.0031704953871667385
-150 0.0028561835642904043
-160 0.0025887591764330864
-170 0.0023648005444556475
-180 0.002177545567974448
-190 0.00201977975666523
-200 0.0018848013132810593
-210 0.0017688344232738018
-220 0.001670596655458212
-230 0.00158921058755368
-240 0.0015228266129270196
-250 0.0014693135162815452
-260 0.0014267893275246024
-270 0.0013936090981587768
-280 0.0013681232230737805
-290 0.0013486901298165321
-300 0.0013338333228603005
-310 0.00132232834585011
-320 0.0013131353771314025
-330 0.0013056261232122779
-340 0.001299339928664267
-350 0.0012939369771629572
-360 0.0012892503291368484
-370 0.0012851168867200613
-380 0.0012814163928851485
-390 0.0012781015830114484
-400 0.0012751035392284393
-410 0.001272400375455618
-420 0.0012699670623987913
-430 0.0012676883488893509
-440 0.0012656532926484942
-450 0.0012637837789952755
-460 0.0012620993657037616
-470 0.001260560704395175
-480 0.0012591815320774913
-490 0.001257911790162325</code></pre>
+0 0.07008275389671326
+50 0.010157980024814606
+100 0.004786033183336258
+150 0.0028808838687837124
+200 0.0018825450679287314
+250 0.0014831097796559334
+300 0.00133986072614789
+350 0.00129795225802809
+400 0.0012805043952539563
+450 0.0012705608969554305</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="14">
+<div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f057812d9a0&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b7c585d60&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="25">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy).<span class="bu">float</span>().to(device)</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">2000</span>, niter<span class="op">=</span><span class="dv">10000</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch.Size([1365, 2048])
-0 150.97117614746094
-50 0.05341056361794472
-100 0.03285151720046997
-150 0.02901613898575306
-200 0.025218751281499863
-250 0.02143346145749092
-300 0.017777008935809135
-350 0.014495181851089
-400 0.01180704589933157
-450 0.009690864011645317
-500 0.008009172044694424
-550 0.006648130714893341
-600 0.005532505922019482
-650 0.004613785073161125
-700 0.0038573681376874447
-750 0.003235312644392252
-800 0.002723895013332367
-850 0.002303040586411953
-900 0.001956029562279582
-950 0.0016691131750121713
-1000 0.0014310750411823392
-1050 0.0012328173033893108
-1100 0.001066986471414566
-1150 0.0009276540949940681
-1200 0.0008100455161184072
-1250 0.0007103134994395077
-1300 0.0006253537721931934
-1350 0.0005526544991880655
-1400 0.0004901768988929689
-1450 0.0004362595791462809
-1500 0.00038954304181970656
-1550 0.00034891001996584237
-1600 0.0003134383005090058
-1650 0.0002823633549269289
-1700 0.0002550485369283706
-1750 0.00023096162476576865
-1800 0.00020965580188203603
-1850 0.00019075443560723215
-1900 0.00017393901362083852
-1950 0.00015893897216301411
-2000 0.00014552375068888068
-2050 0.00013349624350667
-2100 0.00012268732825759798
-2150 0.00011295141302980483
-2200 0.00010416284203529358
-2250 9.621278150007129e-05
-2300 8.900670945877209e-05
-2350 8.246232027886435e-05
-2400 7.650776387890801e-05
-2450 7.10801177774556e-05
-2500 6.612417928408831e-05
-2550 6.159136682981625e-05
-2600 5.743886504205875e-05
-2650 5.362883894122206e-05
-2700 5.012777182855643e-05
-2750 4.690593414125033e-05
-2800 4.393686685943976e-05
-2850 4.1197024984285235e-05
-2900 3.866538463626057e-05
-2950 3.632314474089071e-05
-3000 3.415345054236241e-05
-3050 3.2141204428626224e-05
-3100 3.0272811272880062e-05
-3150 2.8536049285321496e-05
-3200 2.6919889933196828e-05
-3250 2.5414365154574625e-05
-3300 2.401047822786495e-05
-3350 2.270007462357171e-05
-3400 2.1475751054822467e-05
-3450 2.0330777260824107e-05
-3500 1.9259052351117134e-05
-3550 1.8255008399137296e-05
-3600 1.7313568605459295e-05
-3650 1.643009454710409e-05
-3700 1.5600355254719034e-05
-3750 1.4820473552390467e-05
-3800 1.4086899682297371e-05
-3850 1.3396372196439188e-05
-3900 1.2745897947752383e-05
-3950 1.2132728443248197e-05
-4000 1.1554336197150405e-05
-4050 1.1008387446054257e-05
-4100 1.0492732144484762e-05
-4150 1.0005393960454967e-05
-4200 9.544532076688483e-06
-4250 9.108456652029417e-06
-4300 8.695598808117211e-06
-4350 8.304504262923729e-06
-4400 7.933832421258558e-06
-4450 7.582332273159409e-06
-4500 7.248837391671259e-06
-4550 6.9322791205195244e-06
-4600 6.631650649069343e-06
-4650 6.34601610727259e-06
-4700 6.074509656173177e-06
-4750 5.816319571749773e-06
-4800 5.570689154410502e-06
-4850 5.3369126362667885e-06
-4900 5.11432699568104e-06
-4950 4.902320142718963e-06
-5000 4.700310000771424e-06
-5050 4.50775723948027e-06
-5100 4.324154815549264e-06
-5150 4.149028882238781e-06
-5200 3.981928784924094e-06
-5250 3.822439339273842e-06
-5300 3.6701676435768604e-06
-5350 3.524737849147641e-06
-5400 3.385807303857291e-06
-5450 3.2530431326449616e-06
-5500 3.1261370168067515e-06
-5550 3.0047970085433917e-06
-5600 2.8887482130812714e-06
-5650 2.7777321065514116e-06
-5700 2.6715015337686054e-06
-5750 2.5698252557049273e-06
-5800 2.4724829472688725e-06
-5850 2.3792699721525423e-06
-5900 2.2899866962688975e-06
-5950 2.2044491743145045e-06
-6000 2.1224793727014912e-06
-6050 2.0439129002625123e-06
-6100 1.9685905954247573e-06
-6150 1.8963601178256795e-06
-6200 1.8270810642206925e-06
-6250 1.760620079949149e-06
-6300 1.6968460840871558e-06
-6350 1.635640273889294e-06
-6400 1.5768823686812539e-06
-6450 1.5204675491986563e-06
-6500 1.4662883813798544e-06
-6550 1.414246071362868e-06
-6600 1.364247509627603e-06
-6650 1.316200609835505e-06
-6700 1.2700223805950372e-06
-6750 1.2256310810698778e-06
-6800 1.1829495178972138e-06
-6850 1.1419036809456884e-06
-6900 1.102423198062752e-06
-6950 1.0644417898220127e-06
-7000 1.027897269523237e-06
-7050 9.927267683451646e-07
-7100 9.588746934241499e-07
-7150 9.262849403057771e-07
-7200 8.949060656959773e-07
-7250 8.646877063256397e-07
-7300 8.355830232176231e-07
-7350 8.075453479250427e-07
-7400 7.805318773534964e-07
-7450 7.545020821453363e-07
-7500 7.294156034731714e-07
-7550 7.052357204884174e-07
-7600 6.819264513069356e-07
-7650 6.594532351300586e-07
-7700 6.377832733051036e-07
-7750 6.168849608911842e-07
-7800 5.967290235275868e-07
-7850 5.772870395048812e-07
-7900 5.585311555478256e-07
-7950 5.404351668403251e-07
-8000 5.229745738688507e-07
-8050 5.061245360593603e-07
-8100 4.898624297311471e-07
-8150 4.7416742177119886e-07
-8200 4.590159221606882e-07
-8250 4.44389627318742e-07
-8300 4.3026821572311746e-07
-8350 4.1663423644422437e-07
-8400 4.034685332499066e-07
-8450 3.907547636572417e-07
-8500 3.7847598832740914e-07
-8550 3.666165184768033e-07
-8600 3.551611769125884e-07
-8650 3.44094615911672e-07
-8700 3.334033920054935e-07
-8750 3.230740901472018e-07
-8800 3.130932100248174e-07
-8850 3.0344827450790035e-07
-8900 2.941270622613956e-07
-8950 2.8511848881862534e-07
-9000 2.764106739050476e-07
-9050 2.679938972960372e-07
-9100 2.598564776690182e-07
-9150 2.519889221730409e-07
-9200 2.443812263663858e-07
-9250 2.370250768990445e-07
-9300 2.2991073933553707e-07
-9350 2.2302984348243626e-07
-9400 2.1637396230289596e-07
-9450 2.0993516613998509e-07
-9500 2.0370568165617442e-07
-9550 1.976784460566705e-07
-9600 1.9184577126907243e-07
-9650 1.862013192521772e-07
-9700 1.8073811247631966e-07
-9750 1.7545029606935714e-07
-9800 1.703306367062396e-07
-9850 1.653745158591846e-07
-9900 1.605755244327156e-07
-9950 1.5592880231452e-07</code></pre>
+0 151.32118225097656
+50 0.053587257862091064
+100 0.0328286774456501
+150 0.028992202132940292
+200 0.025189215317368507
+250 0.021402839571237564
+300 0.017760802060365677
+350 0.014506581239402294
+400 0.011836829595267773
+450 0.009722495451569557
+500 0.008035768754780293
+550 0.006668942980468273
+600 0.005548533983528614
+650 0.004626259207725525
+700 0.0038673582021147013
+750 0.003243650309741497
+800 0.0027311642188578844
+850 0.002309612464159727
+900 0.001962121110409498
+950 0.001674843137152493
+1000 0.0014365077950060368
+1050 0.001237988006323576
+1100 0.0010719174752011895
+1150 0.0009323609410785139
+1200 0.0008145408355630934
+1250 0.0007146071875467896
+1300 0.0006294533377513289
+1350 0.0005565652973018587
+1400 0.0004939022473990917
+1450 0.00043980134068988264
+1500 0.0003929023223463446
+1550 0.0003520874015521258
+1600 0.0003164346853736788
+1650 0.00028518016915768385
+1700 0.0002576881379354745
+1750 0.00023342730128206313
+1800 0.00021195180306676775
+1850 0.00019288611656520516
+1900 0.0001759123697411269
+1950 0.00016076072643045336
+2000 0.00014720119361300021
+2050 0.0001350370148429647
+2100 0.00012409927148837596
+2150 0.00011424245894886553
+2200 0.00010534089960856363
+2250 9.728559234645218e-05
+2300 8.998184785014018e-05
+2350 8.334707672474906e-05
+2400 7.730907964287326e-05
+2450 7.180459942901507e-05
+2500 6.677806231891736e-05
+2550 6.218050111783668e-05
+2600 5.7968714827438816e-05
+2650 5.4104482842376456e-05
+2700 5.055393194197677e-05
+2750 4.7286961489589885e-05
+2800 4.4276792323216796e-05
+2850 4.149954838794656e-05
+2900 3.893388930009678e-05
+2950 3.6560737498803064e-05
+3000 3.436299812165089e-05
+3050 3.2325297070201486e-05
+3100 3.043382821488194e-05
+3150 2.867616967705544e-05
+3200 2.7041087378165685e-05
+3250 2.551845864218194e-05
+3300 2.4099113943520933e-05
+3350 2.277475687151309e-05
+3400 2.1537845896091312e-05
+3450 2.0381547074066475e-05
+3500 1.929963764268905e-05
+3550 1.828645144996699e-05
+3600 1.7336820747004822e-05
+3650 1.6446025256300345e-05
+3700 1.560976124892477e-05
+3750 1.4824079698882997e-05
+3800 1.4085370821703691e-05
+3850 1.3390311323746573e-05
+3900 1.2735866221191827e-05
+3950 1.2119240636820905e-05
+4000 1.1537848877196666e-05
+4050 1.0989331713062711e-05
+4100 1.0471500900166575e-05
+4150 9.982338269765023e-06
+4200 9.519984814687632e-06
+4250 9.082707947527524e-06
+4300 8.668922419019509e-06
+4350 8.277146662294399e-06
+4400 7.906016435299534e-06
+4450 7.554254807473626e-06
+4500 7.220686711661983e-06
+4550 6.904213933012215e-06
+4600 6.603815563721582e-06
+4650 6.318538453342626e-06
+4700 6.0475040299934335e-06
+4750 5.789883289253339e-06
+4800 5.544910891330801e-06
+4850 5.311860604706453e-06
+4900 5.090067134005949e-06
+4950 4.878899289906258e-06
+5000 4.677770903072087e-06
+5050 4.4861308197141625e-06
+5100 4.303465630073333e-06
+5150 4.129289663978852e-06
+5200 3.963151812058641e-06
+5250 3.804624157055514e-06
+5300 3.65331061402685e-06
+5350 3.5088337426714133e-06
+5400 3.3708383853081614e-06
+5450 3.238998715460184e-06
+5500 3.1129964099818608e-06
+5550 2.9925363378424663e-06
+5600 2.8773445137630915e-06
+5650 2.7671578664012486e-06
+5700 2.6617296953190817e-06
+5750 2.5608264877519105e-06
+5800 2.4642274638608797e-06
+5850 2.3717261683486868e-06
+5900 2.2831234218756435e-06
+5950 2.198237552875071e-06
+6000 2.116889163517044e-06
+6050 2.0389113615237875e-06
+6100 1.9641472590592457e-06
+6150 1.892449631668569e-06
+6200 1.8236726191389607e-06
+6250 1.7576849131728522e-06
+6300 1.6943600940066972e-06
+6350 1.633575038795243e-06
+6400 1.5752151512060664e-06
+6450 1.5191724287433317e-06
+6500 1.4653436437583878e-06
+6550 1.4136292065813905e-06
+6600 1.3639372582474607e-06
+6650 1.3161782135284739e-06
+6700 1.270266693609301e-06
+6750 1.2261241408850765e-06
+6800 1.1836722251246101e-06</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>KeyboardInterrupt: </code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="26">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="26">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f057043c0a0&gt;</code></pre>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b7c4f0700&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-14-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="70">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy.ma <span class="im">as</span> ma</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>img_copy_mar <span class="op">=</span> img.copy()</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mask 50% of the values</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.random.rand(<span class="op">*</span>img_copy_mar.shape) <span class="op">&lt;</span> <span class="fl">0.5</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>img_copy_mar[mask] <span class="op">=</span> np.NaN</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy_mar, cmap<span class="op">=</span><span class="st">'gray'</span>, interpolation<span class="op">=</span><span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="70">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f04f4a99e50&gt;</code></pre>
+<div class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy.ma <span class="im">as</span> ma</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>img_copy_mar <span class="op">=</span> img.copy()</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mask 50% of the values</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.random.rand(<span class="op">*</span>img_copy_mar.shape) <span class="op">&lt;</span> <span class="fl">0.5</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>img_copy_mar[mask] <span class="op">=</span> np.NaN</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy_mar, cmap<span class="op">=</span><span class="st">'gray'</span>, interpolation<span class="op">=</span><span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b7c4b3160&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-15-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="71">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy_mar).<span class="bu">float</span>().to(device)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy_mar).<span class="bu">float</span>().to(device)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch.Size([1365, 2048])
-0 0.06834408640861511
-50 0.009696380235254765
-100 0.004485020879656076
-150 0.002751269144937396
-200 0.001827028812840581
-250 0.0014045980060473084
-300 0.0012345635332167149
-350 0.001172593212686479
-400 0.0011480636894702911
-450 0.001136348000727594</code></pre>
+0 0.06847646087408066
+50 0.009698617272078991
+100 0.004532135557383299
+150 0.0027155799325555563
+200 0.0017738448223099113
+250 0.0013879495672881603
+300 0.0012326812138780951
+350 0.001177298603579402
+400 0.0011539665283635259
+450 0.0011406586272642016</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="72">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="72">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f04f4a151c0&gt;</code></pre>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b7c41a4f0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-17-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="88">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>img_copy_mar <span class="op">=</span> img.copy()</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Mask 95% of the values</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.random.rand(<span class="op">*</span>img_copy_mar.shape) <span class="op">&lt;</span> <span class="fl">0.90</span></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>img_copy_mar[mask] <span class="op">=</span> np.NaN</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy_mar, cmap<span class="op">=</span><span class="st">'gray'</span>, interpolation<span class="op">=</span><span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="88">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f04ec72f310&gt;</code></pre>
+<div class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>img_copy_mar <span class="op">=</span> img.copy()</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Mask 95% of the values</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.random.rand(<span class="op">*</span>img_copy_mar.shape) <span class="op">&lt;</span> <span class="fl">0.90</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>img_copy_mar[mask] <span class="op">=</span> np.NaN</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy_mar, cmap<span class="op">=</span><span class="st">'gray'</span>, interpolation<span class="op">=</span><span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="34">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b59f9d0a0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-18-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="97">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy_mar).<span class="bu">float</span>().to(device)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">12</span>, niter<span class="op">=</span><span class="dv">5000</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy_mar).<span class="bu">float</span>().to(device)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">6</span>, niter<span class="op">=</span><span class="dv">5000</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch.Size([1365, 2048])
-0 0.16524310410022736
-50 0.011408291757106781
-100 0.010492468252778053
-150 0.007313533686101437
-200 0.005183914676308632
-250 0.00427259411662817
-300 0.003722510999068618
-350 0.0034131277352571487
-400 0.003222056897357106
-450 0.0030949581414461136
-500 0.0030100212898105383
-550 0.00295196077786386
-600 0.00291002937592566
-650 0.002877690363675356
-700 0.002851426601409912
-750 0.0028294965159147978
-800 0.0028110460843890905
-850 0.0027956736739724874
-900 0.002783292206004262
-950 0.002773684449493885
-1000 0.0027662254869937897
-1050 0.0027602335903793573
-1100 0.002755254739895463
-1150 0.002751055173575878
-1200 0.002747524296864867
-1250 0.0027445885352790356
-1300 0.002742170123383403
-1350 0.0027401773259043694
-1400 0.0027385170105844736
-1450 0.002737109549343586
-1500 0.002735892776399851
-1550 0.0027348219882696867
-1600 0.0027338655199855566
-1650 0.0027330005541443825
-1700 0.002732211723923683
-1750 0.0027314850594848394
-1800 0.002730810549110174
-1850 0.002730181673541665
-1900 0.0027295963373035192
-1950 0.002729057800024748
-2000 0.0027285716496407986
-2050 0.0027281453367322683
-2100 0.0027277832850813866
-2150 0.0027274840977042913
-2200 0.002727244049310684
-2250 0.0027270542923361063
-2300 0.002726905979216099
-2350 0.002726790262386203
-2400 0.0027266989927738905
-2450 0.002726626815274358
-2500 0.0027265683747828007
-2550 0.0027265208773314953
-2600 0.002726481994614005
-2650 0.0027264493983238935
-2700 0.0027264219243079424
-2750 0.0027263984084129333
-2800 0.002726377919316292
-2850 0.0027263606898486614
-2900 0.0027263450901955366
-2950 0.0027263315860182047
-3000 0.0027263194788247347
-3050 0.002726308535784483
-3100 0.002726298524066806
-3150 0.0027262892108410597
-3200 0.002726281527429819
-3250 0.002726274076849222
-3300 0.0027262675575912
-3350 0.002726261503994465
-3400 0.002726256148889661
-3450 0.0027262514922767878
-3500 0.0027262470684945583
-3550 0.0027262435760349035
-3600 0.0027262403164058924
-3650 0.002726237755268812
-3700 0.002726235194131732
-3750 0.0027262333314865828
-3800 0.002726231701672077
-3850 0.002726230537518859
-3900 0.002726229140534997
-3950 0.0027262282092124224
-4000 0.002726227743551135
-4050 0.002726227045059204
-4100 0.002726226579397917
-4150 0.002726226346567273
-4200 0.0027262261137366295
-4250 0.002726225648075342
-4300 0.002726225648075342
-4350 0.002726225648075342
-4400 0.002726225182414055
-4450 0.0027262254152446985
-4500 0.002726225182414055
-4550 0.002726225182414055
-4600 0.002726225182414055
-4650 0.002726225182414055
-4700 0.002726225182414055
-4750 0.002726225182414055
-4800 0.002726225182414055
-4850 0.002726225182414055
-4900 0.002726225182414055
-4950 0.002726225182414055</code></pre>
+0 0.19373248517513275
+50 0.011713889427483082
+100 0.011015579104423523
+150 0.010831421241164207
+200 0.00988197885453701
+250 0.0070482841692864895
+300 0.005951507017016411
+350 0.005491257179528475
+400 0.005056201014667749
+450 0.004716753028333187
+500 0.004533899482339621
+550 0.004458062816411257
+600 0.004424984101206064
+650 0.004407119005918503
+700 0.0043948739767074585
+750 0.004384889733046293
+800 0.004376130178570747
+850 0.004368423484265804
+900 0.004361842758953571
+950 0.004356436897069216
+1000 0.004352156538516283
+1050 0.004348871763795614
+1100 0.0043464116752147675
+1150 0.004344604909420013
+1200 0.004343296866863966
+1250 0.0043423594906926155
+1300 0.004341694060713053
+1350 0.0043412246741354465
+1400 0.004340897314250469
+1450 0.004340670071542263
+1500 0.004340513609349728
+1550 0.004340406507253647
+1600 0.004340334329754114
+1650 0.0043402849696576595
+1700 0.004340252839028835
+1750 0.0043402318842709064
+1800 0.004340217448771
+1850 0.004340208601206541
+1900 0.004340203013271093
+1950 0.004340199287980795
+2000 0.004340196959674358
+2050 0.0043401955626904964
+2100 0.004340195097029209
+2150 0.0043401941657066345
+2200 0.0043401941657066345
+2250 0.0043401941657066345
+2300 0.0043401941657066345
+2350 0.0043401941657066345
+2400 0.0043401941657066345
+2450 0.0043401941657066345
+2500 0.0043401941657066345
+2550 0.0043401941657066345
+2600 0.004340193700045347
+2650 0.004340193700045347
+2700 0.004340193700045347
+2750 0.004340193700045347
+2800 0.0043401941657066345
+2850 0.004340193700045347
+2900 0.004340193700045347
+2950 0.0043401941657066345
+3000 0.004340193700045347
+3050 0.004340193700045347
+3100 0.00434019323438406
+3150 0.00434019323438406
+3200 0.00434019323438406
+3250 0.00434019323438406
+3300 0.00434019323438406
+3350 0.004340193700045347
+3400 0.004340193700045347
+3450 0.004340193700045347
+3500 0.004340193700045347
+3550 0.004340193700045347
+3600 0.0043401941657066345
+3650 0.004340193700045347
+3700 0.0043401941657066345
+3750 0.004340193700045347
+3800 0.004340193700045347
+3850 0.004340193700045347
+3900 0.004340193700045347
+3950 0.004340193700045347
+4000 0.004340193700045347
+4050 0.004340193700045347
+4100 0.004340193700045347
+4150 0.004340193700045347
+4200 0.004340193700045347
+4250 0.004340193700045347
+4300 0.004340193700045347
+4350 0.004340193700045347
+4400 0.004340193700045347
+4450 0.004340193700045347
+4500 0.004340193700045347
+4550 0.004340193700045347
+4600 0.004340193700045347
+4650 0.004340193700045347
+4700 0.004340193700045347
+4750 0.0043401941657066345
+4800 0.0043401941657066345
+4850 0.004340193700045347
+4900 0.0043401941657066345
+4950 0.00434019323438406</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="98">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="98">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f04ec4cc640&gt;</code></pre>
+<div class="cell" data-execution_count="38">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="38">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b59eedc70&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-20-output-2.png" class="img-fluid"></p>
