@@ -4,6 +4,8 @@
     "items": [
       "/notebooks/posts/mle.html",
       "/notebooks/posts/log-sum-exp.html",
+      "/notebooks/posts/kmeans-num-clusters.html",
+      "/notebooks/posts/hierarchial-clustering.html",
       "/notebooks/posts/curse-dimensionality.html",
       "/notebooks/posts/kmeans-segmentation.html",
       "/notebooks/posts/image-completion.html",
