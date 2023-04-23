@@ -225,7 +225,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -235,478 +235,274 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> plt.imread(<span class="st">'dog.jpg'</span>)</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>plt.imshow(img)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="2">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9c2a687f10&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f662ba10430&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-2-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to grayscale</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> img.mean(axis<span class="op">=</span><span class="dv">2</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.imshow(img, cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="3">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9c2a5cbbb0&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="2">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f662b94cfd0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-3-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>img <span class="op">=</span> img<span class="op">/</span><span class="dv">255</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>plt.imshow(img, cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9c29d44970&gt;</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f662b0c4d60&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="59">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MF code with missing values</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># INIT WELL!</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> factorize(A, k, niter<span class="op">=</span><span class="dv">100</span>, lr<span class="op">=</span><span class="fl">1e-3</span>):</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    n, m <span class="op">=</span> A.shape</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If we do not init well, our solution is poor</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> torch.<span class="bu">abs</span>(torch.randn(n, k)<span class="op">/</span><span class="dv">10</span>).to(A.device)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    H <span class="op">=</span> torch.<span class="bu">abs</span>(torch.randn(k, m)<span class="op">/</span><span class="dv">10</span>).to(A.device)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">#W = torch.randn(n, k).to(A.device)</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">#H = torch.randn(k, m).to(A.device)</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    W.requires_grad <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    H.requires_grad <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Mask where A is not missing</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> <span class="op">~</span>torch.isnan(A).to(A.device)</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(mask.shape)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> torch.optim.Adam([W, H], lr<span class="op">=</span>lr)</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(niter):</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        Ahat <span class="op">=</span> W <span class="op">@</span> H</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> F.mse_loss(Ahat[mask], A[mask])</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">%</span> <span class="dv">50</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(i, loss.item())</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> W, H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>img.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>(1365, 2048)</code></pre>
 </div>
-<div class="cell" data-execution_count="60">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> torch.device(<span class="st">'cuda'</span> <span class="cf">if</span> torch.cuda.is_available() <span class="cf">else</span> <span class="st">'cpu'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell" data-execution_count="61">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img).<span class="bu">float</span>().to(device)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MF code with missing values</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn.functional <span class="im">as</span> F</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># INIT WELL!</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> factorize(A, k, niter<span class="op">=</span><span class="dv">100</span>, lr<span class="op">=</span><span class="fl">1e-3</span>):</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    n, m <span class="op">=</span> A.shape</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If we do not init well, our solution is poor</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    W <span class="op">=</span> torch.<span class="bu">abs</span>(torch.randn(n, k)<span class="op">/</span><span class="dv">10</span>).to(A.device)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    H <span class="op">=</span> torch.<span class="bu">abs</span>(torch.randn(k, m)<span class="op">/</span><span class="dv">10</span>).to(A.device)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">#W = torch.randn(n, k).to(A.device)</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">#H = torch.randn(k, m).to(A.device)</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    W.requires_grad <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    H.requires_grad <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Mask where A is not missing</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> <span class="op">~</span>torch.isnan(A).to(A.device)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(mask.shape)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    optimizer <span class="op">=</span> torch.optim.Adam([W, H], lr<span class="op">=</span>lr)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(niter):</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        Ahat <span class="op">=</span> W <span class="op">@</span> H</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> F.mse_loss(Ahat[mask], A[mask])</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">%</span> <span class="dv">50</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(i, loss.item())</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> W, H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>device <span class="op">=</span> torch.device(<span class="st">'cuda'</span> <span class="cf">if</span> torch.cuda.is_available() <span class="cf">else</span> <span class="st">'cpu'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img).<span class="bu">float</span>().to(device)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch.Size([1365, 2048])
-0 0.06817418336868286
-50 0.009624256752431393
-100 0.004642861895263195
-150 0.0027925868052989244
-200 0.0018268945859745145
-250 0.001446255948394537
-300 0.001321688061580062
-350 0.0012761197285726666
-400 0.0012540414463728666
-450 0.0012417419347912073</code></pre>
+0 0.06899718195199966
+50 0.010017945431172848
+100 0.004583133850246668
+150 0.0028046893421560526
+200 0.0018594106659293175
+250 0.001452349592000246
+300 0.00131764798425138
+350 0.001272885361686349
+400 0.0012544193305075169
+450 0.0012451813090592623</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="62">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>W<span class="op">@</span>H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="62">
-<pre><code>tensor([[0.2184, 0.2236, 0.2266,  ..., 0.2066, 0.2106, 0.2134],
-        [0.2185, 0.2236, 0.2265,  ..., 0.2064, 0.2104, 0.2131],
-        [0.2187, 0.2238, 0.2267,  ..., 0.2056, 0.2094, 0.2121],
+<div class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>W<span class="op">@</span>H</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="35">
+<pre><code>tensor([[0.2084, 0.2101, 0.2124,  ..., 0.2132, 0.2165, 0.2187],
+        [0.2090, 0.2107, 0.2130,  ..., 0.2131, 0.2163, 0.2185],
+        [0.2092, 0.2109, 0.2132,  ..., 0.2119, 0.2150, 0.2171],
         ...,
-        [0.3433, 0.3438, 0.3415,  ..., 0.3319, 0.3323, 0.3321],
-        [0.3411, 0.3423, 0.3405,  ..., 0.3397, 0.3399, 0.3396],
-        [0.3397, 0.3416, 0.3401,  ..., 0.3455, 0.3457, 0.3453]],
+        [0.3419, 0.3364, 0.3296,  ..., 0.3340, 0.3331, 0.3322],
+        [0.3406, 0.3352, 0.3286,  ..., 0.3410, 0.3400, 0.3391],
+        [0.3399, 0.3348, 0.3284,  ..., 0.3463, 0.3452, 0.3443]],
        device='cuda:0', grad_fn=&lt;MmBackward0&gt;)</code></pre>
 </div>
 </div>
-<div class="cell" data-execution_count="63">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot reconstructed image</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>plt.imshow((W <span class="op">@</span> H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="63">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b59caa280&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="image-completion_files/figure-html/cell-9-output-2.png" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, remove a rectangular patch from the image</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>patch <span class="op">=</span> [<span class="dv">100</span>, <span class="dv">600</span>, <span class="dv">400</span>, <span class="dv">1000</span>]</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>img_copy <span class="op">=</span> img.copy()</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># NAN the patch region</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>img_copy[patch[<span class="dv">0</span>]:patch[<span class="dv">2</span>], patch[<span class="dv">1</span>]: patch[<span class="dv">3</span>]] <span class="op">=</span> np.NaN</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy,cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b90050a00&gt;</code></pre>
+<div class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot reconstructed image</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>plt.imshow((W <span class="op">@</span> H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="36">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f655c3dc400&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-10-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy).<span class="bu">float</span>().to(device)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>torch.Size([1365, 2048])
-0 0.07008275389671326
-50 0.010157980024814606
-100 0.004786033183336258
-150 0.0028808838687837124
-200 0.0018825450679287314
-250 0.0014831097796559334
-300 0.00133986072614789
-350 0.00129795225802809
-400 0.0012805043952539563
-450 0.0012705608969554305</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b7c585d60&gt;</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<p><img src="image-completion_files/figure-html/cell-12-output-2.png" class="img-fluid"></p>
-</div>
-</div>
-<div class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy).<span class="bu">float</span>().to(device)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">2000</span>, niter<span class="op">=</span><span class="dv">10000</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>torch.Size([1365, 2048])
-0 151.32118225097656
-50 0.053587257862091064
-100 0.0328286774456501
-150 0.028992202132940292
-200 0.025189215317368507
-250 0.021402839571237564
-300 0.017760802060365677
-350 0.014506581239402294
-400 0.011836829595267773
-450 0.009722495451569557
-500 0.008035768754780293
-550 0.006668942980468273
-600 0.005548533983528614
-650 0.004626259207725525
-700 0.0038673582021147013
-750 0.003243650309741497
-800 0.0027311642188578844
-850 0.002309612464159727
-900 0.001962121110409498
-950 0.001674843137152493
-1000 0.0014365077950060368
-1050 0.001237988006323576
-1100 0.0010719174752011895
-1150 0.0009323609410785139
-1200 0.0008145408355630934
-1250 0.0007146071875467896
-1300 0.0006294533377513289
-1350 0.0005565652973018587
-1400 0.0004939022473990917
-1450 0.00043980134068988264
-1500 0.0003929023223463446
-1550 0.0003520874015521258
-1600 0.0003164346853736788
-1650 0.00028518016915768385
-1700 0.0002576881379354745
-1750 0.00023342730128206313
-1800 0.00021195180306676775
-1850 0.00019288611656520516
-1900 0.0001759123697411269
-1950 0.00016076072643045336
-2000 0.00014720119361300021
-2050 0.0001350370148429647
-2100 0.00012409927148837596
-2150 0.00011424245894886553
-2200 0.00010534089960856363
-2250 9.728559234645218e-05
-2300 8.998184785014018e-05
-2350 8.334707672474906e-05
-2400 7.730907964287326e-05
-2450 7.180459942901507e-05
-2500 6.677806231891736e-05
-2550 6.218050111783668e-05
-2600 5.7968714827438816e-05
-2650 5.4104482842376456e-05
-2700 5.055393194197677e-05
-2750 4.7286961489589885e-05
-2800 4.4276792323216796e-05
-2850 4.149954838794656e-05
-2900 3.893388930009678e-05
-2950 3.6560737498803064e-05
-3000 3.436299812165089e-05
-3050 3.2325297070201486e-05
-3100 3.043382821488194e-05
-3150 2.867616967705544e-05
-3200 2.7041087378165685e-05
-3250 2.551845864218194e-05
-3300 2.4099113943520933e-05
-3350 2.277475687151309e-05
-3400 2.1537845896091312e-05
-3450 2.0381547074066475e-05
-3500 1.929963764268905e-05
-3550 1.828645144996699e-05
-3600 1.7336820747004822e-05
-3650 1.6446025256300345e-05
-3700 1.560976124892477e-05
-3750 1.4824079698882997e-05
-3800 1.4085370821703691e-05
-3850 1.3390311323746573e-05
-3900 1.2735866221191827e-05
-3950 1.2119240636820905e-05
-4000 1.1537848877196666e-05
-4050 1.0989331713062711e-05
-4100 1.0471500900166575e-05
-4150 9.982338269765023e-06
-4200 9.519984814687632e-06
-4250 9.082707947527524e-06
-4300 8.668922419019509e-06
-4350 8.277146662294399e-06
-4400 7.906016435299534e-06
-4450 7.554254807473626e-06
-4500 7.220686711661983e-06
-4550 6.904213933012215e-06
-4600 6.603815563721582e-06
-4650 6.318538453342626e-06
-4700 6.0475040299934335e-06
-4750 5.789883289253339e-06
-4800 5.544910891330801e-06
-4850 5.311860604706453e-06
-4900 5.090067134005949e-06
-4950 4.878899289906258e-06
-5000 4.677770903072087e-06
-5050 4.4861308197141625e-06
-5100 4.303465630073333e-06
-5150 4.129289663978852e-06
-5200 3.963151812058641e-06
-5250 3.804624157055514e-06
-5300 3.65331061402685e-06
-5350 3.5088337426714133e-06
-5400 3.3708383853081614e-06
-5450 3.238998715460184e-06
-5500 3.1129964099818608e-06
-5550 2.9925363378424663e-06
-5600 2.8773445137630915e-06
-5650 2.7671578664012486e-06
-5700 2.6617296953190817e-06
-5750 2.5608264877519105e-06
-5800 2.4642274638608797e-06
-5850 2.3717261683486868e-06
-5900 2.2831234218756435e-06
-5950 2.198237552875071e-06
-6000 2.116889163517044e-06
-6050 2.0389113615237875e-06
-6100 1.9641472590592457e-06
-6150 1.892449631668569e-06
-6200 1.8236726191389607e-06
-6250 1.7576849131728522e-06
-6300 1.6943600940066972e-06
-6350 1.633575038795243e-06
-6400 1.5752151512060664e-06
-6450 1.5191724287433317e-06
-6500 1.4653436437583878e-06
-6550 1.4136292065813905e-06
-6600 1.3639372582474607e-06
-6650 1.3161782135284739e-06
-6700 1.270266693609301e-06
-6750 1.2261241408850765e-06
-6800 1.1836722251246101e-06</code></pre>
-</div>
-<div class="cell-output cell-output-error">
-<pre><code>KeyboardInterrupt: </code></pre>
-</div>
-</div>
 <div class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, remove a rectangular patch from the image</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>patch <span class="op">=</span> [<span class="dv">600</span>, <span class="dv">600</span>, <span class="dv">900</span>, <span class="dv">1000</span>]</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>img_copy <span class="op">=</span> img.copy()</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># NAN the patch region</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>img_copy[patch[<span class="dv">0</span>]:patch[<span class="dv">2</span>], patch[<span class="dv">1</span>]: patch[<span class="dv">3</span>]] <span class="op">=</span> np.NaN</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy,cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b7c4f0700&gt;</code></pre>
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f655c78f0d0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="image-completion_files/figure-html/cell-14-output-2.png" class="img-fluid"></p>
+<p><img src="image-completion_files/figure-html/cell-11-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 <div class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy.ma <span class="im">as</span> ma</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>img_copy_mar <span class="op">=</span> img.copy()</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mask 50% of the values</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.random.rand(<span class="op">*</span>img_copy_mar.shape) <span class="op">&lt;</span> <span class="fl">0.5</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>img_copy_mar[mask] <span class="op">=</span> np.NaN</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy_mar, cmap<span class="op">=</span><span class="st">'gray'</span>, interpolation<span class="op">=</span><span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="15">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b7c4b3160&gt;</code></pre>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy).<span class="bu">float</span>().to(device)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1365, 2048])
+0 0.06408126652240753
+50 0.009235438890755177
+100 0.004174043890088797
+150 0.002459741896018386
+200 0.0016036551678553224
+250 0.0012612321879714727
+300 0.001155527075752616
+350 0.0011186705669388175
+400 0.0011004399275407195
+450 0.001089434023015201</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f655c76a730&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="image-completion_files/figure-html/cell-13-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy).<span class="bu">float</span>().to(device)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">200</span>, niter<span class="op">=</span><span class="dv">1000</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1365, 2048])
+0 0.745537519454956
+50 0.014033811166882515
+100 0.006585388910025358
+150 0.0039051645435392857
+200 0.0023795326706022024
+250 0.0014881007373332977
+300 0.0009968953672796488
+350 0.0007123255636543036
+400 0.0005354612949304283
+450 0.0004198925453238189
+500 0.0003404634480830282
+550 0.00028347159968689084
+600 0.0002411041350569576
+650 0.00020870099251624197
+700 0.0001833428832469508
+750 0.00016311286890413612
+800 0.0001467068213969469
+850 0.00013321208825800568
+900 0.00012197894102428108
+950 0.0001125385460909456</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f655c6cfd00&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-15-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="16">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy_mar).<span class="bu">float</span>().to(device)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>torch.Size([1365, 2048])
-0 0.06847646087408066
-50 0.009698617272078991
-100 0.004532135557383299
-150 0.0027155799325555563
-200 0.0017738448223099113
-250 0.0013879495672881603
-300 0.0012326812138780951
-350 0.001177298603579402
-400 0.0011539665283635259
-450 0.0011406586272642016</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="17">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="17">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b7c41a4f0&gt;</code></pre>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy.ma <span class="im">as</span> ma</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>img_copy_mar <span class="op">=</span> img.copy()</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mask 50% of the values</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.random.rand(<span class="op">*</span>img_copy_mar.shape) <span class="op">&lt;</span> <span class="fl">0.5</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>img_copy_mar[mask] <span class="op">=</span> np.NaN</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy_mar, cmap<span class="op">=</span><span class="st">'gray'</span>, interpolation<span class="op">=</span><span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f655c6be8e0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="image-completion_files/figure-html/cell-17-output-2.png" class="img-fluid"></p>
+<p><img src="image-completion_files/figure-html/cell-16-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="34">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>img_copy_mar <span class="op">=</span> img.copy()</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Mask 95% of the values</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.random.rand(<span class="op">*</span>img_copy_mar.shape) <span class="op">&lt;</span> <span class="fl">0.90</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>img_copy_mar[mask] <span class="op">=</span> np.NaN</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy_mar, cmap<span class="op">=</span><span class="st">'gray'</span>, interpolation<span class="op">=</span><span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="34">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b59f9d0a0&gt;</code></pre>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy_mar).<span class="bu">float</span>().to(device)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">40</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1365, 2048])
+0 0.06749840080738068
+50 0.009521582163870335
+100 0.004410044755786657
+150 0.0026408638805150986
+200 0.00173112191259861
+250 0.0013635847717523575
+300 0.00121410156134516
+350 0.001163529814220965
+400 0.00114450475666672
+450 0.0011350518325343728</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f655c628cd0&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <p><img src="image-completion_files/figure-html/cell-18-output-2.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="37">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy_mar).<span class="bu">float</span>().to(device)</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">6</span>, niter<span class="op">=</span><span class="dv">5000</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>torch.Size([1365, 2048])
-0 0.19373248517513275
-50 0.011713889427483082
-100 0.011015579104423523
-150 0.010831421241164207
-200 0.00988197885453701
-250 0.0070482841692864895
-300 0.005951507017016411
-350 0.005491257179528475
-400 0.005056201014667749
-450 0.004716753028333187
-500 0.004533899482339621
-550 0.004458062816411257
-600 0.004424984101206064
-650 0.004407119005918503
-700 0.0043948739767074585
-750 0.004384889733046293
-800 0.004376130178570747
-850 0.004368423484265804
-900 0.004361842758953571
-950 0.004356436897069216
-1000 0.004352156538516283
-1050 0.004348871763795614
-1100 0.0043464116752147675
-1150 0.004344604909420013
-1200 0.004343296866863966
-1250 0.0043423594906926155
-1300 0.004341694060713053
-1350 0.0043412246741354465
-1400 0.004340897314250469
-1450 0.004340670071542263
-1500 0.004340513609349728
-1550 0.004340406507253647
-1600 0.004340334329754114
-1650 0.0043402849696576595
-1700 0.004340252839028835
-1750 0.0043402318842709064
-1800 0.004340217448771
-1850 0.004340208601206541
-1900 0.004340203013271093
-1950 0.004340199287980795
-2000 0.004340196959674358
-2050 0.0043401955626904964
-2100 0.004340195097029209
-2150 0.0043401941657066345
-2200 0.0043401941657066345
-2250 0.0043401941657066345
-2300 0.0043401941657066345
-2350 0.0043401941657066345
-2400 0.0043401941657066345
-2450 0.0043401941657066345
-2500 0.0043401941657066345
-2550 0.0043401941657066345
-2600 0.004340193700045347
-2650 0.004340193700045347
-2700 0.004340193700045347
-2750 0.004340193700045347
-2800 0.0043401941657066345
-2850 0.004340193700045347
-2900 0.004340193700045347
-2950 0.0043401941657066345
-3000 0.004340193700045347
-3050 0.004340193700045347
-3100 0.00434019323438406
-3150 0.00434019323438406
-3200 0.00434019323438406
-3250 0.00434019323438406
-3300 0.00434019323438406
-3350 0.004340193700045347
-3400 0.004340193700045347
-3450 0.004340193700045347
-3500 0.004340193700045347
-3550 0.004340193700045347
-3600 0.0043401941657066345
-3650 0.004340193700045347
-3700 0.0043401941657066345
-3750 0.004340193700045347
-3800 0.004340193700045347
-3850 0.004340193700045347
-3900 0.004340193700045347
-3950 0.004340193700045347
-4000 0.004340193700045347
-4050 0.004340193700045347
-4100 0.004340193700045347
-4150 0.004340193700045347
-4200 0.004340193700045347
-4250 0.004340193700045347
-4300 0.004340193700045347
-4350 0.004340193700045347
-4400 0.004340193700045347
-4450 0.004340193700045347
-4500 0.004340193700045347
-4550 0.004340193700045347
-4600 0.004340193700045347
-4650 0.004340193700045347
-4700 0.004340193700045347
-4750 0.0043401941657066345
-4800 0.0043401941657066345
-4850 0.004340193700045347
-4900 0.0043401941657066345
-4950 0.00434019323438406</code></pre>
-</div>
-</div>
-<div class="cell" data-execution_count="38">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="38">
-<pre><code>&lt;matplotlib.image.AxesImage at 0x7f9b59eedc70&gt;</code></pre>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>img_copy_mar <span class="op">=</span> img.copy()</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Mask 95% of the values</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>mask <span class="op">=</span> np.random.rand(<span class="op">*</span>img_copy_mar.shape) <span class="op">&lt;</span> <span class="fl">0.90</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>img_copy_mar[mask] <span class="op">=</span> np.NaN</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>plt.imshow(img_copy_mar, cmap<span class="op">=</span><span class="st">'gray'</span>, interpolation<span class="op">=</span><span class="st">'none'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f655c59c790&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
-<p><img src="image-completion_files/figure-html/cell-20-output-2.png" class="img-fluid"></p>
+<p><img src="image-completion_files/figure-html/cell-19-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> torch.from_numpy(img_copy_mar).<span class="bu">float</span>().to(device)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>W, H <span class="op">=</span> factorize(A, <span class="dv">12</span>, niter<span class="op">=</span><span class="dv">500</span>, lr<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch.Size([1365, 2048])
+0 0.1652921885251999
+50 0.011481668800115585
+100 0.010577931068837643
+150 0.00767508614808321
+200 0.005586703773587942
+250 0.004488078411668539
+300 0.0038986506406217813
+350 0.003568559419363737
+400 0.0033569824881851673
+450 0.0032061892561614513</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>plt.imshow((W<span class="op">@</span>H).cpu().detach().numpy(), cmap<span class="op">=</span><span class="st">'gray'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>&lt;matplotlib.image.AxesImage at 0x7f655c4ff3d0&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="image-completion_files/figure-html/cell-21-output-2.png" class="img-fluid"></p>
 </div>
 </div>
 
