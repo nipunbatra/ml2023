@@ -34,7 +34,7 @@ title: "Schedule"
 |26| 18 Apr| [Curse of Dimensionality](https://nipunbatra.github.io/ml2023/notebooks/posts/curse-dimensionality.html), [Segment Anything demo](https://segment-anything.com), Unsupervised learning, [Image segmentation](https://nipunbatra.github.io/ml2023/notebooks/posts/kmeans-segmentation.html), [Image completion](https://nipunbatra.github.io/ml2023/notebooks/posts/image-completion.html), KMeans [Viz 1](https://www.naftaliharris.com/blog/visualizing-k-means-clustering/), [Viz 2](http://alekseynp.com/viz/k-means.html), [PCA reference](https://www.youtube.com/watch?v=g-Hb26agBFg)|
 |27| 20 Apr| [Constrained Optimization (self study)](https://www.youtube.com/watch?v=rjq0g-ugwwg), [Support Vector Machines -1](lectures/svm-intro.pdf)|
 |28| 23 Apr| [Support Vector Machines](lectures/svm-intro.pdf)|
-|29| 25 Apr| [Support Vector Machines (Soft Margin)]|
+|29| 25 Apr| [Support Vector Machines (Soft Margin)](lectures/svm-soft-margin.pdf)|
 
 
 
